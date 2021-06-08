@@ -30,42 +30,42 @@ void Environment::define_uwb_beacon(uint64_t n)
     for (size_t i = 0; i < n; i++) {
         uwb_beacon.push_back(std::vector<float>());
         if(i == 0){
-            uwb_beacon[i].push_back(lim-5);
-            uwb_beacon[i].push_back(-lim+5);
+            uwb_beacon[i].push_back(lim-15);
+            uwb_beacon[i].push_back(-lim+15);
         }
 
         if(i == 1){
-            uwb_beacon[i].push_back(lim-5);
-            uwb_beacon[i].push_back(lim-5);
+            uwb_beacon[i].push_back(lim-15);
+            uwb_beacon[i].push_back(lim-15);
         }
 
         if(i == 2){
-            uwb_beacon[i].push_back(-lim+5);
-            uwb_beacon[i].push_back(lim-5);
+            uwb_beacon[i].push_back(-lim+15);
+            uwb_beacon[i].push_back(lim-15);
         }
 
         if(i == 3){
-            uwb_beacon[i].push_back(-lim+5);
-            uwb_beacon[i].push_back(-lim+5);
+            uwb_beacon[i].push_back(-lim+15);
+            uwb_beacon[i].push_back(-lim+15);
         }
 
         if(i == 4){
             uwb_beacon[i].push_back(0);
-            uwb_beacon[i].push_back(lim-5);
+            uwb_beacon[i].push_back(lim-15);
         }
 
         if(i == 5){
-            uwb_beacon[i].push_back(-lim+5);
+            uwb_beacon[i].push_back(-lim+15);
             uwb_beacon[i].push_back(0);
         }
 
         if(i == 6){
             uwb_beacon[i].push_back(0);
-            uwb_beacon[i].push_back(-lim+5);
+            uwb_beacon[i].push_back(-lim+15);
         }
 
         if(i == 7){
-            uwb_beacon[i].push_back(lim-5);
+            uwb_beacon[i].push_back(lim-15);
             uwb_beacon[i].push_back(0);
         }
         //  uwb_beacon[i].push_back(rg.uniform_float(-lim, lim));
@@ -186,6 +186,9 @@ void Environment::animate(void)
 
   for (size_t i = 0; i < food.size(); i++) {
     d.food(food[i][0], food[i][1]);
+  }
+  for (size_t i = 0; i < uwb_beacon.size(); i++) {
+        d.uwb_beacon(uwb_beacon[i][0], uwb_beacon[i][1]);
   }
 }
 
