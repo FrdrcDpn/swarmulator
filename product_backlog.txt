@@ -1,0 +1,8 @@
+# PRODUCT BACKLOG - TODO LIST
+
+- clean up uwb_beacon test code
+- uwb ground truth function
+- uwb ranging with noise
+- logging uwb values
+
+- implement simple TDOA example
