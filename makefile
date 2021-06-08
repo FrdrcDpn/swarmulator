@@ -8,15 +8,17 @@ SRC_FOLDER = sw
 
 CONTROLLER?=aggregation
 AGENT?=particle
+BEACON?=uwb_testbeacon
 
 CONTROLLER_INCLUDE=\"$(CONTROLLER).h\"
 AGENT_INCLUDE=\"$(AGENT).h\"
+BCN_INCLUDE=\"$(BEACON).h\"
 # Compiler parameters
 #  -g    adds debugging information to the executable file
 #  -Wall turns on most, but not all, compiler warnings
 
 CC = g++ # chosen compiler
-CFLAGS = -g -Wall -std=gnu++17 -D_GLIBCXX_USE_NANOSLEEP -DSWARMULATOR -DCONTROLLER=$(CONTROLLER) -DAGENT=$(AGENT) -DAGENT_INCLUDE=$(AGENT_INCLUDE) -DCONTROLLER_INCLUDE=$(CONTROLLER_INCLUDE) -D_GLIBCXX_USE_CXX11_ABI=0
+CFLAGS = -g -Wall -std=gnu++17 -D_GLIBCXX_USE_NANOSLEEP -DSWARMULATOR -DCONTROLLER=$(CONTROLLER) -DBEACON=$(BEACON) -DAGENT=$(AGENT) -DAGENT_INCLUDE=$(AGENT_INCLUDE) -DBCN_INCLUDE=$(BCN_INCLUDE) -DCONTROLLER_INCLUDE=$(CONTROLLER_INCLUDE) -D_GLIBCXX_USE_CXX11_ABI=0
 OPT=-lglut -lGLU -lGL -lpthread -lxerces-c -Wno-deprecated-declarations -fno-inline-functions -lprotobuf
 
 ifeq ($(VERBOSE),ON)
@@ -33,6 +35,7 @@ endif
 
 CTRL_FOLDER = sw/simulation/controllers
 AGNT_FOLDER = sw/simulation/agents
+BCN_FOLDER = sw/simulation/beacons
 
 # General parameters to include all relevant cpp files and all subfolders
 # INC_DIRS = $(shell find $(SRC_FOLDER) -path $(CTRL_FOLDER) -prune -o -type d)
@@ -51,6 +54,12 @@ AGNT_INC = $(shell find $(SRC_FOLDER) -name $(AGENT).cpp -printf '%h\n')
 SOURCES_CPP +=  $(shell find $(AGNT_INC) -name *.cpp -print)
 SOURCES_C +=  $(shell find $(AGNT_INC) -name *.c -print)
 INC_DIRS += $(shell find $(AGNT_INC) -type d)
+
+### Select beacon files
+BCN_INC = $(shell find $(SRC_FOLDER) -name $(BEACON).cpp -printf '%h\n')
+SOURCES_CPP +=  $(shell find $(BCN_INC) -name *.cpp -print)
+SOURCES_C +=  $(shell find $(BCN_INC) -name *.c -print)
+INC_DIRS += $(shell find $(BCN_INC) -type d)
 
 ### External libraries
 # If using pytorch, load the library!

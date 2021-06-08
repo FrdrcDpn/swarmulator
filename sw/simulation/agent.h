@@ -9,6 +9,7 @@
 #include "settings.h"
 #include "terminalinfo.h"
 #include CONTROLLER_INCLUDE
+#include BCN_INCLUDE
 
 /**
  * Parent class defining an agent. The dynamic implementation is handled in children classes.
@@ -37,6 +38,7 @@ public:
   float manualpsi_delta;
   random_generator rg;
   Controller *controller = new CONTROLLER;
+  Beacon *beacon = new BEACON;
 
   /**
    * Returns the position of the agent along a certain dimension (i.e., North(0) and East(1))

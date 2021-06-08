@@ -13,6 +13,7 @@ class Environment
 public:
   std::vector<std::vector<float>> food;
   std::vector<float> beacon;
+  std::vector<std::vector<float>> uwb_beacon;
   float nest;
 
   /**
@@ -27,6 +28,7 @@ public:
    */
   ~Environment() {};
 
+  void define_uwb_beacon(uint64_t n);
   /**
    * @brief Define the initial obstacle list according to the list in conf/environments/.txt
    * You can indicate obstacle list in the conf/parameters.xml file, under <environment>

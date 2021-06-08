@@ -2,6 +2,14 @@
 #include "trigonometry.h"
 #include "main.h"
 
+void OmniscientObserver::uwb_beacon(const uint16_t ID, float &r, float &b,const uint16_t n)
+{
+    mtx_env.lock_shared();
+
+    float x = environment.uwb_beacon[n-1][0] - s[ID]->get_position(0);
+    float y = environment.uwb_beacon[n-1][1] - s[ID]->get_position(1);
+    cart2polar(x, y, r, b);
+}
 int compare_index(const void *p1, const void *p2)
 {
   indexed_array *elem1 = (indexed_array *)p1;

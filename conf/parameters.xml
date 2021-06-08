@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <parameters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="parameters.xsd">
   <!-- Simulation -->
+  <nbeacons>4</nbeacons>
   <simulation_updatefreq>20</simulation_updatefreq>
   <simulation_realtimefactor>300</simulation_realtimefactor>
   <time_limit>0</time_limit>

@@ -35,6 +35,15 @@ public:
    */
   ~OmniscientObserver() {};
 
+    /**
+   * @brief Return the location to the uwb beacon location in the environment
+   *
+   * @param ID
+   * @param r
+   * @param b
+   * @param n number of beacon
+   */
+    void uwb_beacon(const uint16_t ID, float &r, float &b, const uint16_t n);
   /**
    * Get a std::vector of the closest neighbors, in order from closest to furthest.
    *

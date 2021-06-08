@@ -3,6 +3,25 @@
 #include <cmath>
 #include "fitness_functions.h"
 
+void draw::uwb_beacon_range(const uint16_t &ID)
+{
+    glRasterPos2f(-0.01, 0.035);
+    glColor3f(1.0, 1.0, 1.0); // Background color
+    std::stringstream ss;
+    ss << (int)ID;
+    glutBitmapString(GLUT_BITMAP_8_BY_13, (unsigned char *)ss.str().c_str());
+}
+
+void draw::uwb_beacon(const float &xb, const float &yb)
+{
+    glPushMatrix();
+    glTranslatef(yb * xrat, xb * yrat, 0.0);
+    glRotatef(90, 0.0, 0.0, 1.0);
+    glColor3ub(200, 000, 000); // Red
+    point();
+    glPopMatrix();
+}
+
 void draw::data()
 {
   glRasterPos2f((-3.9 / zoom_scale - center_x), (-3.9 / zoom_scale - center_y));

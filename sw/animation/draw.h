@@ -22,6 +22,21 @@ public:
   /******* General openGL functions ********/
 
   /**
+   * Draw the range of an agent towards an uwb beacon on top of the uwb beacon
+   *
+   * @param ID The ID of the robot in question
+   */
+  void uwb_beacon_range(const uint16_t &ID);
+
+  /**
+    * Draw a red uwb beacon with coordinates x and y
+    *
+    * @param x x position (East)
+    * @param y y position (North)
+    */
+  void uwb_beacon(const float &xb, const float &yb);
+  
+  /**
    * Draw a simple triangle of size scl
    *
    * @param s Scale of the triangle
@@ -121,6 +136,8 @@ public:
    * @param y The y position of the food
    */
   void food(const float &x, const float &y);
+
+
 };
 
 #endif /*DRAW_H*/
