@@ -40,8 +40,8 @@ BCN_FOLDER = sw/simulation/beacons
 # General parameters to include all relevant cpp files and all subfolders
 # INC_DIRS = $(shell find $(SRC_FOLDER) -path $(CTRL_FOLDER) -prune -o -type d)
 INC_DIRS = $(shell find $(SRC_FOLDER) -type d)
-SOURCES_CPP = $(shell find $(SRC_FOLDER) -path $(CTRL_FOLDER) -prune -o -path $(AGNT_FOLDER) -prune -o -name *.cpp -print) # Recursively find all cpp/c files
-SOURCES_C = $(shell find $(SRC_FOLDER) -path $(CTRL_FOLDER) -prune -o -path $(AGNT_FOLDER) -prune -o -name *.c -print) # Recursively find all cpp/c files
+SOURCES_CPP = $(shell find $(SRC_FOLDER) -path $(BCN_FOLDER) -prune -o -path $(CTRL_FOLDER) -prune -o -path $(AGNT_FOLDER) -prune -o -name *.cpp -print) # Recursively find all cpp/c files
+SOURCES_C = $(shell find $(SRC_FOLDER) -path $(BCN_FOLDER) -prune -o -path $(CTRL_FOLDER) -prune -o -path $(AGNT_FOLDER) -prune -o -name *.c -print) # Recursively find all cpp/c files
 
 ### Select controller files
 CTRL_INC = $(shell find $(SRC_FOLDER) -name $(CONTROLLER).cpp -printf '%h\n')

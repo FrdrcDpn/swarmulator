@@ -1,10 +1,7 @@
 #include "uwb_testbeacon.h"
 #include "agent.h"
 #include "main.h"
-#include "randomgenerator.h"
-#include "auxiliary.h"
-#include "math.h"
-#include "draw.h"
+
 using namespace std;
 uwb_testbeacon::uwb_testbeacon() {
 
