@@ -53,7 +53,7 @@ vector<float> particle_oriented::state_update(vector<float> state)
   // Position
   state.at(0) += state[2] * dt + 0.5 * state[4] * pow(dt, 2); // Position x global frame
   state.at(1) += state[3] * dt + 0.5 * state[5] * pow(dt, 2); // Position y global frame
-  beacon->test_range(ID);
+  beacon->ranges_terminal(ID);
   return state;
 };
 

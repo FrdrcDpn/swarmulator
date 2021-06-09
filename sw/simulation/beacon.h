@@ -17,12 +17,13 @@ public:
      * Constructor
      */
     Beacon();
-    void test();
+    std::vector<float> range_beacon(const uint16_t ID);
     /**
      * Destructor
      */
-    virtual void beacontest()=0;
-    virtual void test_range(const uint16_t ID)=0;
+
+    virtual void ranges_terminal(const uint16_t ID)=0;
+
     virtual ~Beacon() {};
 };
 
