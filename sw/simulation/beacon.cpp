@@ -1,8 +1,9 @@
 #include "beacon.h"
 #include "agent.h"
 #include "main.h"
-
+#include <random>
 #include <vector>
+
 using namespace std;
 Beacon::Beacon()
 {
@@ -20,4 +21,25 @@ std::vector<float> Beacon::range_beacon(const uint16_t ID){
         beacon_ranges.push_back(r1);
     }
     return beacon_ranges;
+}
+
+
+float Beacon::add_gaussian_noise(float value, const double mean, const double stddev) {
+    float noisy_value;
+
+    std::default_random_engine generator;
+    std::normal_distribution<double> dist(mean, stddev);
+    // Add Gaussian noise
+    noisy_value = value + dist(generator);
+    return noisy_value;
+}
+
+float Beacon::add_cauchy_noise(float value, const double mean, const double stddev) {
+    float noisy_value;
+
+    std::default_random_engine generator;
+    std::cauchy_distribution<double> dist(mean,stddev);
+    // Add Gaussian noise
+    noisy_value = value + dist(generator);
+    return noisy_value;
 }

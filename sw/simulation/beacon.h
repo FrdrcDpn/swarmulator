@@ -21,10 +21,40 @@ public:
     /**
      * Destructor
      */
+    virtual ~Beacon() {};
 
+    /**
+   * @brief Return noisy value following gaussian distribution
+   *
+   * @param value value to which noise is to be added
+   * @param mean mean of the gaussian noise
+   * @param stddev standard deviation of the gaussian noise
+   */
+    float add_gaussian_noise(float value, const double mean, const double stddev);
+
+    /**
+    * @brief Return noisy value following cauchy distribution
+    *
+    * @param value value to which noise is to be added
+    * @param mean mean of the gaussian noise
+    * @param stddev standard deviation of the gaussian noise
+    */
+    float add_cauchy_noise(float value, const double mean, const double stddev);
+
+    /**
+    * @brief Output exact distances from agent to all active beacons to the terminal
+    *
+    * @param ID agent
+    */
     virtual void ranges_terminal(const uint16_t ID)=0;
 
-    virtual ~Beacon() {};
+    /**
+    * @brief Output exact distances from agent to all active beacons to the terminal
+    *
+    * @param ID agent
+    */
+    virtual float twr_range(const uint16_t ID,const uint16_t ID_beacon )=0;
+
 };
 
 

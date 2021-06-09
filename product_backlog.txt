@@ -1,8 +1,8 @@
 # PRODUCT BACKLOG - TODO LIST
 
-- clean up uwb_beacon test code
-- uwb ground truth function
-- uwb ranging with noise
-- logging uwb values
+- implement noise function gaussian + Cauchy
+- create TWR child class of beacon, and test with new agent
+- create TDOA child class of beacon, and test with new agent
 
-- implement simple TDOA example
+- uwb ground truth function
+- logging uwb values

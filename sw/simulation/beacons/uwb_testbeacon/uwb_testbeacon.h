@@ -15,9 +15,8 @@ public:
      * Construction. uwb_testbeacon is a child class of Beacon.
      */
     uwb_testbeacon();
-
     void ranges_terminal(const uint16_t ID);
-
+    float twr_range(const uint16_t ID,const uint16_t ID_beacon );
 };
 
 

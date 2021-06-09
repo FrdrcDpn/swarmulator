@@ -19,3 +19,9 @@ void uwb_testbeacon::ranges_terminal(const uint16_t ID){
     cout << endl;
 }
 
+float twr_range(const uint16_t ID,const uint16_t ID_beacon ){
+    float twr_range;
+
+    return twr_range;
+}
+

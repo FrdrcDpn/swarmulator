@@ -53,7 +53,10 @@ vector<float> particle_oriented::state_update(vector<float> state)
   // Position
   state.at(0) += state[2] * dt + 0.5 * state[4] * pow(dt, 2); // Position x global frame
   state.at(1) += state[3] * dt + 0.5 * state[5] * pow(dt, 2); // Position y global frame
-  beacon->ranges_terminal(ID);
+
+  cout << "without noise " << beacon->range_beacon(ID)[1] << "   with gaussian noise dist " << beacon->add_gaussian_noise(beacon->range_beacon(ID)[1], 0.0, 0.1) << endl;
+  cout << "without noise " << beacon->range_beacon(ID)[1] << "   with cauchy noise dist " << beacon->add_cauchy_noise(beacon->range_beacon(ID)[1],0.0,0.1) << endl;
+
   return state;
 };
 
