@@ -34,7 +34,7 @@ float Beacon::add_gaussian_noise(float value, const double mean, const double st
     return noisy_value;
 }
 
-float Beacon::add_cauchy_noise(float value, const double mean, const double stddev) {
+float Beacon::add_ht_cauchy_noise(float value, const double mean, const double stddev) {
     float noisy_value;
 
     std::default_random_engine generator;
@@ -43,3 +43,4 @@ float Beacon::add_cauchy_noise(float value, const double mean, const double stdd
     noisy_value = value + dist(generator);
     return noisy_value;
 }
+

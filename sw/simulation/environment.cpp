@@ -26,47 +26,46 @@ Environment::Environment(void)
 }
 void Environment::define_uwb_beacon(uint64_t n)
 {
-    float lim = limits();
     for (size_t i = 0; i < n; i++) {
         uwb_beacon.push_back(std::vector<float>());
         if(i == 0){
-            uwb_beacon[i].push_back(lim-15);
-            uwb_beacon[i].push_back(-lim+15);
+            uwb_beacon[i].push_back(param->x_beacon_1());
+            uwb_beacon[i].push_back(param->y_beacon_1());
         }
 
         if(i == 1){
-            uwb_beacon[i].push_back(lim-15);
-            uwb_beacon[i].push_back(lim-15);
+            uwb_beacon[i].push_back(param->x_beacon_2());
+            uwb_beacon[i].push_back(param->y_beacon_2());
         }
 
         if(i == 2){
-            uwb_beacon[i].push_back(-lim+15);
-            uwb_beacon[i].push_back(lim-15);
+            uwb_beacon[i].push_back(param->x_beacon_3());
+            uwb_beacon[i].push_back(param->y_beacon_3());
         }
 
         if(i == 3){
-            uwb_beacon[i].push_back(-lim+15);
-            uwb_beacon[i].push_back(-lim+15);
+            uwb_beacon[i].push_back(param->x_beacon_4());
+            uwb_beacon[i].push_back(param->y_beacon_4());
         }
 
         if(i == 4){
-            uwb_beacon[i].push_back(0);
-            uwb_beacon[i].push_back(lim-15);
+            uwb_beacon[i].push_back(param->x_beacon_5());
+            uwb_beacon[i].push_back(param->y_beacon_5());
         }
 
         if(i == 5){
-            uwb_beacon[i].push_back(-lim+15);
-            uwb_beacon[i].push_back(0);
+            uwb_beacon[i].push_back(param->x_beacon_6());
+            uwb_beacon[i].push_back(param->y_beacon_6());
         }
 
         if(i == 6){
-            uwb_beacon[i].push_back(0);
-            uwb_beacon[i].push_back(-lim+15);
+            uwb_beacon[i].push_back(param->x_beacon_7());
+            uwb_beacon[i].push_back(param->y_beacon_7());
         }
 
         if(i == 7){
-            uwb_beacon[i].push_back(lim-15);
-            uwb_beacon[i].push_back(0);
+            uwb_beacon[i].push_back(param->x_beacon_8());
+            uwb_beacon[i].push_back(param->y_beacon_8());
         }
         //  uwb_beacon[i].push_back(rg.uniform_float(-lim, lim));
     }

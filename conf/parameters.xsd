@@ -3,6 +3,22 @@
   <xs:complexType name="parameters_t">
     <xs:sequence>
       <xs:element name="nbeacons" type="xs:integer"/>
+      <xs:element name="x_beacon_1" type="xs:float"/>
+      <xs:element name="y_beacon_1" type="xs:float"/>
+      <xs:element name="x_beacon_2" type="xs:float"/>
+      <xs:element name="y_beacon_2" type="xs:float"/>
+      <xs:element name="x_beacon_3" type="xs:float"/>
+      <xs:element name="y_beacon_3" type="xs:float"/>
+      <xs:element name="x_beacon_4" type="xs:float"/>
+      <xs:element name="y_beacon_4" type="xs:float"/>
+      <xs:element name="x_beacon_5" type="xs:float"/>
+      <xs:element name="y_beacon_5" type="xs:float"/>
+      <xs:element name="x_beacon_6" type="xs:float"/>
+      <xs:element name="y_beacon_6" type="xs:float"/>
+      <xs:element name="x_beacon_7" type="xs:float"/>
+      <xs:element name="y_beacon_7" type="xs:float"/>
+      <xs:element name="x_beacon_8" type="xs:float"/>
+      <xs:element name="y_beacon_8" type="xs:float"/>
       <xs:element name="simulation_updatefreq" type="xs:float"/>
       <xs:element name="simulation_realtimefactor" type="xs:float"/>
       <xs:element name="time_limit" type="xs:float"/>

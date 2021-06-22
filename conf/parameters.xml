@@ -1,7 +1,23 @@
 <?xml version="1.0"?>
 <parameters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="parameters.xsd">
   <!-- Simulation -->
-  <nbeacons>4</nbeacons>
+  <nbeacons>7</nbeacons>
+  <x_beacon_1>20</x_beacon_1>
+  <y_beacon_1>20</y_beacon_1>
+  <x_beacon_2>20</x_beacon_2>
+  <y_beacon_2>-20</y_beacon_2>
+  <x_beacon_3>-20</x_beacon_3>
+  <y_beacon_3>-20</y_beacon_3>
+  <x_beacon_4>-20</x_beacon_4>
+  <y_beacon_4>20</y_beacon_4>
+  <x_beacon_5>0</x_beacon_5>
+  <y_beacon_5>20</y_beacon_5>
+  <x_beacon_6>20</x_beacon_6>
+  <y_beacon_6>0</y_beacon_6>
+  <x_beacon_7>0</x_beacon_7>
+  <y_beacon_7>-20</y_beacon_7>
+  <x_beacon_8>-20</x_beacon_8>
+  <y_beacon_8>0</y_beacon_8>
   <simulation_updatefreq>20</simulation_updatefreq>
   <simulation_realtimefactor>300</simulation_realtimefactor>
   <time_limit>0</time_limit>
