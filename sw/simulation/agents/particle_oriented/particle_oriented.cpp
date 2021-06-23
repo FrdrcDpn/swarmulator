@@ -57,7 +57,7 @@ vector<float> particle_oriented::state_update(vector<float> state)
 
   //cout << "without noise " << beacon->range_beacon(ID)[1] << "   with gaussian noise dist " << beacon->add_gaussian_noise(beacon->range_beacon(ID)[1], 0.0, 0.1) << endl;
   //cout << "without noise " << beacon->range_beacon(ID)[1] << "   with cauchy noise dist " << beacon->add_cauchy_noise(beacon->range_beacon(ID)[1],0.0,0.1) << endl;
-  cout << "agent: "<< ID << " ranging values b1 and b2 " << beacon->range(ID,1,2) << endl;
+  cout << "agent: "<< ID << " ranging values b1 and b2 " << beacon->measurement(ID,2,1) << endl;
   return state;
 };
 

@@ -19,7 +19,7 @@ void beacon_twr::ranges_terminal(const uint16_t ID){
     cout << endl;
 }
 
-float beacon_twr::range(const uint16_t ID,const uint16_t ID_beacon_0, const uint16_t ID_beacon_1){
+float beacon_twr::measurement(const uint16_t ID,const uint16_t ID_beacon_0){
     float x_0, y_0, dx0, dy0, d,d_noisy;
     x_0 = environment.uwb_beacon[ID_beacon_0][0];
     y_0 = environment.uwb_beacon[ID_beacon_0][1];

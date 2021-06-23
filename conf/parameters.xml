@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <parameters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="parameters.xsd">
   <!-- Simulation -->
-  <nbeacons>7</nbeacons>
+  <nbeacons>4</nbeacons>
   <x_beacon_1>20</x_beacon_1>
   <y_beacon_1>20</y_beacon_1>
   <x_beacon_2>20</x_beacon_2>

@@ -18,6 +18,7 @@ public:
      */
     Beacon();
     std::vector<float> range_beacon(const uint16_t ID);
+    std::vector<float> ground_truth(const uint16_t ID);
     /**
      * Destructor
      */
@@ -54,8 +55,8 @@ public:
     *
     * @param ID agent
     */
-    virtual float range(const uint16_t ID,const uint16_t ID_beacon_0,const uint16_t ID_beacon_1)=0;
-
+    virtual float measurement(const uint16_t ID,const uint16_t ID_beacon_0,const uint16_t ID_beacon_1)=0;
+    virtual float measurement(const uint16_t ID,const uint16_t ID_beacon_0)=0;
 };
 
 
