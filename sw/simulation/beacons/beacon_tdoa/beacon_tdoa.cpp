@@ -19,10 +19,26 @@ void beacon_tdoa::ranges_terminal(const uint16_t ID){
     cout << endl;
 }
 
-float beacon_tdoa::range(const uint16_t ID,const uint16_t ID_beacon ){
-    float tdoa_d =0;
+float beacon_tdoa::range(const uint16_t ID,const uint16_t ID_beacon_0,const uint16_t ID_beacon_1){
+    float x_0, y_0, x_1, y_1, dx0, dy0, dx1, dy1, d0, d1, dd, dd_noisy;
 
-    return tdoa_d;
+    x_0 = environment.uwb_beacon[ID_beacon_0][0];
+    y_0 = environment.uwb_beacon[ID_beacon_0][1];
+    x_1 = environment.uwb_beacon[ID_beacon_1][0];
+    y_1 = environment.uwb_beacon[ID_beacon_1][1];
+
+    dx0 = s[ID]->get_position(0) - x_0;
+    dy0 = s[ID]->get_position(1) - y_0;
+
+    dx1 = s[ID]->get_position(0) - x_1;
+    dy1 = s[ID]->get_position(1) - y_1;
+
+    d0 = sqrt(dx0*dx0 + dy0*dy0);
+    d1 = sqrt(dx1*dx1 + dy1*dy1);
+    dd = d1-d0;
+
+    dd_noisy = add_gaussian_noise(dd,0.0,0.1);
+    return dd_noisy;
 }
 
 float beacon_tdoa::add_summation_noise(float value, const double mean, const double stddev) {

@@ -39,7 +39,7 @@ public:
     * @param mean mean of the gaussian noise
     * @param stddev standard deviation of the gaussian noise
     */
-    float add_ht_cauchy_noise(float value, const double mean, const double stddev);
+    float add_cauchy_noise(float value, const double mean, const double stddev);
 
 
     /**
@@ -54,7 +54,7 @@ public:
     *
     * @param ID agent
     */
-    virtual float range(const uint16_t ID,const uint16_t ID_beacon )=0;
+    virtual float range(const uint16_t ID,const uint16_t ID_beacon_0,const uint16_t ID_beacon_1)=0;
 
 };
 

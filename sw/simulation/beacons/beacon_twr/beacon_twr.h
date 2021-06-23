@@ -16,8 +16,7 @@ public:
      */
     beacon_twr();
     void ranges_terminal(const uint16_t ID);
-    float range(const uint16_t ID,const uint16_t ID_beacon );
-
+    float range(const uint16_t ID,const uint16_t ID_beacon_0,const uint16_t ID_beacon_1);
     /**
     * @brief Return noisy value following ratio distribution of 2 known distributions
     *

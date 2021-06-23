@@ -3,11 +3,10 @@
 #include "main.h"
 #include <random>
 #include <vector>
-
+#include <tgmath.h>
 using namespace std;
 Beacon::Beacon()
 {
-
 }
 
 // input agent ID, output vector of ranges to beacon
@@ -26,7 +25,6 @@ std::vector<float> Beacon::range_beacon(const uint16_t ID){
 
 float Beacon::add_gaussian_noise(float value, const double mean, const double stddev) {
     float noisy_value;
-
     std::default_random_engine generator;
     std::normal_distribution<double> dist(mean, stddev);
     // Add Gaussian noise
@@ -34,13 +32,8 @@ float Beacon::add_gaussian_noise(float value, const double mean, const double st
     return noisy_value;
 }
 
-float Beacon::add_ht_cauchy_noise(float value, const double mean, const double stddev) {
-    float noisy_value;
-
-    std::default_random_engine generator;
-    std::cauchy_distribution<double> dist(mean,stddev);
-    // Add Gaussian noise
-    noisy_value = value + dist(generator);
+float Beacon::add_cauchy_noise(float value, const double mean, const double stddev) {
+    float noisy_value = 0;
     return noisy_value;
 }
 
