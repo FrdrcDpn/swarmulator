@@ -19,6 +19,7 @@ public:
     Beacon();
     std::vector<float> range_beacon(const uint16_t ID);
     std::vector<float> ground_truth(const uint16_t ID);
+
     /**
      * Destructor
      */
@@ -31,7 +32,7 @@ public:
    * @param mean mean of the gaussian noise
    * @param stddev standard deviation of the gaussian noise
    */
-    float add_gaussian_noise(float value, const double mean, const double stddev);
+    virtual float add_gaussian_noise(float value)=0;
 
     /**
     * @brief Return noisy value following cauchy distribution
@@ -40,8 +41,8 @@ public:
     * @param mean mean of the gaussian noise
     * @param stddev standard deviation of the gaussian noise
     */
-    float add_cauchy_noise(float value, const double mean, const double stddev);
-
+    virtual float add_ht_cauchy_noise(float value)=0;
+    virtual float add_ht_gamma_noise(float value)=0;
 
     /**
     * @brief Output exact distances from agent to all active beacons to the terminal
@@ -57,6 +58,8 @@ public:
     */
     virtual float measurement(const uint16_t ID,const uint16_t ID_beacon_0,const uint16_t ID_beacon_1)=0;
     virtual float measurement(const uint16_t ID,const uint16_t ID_beacon_0)=0;
+    float new_logf(float a);
+    float erfinvf (float a);
 };
 
 

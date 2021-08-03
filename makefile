@@ -17,9 +17,9 @@ BCN_INCLUDE=\"$(BEACON).h\"
 #  -g    adds debugging information to the executable file
 #  -Wall turns on most, but not all, compiler warnings
 
-CC = g++ # chosen compiler
-CFLAGS = -g -Wall -std=gnu++17 -D_GLIBCXX_USE_NANOSLEEP -DSWARMULATOR -DCONTROLLER=$(CONTROLLER) -DBEACON=$(BEACON) -DAGENT=$(AGENT) -DAGENT_INCLUDE=$(AGENT_INCLUDE) -DBCN_INCLUDE=$(BCN_INCLUDE) -DCONTROLLER_INCLUDE=$(CONTROLLER_INCLUDE) -D_GLIBCXX_USE_CXX11_ABI=0
-OPT=-lglut -lGLU -lGL -lpthread -lxerces-c -Wno-deprecated-declarations -fno-inline-functions -lprotobuf
+CC = g++  # chosen compiler
+CFLAGS = -g -Wall -std=gnu++17 -D_GLIBCXX_USE_NANOSLEEP -DSWARMULATOR -DCONTROLLER=$(CONTROLLER) -DBEACON=$(BEACON) -DAGENT=$(AGENT) -DAGENT_INCLUDE=$(AGENT_INCLUDE) -DBCN_INCLUDE=$(BCN_INCLUDE) -DCONTROLLER_INCLUDE=$(CONTROLLER_INCLUDE) -D_GLIBCXX_USE_CXX11_ABI=0 -I/usr/include/python3.8
+OPT=-lglut -lGLU -lGL -lpthread -lxerces-c -Wno-deprecated-declarations -fno-inline-functions -lprotobuf -DPYTHON_EXECUTABLE=/usr/bin/python3
 
 ifeq ($(VERBOSE),ON)
 CFLAGS += -DVERBOSE
@@ -67,6 +67,10 @@ ifeq ($(CONTROLLER),pytorch)
 OPT += -L $(TORCH_LIB_HOME)/lib -lc10 -L $(TORCH_LIB_HOME)/lib -ltorch_cpu
 INC_DIRS += $(shell find $(TORCH_LIB_HOME) -type d) ## Add torchlib include folder, if present
 endif
+
+# If using beacon, load the library!
+OPT += -L/usr/lib/python3.8/config-3.8-x86_64-linux-gnu -L/usr/lib  -lcrypt -lpthread -ldl  -lutil -lm -lm -lpython3.8
+
 
 # Prepare includes
 INC_PARAMS = $(foreach d, $(INC_DIRS), -I$d) # Each include folder must have a -I before it

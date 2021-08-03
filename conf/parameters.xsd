@@ -19,6 +19,14 @@
       <xs:element name="y_beacon_7" type="xs:float"/>
       <xs:element name="x_beacon_8" type="xs:float"/>
       <xs:element name="y_beacon_8" type="xs:float"/>
+      <xs:element name="noise_type" type="xs:integer"/>
+      <xs:element name="gauss_sigma" type="xs:float"/>
+      <xs:element name="htc_gamma" type="xs:float"/>
+      <xs:element name="htc_ratio" type="xs:float"/>
+      <xs:element name="htg_mu" type="xs:float"/>
+      <xs:element name="htg_k" type="xs:float"/>
+      <xs:element name="htg_lambda" type="xs:float"/>
+      <xs:element name="htg_scale" type="xs:float"/>
       <xs:element name="simulation_updatefreq" type="xs:float"/>
       <xs:element name="simulation_realtimefactor" type="xs:float"/>
       <xs:element name="time_limit" type="xs:float"/>

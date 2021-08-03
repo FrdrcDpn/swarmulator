@@ -18,6 +18,7 @@ public:
     void ranges_terminal(const uint16_t ID);
     float measurement(const uint16_t ID,const uint16_t ID_beacon_0);
     float measurement(const uint16_t ID,const uint16_t ID_beacon_0,const uint16_t ID_beacon_1){return 0; };
+
     /**
     * @brief Return noisy value following ratio distribution of 2 known distributions
     *
@@ -25,7 +26,12 @@ public:
     * @param gamma value
     * @param ratio value
     */
-    float add_ratio_noise(float value, const double gamma, const double ratio);
+
+    float add_gaussian_noise(float value);
+    float add_ht_cauchy_noise(float value);
+    float add_ht_gamma_noise(float value);
+    double cdf_ht_gamma(double x);
+    double deriv_cdf_ht_gamma(double x);
 };
 
 

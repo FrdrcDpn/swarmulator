@@ -18,6 +18,14 @@
   <y_beacon_7>-20</y_beacon_7>
   <x_beacon_8>-20</x_beacon_8>
   <y_beacon_8>0</y_beacon_8>
+  <noise_type>3</noise_type>
+  <gauss_sigma>0.1</gauss_sigma>
+  <htc_gamma>0.3</htc_gamma>
+  <htc_ratio>0.3</htc_ratio>
+  <htg_mu>0.1</htg_mu>
+  <htg_k>0.1</htg_k>
+  <htg_lambda>3.5</htg_lambda>
+  <htg_scale>0.2</htg_scale>
   <simulation_updatefreq>20</simulation_updatefreq>
   <simulation_realtimefactor>300</simulation_realtimefactor>
   <time_limit>0</time_limit>

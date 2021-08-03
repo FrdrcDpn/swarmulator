@@ -322,4 +322,6 @@ inline static const std::string currentDateTime()
   return buf;
 }
 
+
+
 #endif /*AUXILIARY_H*/
