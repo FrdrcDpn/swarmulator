@@ -18,7 +18,7 @@
   <y_beacon_7>-20</y_beacon_7>
   <x_beacon_8>-20</x_beacon_8>
   <y_beacon_8>0</y_beacon_8>
-  <noise_type>3</noise_type>
+  <noise_type>2</noise_type>
   <gauss_sigma>0.1</gauss_sigma>
   <htc_gamma>0.3</htc_gamma>
   <htc_ratio>0.3</htc_ratio>
