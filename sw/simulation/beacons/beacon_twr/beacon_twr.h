@@ -14,10 +14,13 @@ public:
     /**
      * Construction. beacon_twr is a child class of Beacon.
      */
+    
+    std::vector<std::vector<std::vector<float>>> UWB;
     beacon_twr();
+    void measurement2pos(const uint16_t ID);
     void ranges_terminal(const uint16_t ID);
-    float measurement(const uint16_t ID,const uint16_t ID_beacon_0);
-    float measurement(const uint16_t ID,const uint16_t ID_beacon_0,const uint16_t ID_beacon_1){return 0; };
+    //void measurement();
+    void measurement(const uint16_t ID);
 
     /**
     * @brief Return noisy value following ratio distribution of 2 known distributions

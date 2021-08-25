@@ -16,7 +16,7 @@ void beacon_tdoa::ranges_terminal(const uint16_t ID){
     float r1;
     //draw the range from the beacons
     cout << "agent id:"<< ID;
-    for (uint16_t i = 0; i < param->nbeacons(); i++) {
+    for (uint16_t i = 0; i < 8; i++) {
         r1 = range_beacon(ID)[i];
         cout << "   range b"<< i+1 <<" "<< r1;
     }
@@ -27,10 +27,13 @@ void beacon_tdoa::ranges_terminal(const uint16_t ID){
 //noise_type 1 = gaussian noise
 //noise_type 2 = heavy tailed cauchy noise
 //noise_type 3 = heavy tailed gamma noise
-
-float beacon_tdoa::measurement(const uint16_t ID,const uint16_t ID_beacon_0,const uint16_t ID_beacon_1){
+void beacon_tdoa::measurement2pos(const uint16_t ID){
+    
+}
+void beacon_tdoa::measurement(const uint16_t ID){
     float x_0, y_0, x_1, y_1, dx0, dy0, dx1, dy1, d0, d1, dd;
-
+    uint16_t ID_beacon_0 = 1; //beacons to be selected for measurements
+    uint16_t ID_beacon_1 = 2;
     x_0 = environment.uwb_beacon[ID_beacon_0][0];
     y_0 = environment.uwb_beacon[ID_beacon_0][1];
     x_1 = environment.uwb_beacon[ID_beacon_1][0];
@@ -47,18 +50,18 @@ float beacon_tdoa::measurement(const uint16_t ID,const uint16_t ID_beacon_0,cons
     dd = d1-d0;
 
     if (param->noise_type() == 0){
-        return dd;
+        //return dd;
     }
     else if (param->noise_type() == 1){
-        return add_gaussian_noise(dd);
+       // return add_gaussian_noise(dd);
     }
     else if (param->noise_type() == 2){
-        return add_ht_cauchy_noise(dd);
+        //return add_ht_cauchy_noise(dd);
     }
     else if (param->noise_type() == 3){
-        return add_ht_gamma_noise(dd);
+        //return add_ht_gamma_noise(dd);
     }
-    else return 0;
+   // else return 0;
 }
 
 float beacon_tdoa::add_gaussian_noise(float value) {

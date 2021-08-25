@@ -16,7 +16,7 @@ std::vector<float> Beacon::range_beacon(const uint16_t ID){
     std::vector<float> beacon_ranges;
     //draw the range from the beacons
     OmniscientObserver obs;
-    for (uint16_t i = 1; i <= param->nbeacons(); i++) {
+    for (uint16_t i = 1; i <= 8; i++) {
         obs.uwb_beacon(ID,r1,b1,i);
         beacon_ranges.push_back(r1);
     }

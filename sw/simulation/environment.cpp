@@ -14,7 +14,7 @@ using namespace std;
 
 Environment::Environment(void)
 {
-    define_uwb_beacon(param->nbeacons());
+    define_uwb_beacon();
   define_walls();
   if (!strcmp(param->fitness().c_str(), "food")) {
     mtx_env.lock();
@@ -24,48 +24,56 @@ Environment::Environment(void)
     mtx_env.unlock();
   }
 }
-void Environment::define_uwb_beacon(uint64_t n)
+void Environment::define_uwb_beacon()
 {
-    for (size_t i = 0; i < n; i++) {
+    for (size_t i = 0; i < 8; i++) {
         uwb_beacon.push_back(std::vector<float>());
         if(i == 0){
             uwb_beacon[i].push_back(param->x_beacon_1());
             uwb_beacon[i].push_back(param->y_beacon_1());
+            uwb_beacon[i].push_back(param->beacon_1_en());
         }
 
         if(i == 1){
             uwb_beacon[i].push_back(param->x_beacon_2());
             uwb_beacon[i].push_back(param->y_beacon_2());
+            uwb_beacon[i].push_back(param->beacon_2_en());
         }
 
         if(i == 2){
             uwb_beacon[i].push_back(param->x_beacon_3());
             uwb_beacon[i].push_back(param->y_beacon_3());
+            uwb_beacon[i].push_back(param->beacon_3_en());
         }
 
         if(i == 3){
             uwb_beacon[i].push_back(param->x_beacon_4());
             uwb_beacon[i].push_back(param->y_beacon_4());
+            uwb_beacon[i].push_back(param->beacon_4_en());
         }
 
         if(i == 4){
             uwb_beacon[i].push_back(param->x_beacon_5());
             uwb_beacon[i].push_back(param->y_beacon_5());
+            uwb_beacon[i].push_back(param->beacon_5_en());
         }
 
         if(i == 5){
             uwb_beacon[i].push_back(param->x_beacon_6());
             uwb_beacon[i].push_back(param->y_beacon_6());
+            uwb_beacon[i].push_back(param->beacon_6_en());
         }
 
         if(i == 6){
             uwb_beacon[i].push_back(param->x_beacon_7());
             uwb_beacon[i].push_back(param->y_beacon_7());
+            uwb_beacon[i].push_back(param->beacon_7_en());
         }
 
         if(i == 7){
             uwb_beacon[i].push_back(param->x_beacon_8());
             uwb_beacon[i].push_back(param->y_beacon_8());
+            uwb_beacon[i].push_back(param->beacon_8_en());
         }
         //  uwb_beacon[i].push_back(rg.uniform_float(-lim, lim));
     }
@@ -187,7 +195,9 @@ void Environment::animate(void)
     d.food(food[i][0], food[i][1]);
   }
   for (size_t i = 0; i < uwb_beacon.size(); i++) {
+    if(uwb_beacon[i][2] == 1){
         d.uwb_beacon(uwb_beacon[i][0], uwb_beacon[i][1]);
+  }
   }
 }
 

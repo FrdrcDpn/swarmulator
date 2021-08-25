@@ -56,8 +56,9 @@ public:
     *
     * @param ID agent
     */
-    virtual float measurement(const uint16_t ID,const uint16_t ID_beacon_0,const uint16_t ID_beacon_1)=0;
-    virtual float measurement(const uint16_t ID,const uint16_t ID_beacon_0)=0;
+   // virtual void measurement()=0;
+    virtual void measurement(const uint16_t ID)=0;
+    virtual void measurement2pos(const uint16_t ID)=0;
     float new_logf(float a);
     float erfinvf (float a);
 };

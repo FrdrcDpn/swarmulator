@@ -14,7 +14,7 @@ void beacon_twr::ranges_terminal(const uint16_t ID){
     float r1;
     //draw the range from the beacons
     cout << "agent id:"<< ID;
-    for (uint16_t i = 0; i < param->nbeacons(); i++) {
+    for (uint16_t i = 0; i < 8; i++) {
         r1 = range_beacon(ID)[i];
         cout << "   range b"<< i+1 <<" "<< r1;
     }
@@ -27,29 +27,72 @@ void beacon_twr::ranges_terminal(const uint16_t ID){
 //noise_type 2 = heavy tailed cauchy noise
 //noise_type 3 = heavy tailed gamma noise
 
-float beacon_twr::measurement(const uint16_t ID,const uint16_t ID_beacon_0){
+void beacon_twr::measurement2pos(const uint16_t ID){
+    measurement(ID);
+
+    // some examples for later implementation
+
+    float x_0, y_0; //get coordinates of a beacon
+    float i = 0;//for example beacon 1
+
+    x_0 = environment.uwb_beacon[i][0];
+    y_0 = environment.uwb_beacon[i][1]; 
+
+    //get the first range measurement for the agent with ID to beacon i
+    UWB[ID][i][1];
+
+
+    //get the last updated range measurements for the agent to beacon 1,2,3 and 4
+    cout<<"distance to beacon 1 "<<UWB[ID][0].back()<< endl;
+    cout<<"distance to beacon 2 "<<UWB[ID][1].back()<< endl;
+    cout<<"distance to beacon 3 "<<UWB[ID][2].back()<< endl;
+    cout<<"distance to beacon 4 "<<UWB[ID][3].back()<< endl;
+}
+
+
+void beacon_twr::measurement(const uint16_t ID){
     float x_0, y_0, dx0, dy0, d;
-    x_0 = environment.uwb_beacon[ID_beacon_0][0];
-    y_0 = environment.uwb_beacon[ID_beacon_0][1];
+    
+    for (size_t i = 0; i < 8; i++){
+        UWB.push_back(std::vector<std::vector<float>>());
+        UWB[ID].push_back(std::vector<float>());
+        //UWB[ID][i].push_back(environment.uwb_beacon[i][0]);
+        //UWB[ID][i].push_back(environment.uwb_beacon[i][1]);
+        //UWB[ID][i].push_back(0);
+        //UWB[ID][i].push_back(std::vector<float>());
+        x_0 = environment.uwb_beacon[i][0];
+        y_0 = environment.uwb_beacon[i][1]; 
 
-    dx0 = s[ID]->get_position(0) - x_0;
-    dy0 = s[ID]->get_position(1) - y_0;
+        //x_0 = UWB[ID][i][0];
+        //y_0 = UWB[ID][i][1];
 
-    d = sqrt(dx0*dx0 + dy0*dy0);
-
-    if (param->noise_type() == 0){
-        return d;
+        dx0 = s[ID]->get_position(0) - x_0;
+        dy0 = s[ID]->get_position(1) - y_0;
+        d = sqrt(dx0*dx0 + dy0*dy0);
+        if (param->noise_type() == 0){
+          UWB[ID][i].push_back(d);
+         // environment.uwb_beacon[i].push_back(ID);
+          
+        }
+        else if (param->noise_type() == 1){
+            //environment.uwb_beacon[i].push_back(add_gaussian_noise(d));
+            UWB[ID][i].push_back(add_gaussian_noise(d));
+        
+        }
+        else if (param->noise_type() == 2){
+            //environment.uwb_beacon[i].push_back(add_ht_cauchy_noise(d));
+            UWB[ID][i].push_back(add_ht_cauchy_noise(d));
+            
+        }
+        else if (param->noise_type() == 3){
+           // environment.uwb_beacon[i].push_back(add_ht_gamma_noise(d));
+            UWB[ID][i].push_back(add_ht_gamma_noise(d));
+            
+        }
+        
+        
     }
-    else if (param->noise_type() == 1){
-        return add_gaussian_noise(d);
-    }
-    else if (param->noise_type() == 2){
-        return add_ht_cauchy_noise(d);
-    }
-    else if (param->noise_type() == 3){
-        return add_ht_gamma_noise(d);
-    }
-    else return 0;
+   
 }
 
 float beacon_twr::add_gaussian_noise(float value) {

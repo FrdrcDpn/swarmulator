@@ -16,7 +16,7 @@ std::vector<float> particle::state_update(std::vector<float> state)
   // NED frame
   // x+ towards North
   // y+ towards East
-
+  beacon->measurement2pos(ID);
   float v_x = 0.0;
   float v_y = 0.0;
   controller->get_velocity_command(ID, v_x, v_y);

@@ -2,7 +2,14 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:complexType name="parameters_t">
     <xs:sequence>
-      <xs:element name="nbeacons" type="xs:integer"/>
+      <xs:element name="beacon_1_en" type="xs:float"/>
+      <xs:element name="beacon_2_en" type="xs:float"/>
+      <xs:element name="beacon_3_en" type="xs:float"/>
+      <xs:element name="beacon_4_en" type="xs:float"/>
+      <xs:element name="beacon_5_en" type="xs:float"/>
+      <xs:element name="beacon_6_en" type="xs:float"/>
+      <xs:element name="beacon_7_en" type="xs:float"/>
+      <xs:element name="beacon_8_en" type="xs:float"/>
       <xs:element name="x_beacon_1" type="xs:float"/>
       <xs:element name="y_beacon_1" type="xs:float"/>
       <xs:element name="x_beacon_2" type="xs:float"/>
