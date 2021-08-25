@@ -15,7 +15,7 @@ public:
      * Construction. beacon_twr is a child class of Beacon.
      */
     
-    std::vector<std::vector<std::vector<float>>> UWB;
+    std::vector<std::vector<std::vector<std::vector<float>>>> UWB;
     beacon_twr();
     void measurement2pos(const uint16_t ID);
     void ranges_terminal(const uint16_t ID);
