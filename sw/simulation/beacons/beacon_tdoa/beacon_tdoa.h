@@ -16,7 +16,7 @@ public:
     beacon_tdoa();
     void ranges_terminal(const uint16_t ID);
     //void measurement(const uint16_t ID,const uint16_t ID_beacon_0) { return 0; } ;
-    void measurement2pos(const uint16_t ID);
+    float returnUWBdata(const uint16_t ID, float beacon);
     void measurement(const uint16_t ID);
 
     float add_gaussian_noise(float value);

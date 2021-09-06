@@ -2,7 +2,7 @@
 #include "draw.h"
 #include "auxiliary.h"
 #include <cmath>
-#include "ekf_range.h"
+//#include "ekf_range.h"
 #define SENSOR_MAX_RANGE 1.8
 using namespace std;
 UWBSIM_controller::UWBSIM_controller(): Controller()
@@ -17,8 +17,12 @@ UWBSIM_controller::UWBSIM_controller(): Controller()
 //actual controller codea
 void UWBSIM_controller::get_velocity_command(const uint16_t ID, float &v_x, float &v_y)
 {
+
 filter.run(ID);
+
 float K = 1;
+
+//run with real position
 float current_x_location = s[ID]->get_position(0);
 float current_y_location = s[ID]->get_position(1);
 

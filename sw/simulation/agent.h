@@ -5,7 +5,8 @@
 #include <stdio.h>
 #include <iostream>
 #include <stdint.h>
-
+#include "controller.h"
+#include "beacon.h"
 #include "settings.h"
 #include "terminalinfo.h"
 #include CONTROLLER_INCLUDE
@@ -40,7 +41,7 @@ public:
   
   Controller *controller = new CONTROLLER;
   Beacon *beacon = new BEACON;
-
+  
   /**
    * Returns the position of the agent along a certain dimension (i.e., North(0) and East(1))
    * This is used by the OmniscientObserver class in order to simulate the presence of sensors.

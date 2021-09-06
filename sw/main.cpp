@@ -33,6 +33,7 @@ std::unique_ptr<parameters_t> param(parameters("conf/parameters.xml", xml_schema
 /**
  * Global variables used throughout simulation
  */
+std::vector<std::vector<std::vector<std::vector<float>>>> UWB;
 uint nagents; // Number of agents in the simulation
 std::vector<Agent *> s; // Set up the agents
 std::shared_mutex mtx; // Mutex needed to lock threads
@@ -42,7 +43,8 @@ float simtime_seconds = 0; // Initial simulation time
 bool program_running  = false; // Program running, initiated false until the beginning
 Environment environment; // Environment walls
 std::string identifier; // Log name identifier
-std::vector<std::vector<std::vector<std::vector<float>>>> UWB;
+
+
 /**
  * The main function launches separate threads that control independent
  * functions of the code. All threads are designed to be optional with the

@@ -5,20 +5,19 @@
 #include <stdio.h>
 #include <iostream>
 #include "beacon.h"
-
 class beacon_twr: public Beacon
 {
+
 
 public:
 
     /**
      * Construction. beacon_twr is a child class of Beacon.
      */
-    
-    
     //std::vector<std::vector<std::vector<float>> UWB;
     beacon_twr();
-    void measurement2pos(const uint16_t ID);
+    
+    float returnUWBdata(const uint16_t ID, float beacon);
     void ranges_terminal(const uint16_t ID);
     //void measurement();
     void measurement(const uint16_t ID);

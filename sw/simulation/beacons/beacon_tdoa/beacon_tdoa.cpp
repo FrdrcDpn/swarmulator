@@ -27,8 +27,9 @@ void beacon_tdoa::ranges_terminal(const uint16_t ID){
 //noise_type 1 = gaussian noise
 //noise_type 2 = heavy tailed cauchy noise
 //noise_type 3 = heavy tailed gamma noise
-void beacon_tdoa::measurement2pos(const uint16_t ID){
-    
+float beacon_tdoa::returnUWBdata(const uint16_t ID, float beacon){
+    float dist = 10;
+    return dist;
 }
 void beacon_tdoa::measurement(const uint16_t ID){
     float x_0, y_0, x_1, y_1, dx0, dy0, dx1, dy1, d0, d1, dd;

@@ -7,16 +7,16 @@ extern "C" {
 #include "ekf_range.h"
 }
 
+
 class ekf_state_estimator
 {
-  // The omniscient observer is used to simulate sensing the other agents.
-  OmniscientObserver o;
+
   bool initialized;
   uint16_t ID;
   float simtime_seconds_store;
-
+  
 public:
-  int anchor_index = 0;
+  
   struct EnuCoor_f speed;
   struct EnuCoor_f pos;
   struct EKFRange ekf;

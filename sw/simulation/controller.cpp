@@ -17,6 +17,7 @@ Controller::Controller()
   _kr = 1.0; // Repulsion gain
   _ka = 0.1; // Attraction gain
   saturation = false; // Controller saturation
+  
 };
 
 void Controller::saturate(float &f)

@@ -40,7 +40,7 @@ ekf_state_estimator::ekf_state_estimator()
 void ekf_state_estimator::init_ekf_filter()
 {
   //we leave the z variables 0; only 2D simulation for now
-
+  
   //initialise the ekf with 0 values
   ekf_range_init(&ekf, EKF_P0_POS, EKF_P0_SPEED,
       EKF_Q, EKF_R_DIST, EKF_R_SPEED, 0.1f);
@@ -57,15 +57,15 @@ void ekf_state_estimator::init_ekf_filter()
 void ekf_state_estimator::run_ekf_filter()
 {
   //update and set states
-  struct EnuCoor_f pos={s[ID]->get_state(0), s[ID]->get_state(1), 0.f };
-  struct EnuCoor_f speed={s[ID]->get_state(2), s[ID]->get_state(3), 0.f };
+  pos={s[ID]->get_state(0), s[ID]->get_state(1), 0.f };
+  speed={s[ID]->get_state(2), s[ID]->get_state(3), 0.f };
   ekf_range_set_state(&ekf,pos,speed);
   ekf.dt = simtime_seconds - simtime_seconds_store;
   simtime_seconds_store = simtime_seconds;
   ekf_range_predict(&ekf);
-
+  float dist;
   //for now update using random anchor 0-3
-  float dist = UWB[ID][random_beacon].back()[0];
+  dist = 10;
   struct EnuCoor_f anchor ={environment.uwb_beacon[random_beacon][0], environment.uwb_beacon[random_beacon][1], 0.f };
   
   //get our UWB measurements and update the estimate with new anchor (for now only anchor)
@@ -85,7 +85,7 @@ void ekf_state_estimator::run(uint16_t ID_in)
   if (!initialized) {
     ID = ID_in;
     init_ekf_filter();
-    //printf("Launched EKF instance for %d to %d\n", ID);
+    std::cout<<"Running ekf for agent ID: "<<ID<<std::endl;
   } else {
     run_ekf_filter();
   }

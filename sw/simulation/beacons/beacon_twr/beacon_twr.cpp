@@ -3,6 +3,7 @@
 #include "main.h"
 #include "txtwrite.h"
 #include <boost/math/special_functions/gamma.hpp>
+
 #define EPSILON 0.001
 using namespace std;
 beacon_twr::beacon_twr() {
@@ -27,21 +28,20 @@ void beacon_twr::ranges_terminal(const uint16_t ID){
 //noise_type 2 = heavy tailed cauchy noise
 //noise_type 3 = heavy tailed gamma noise
 
-void beacon_twr::measurement2pos(const uint16_t ID){
-    measurement(ID);
-
+float beacon_twr::returnUWBdata(const uint16_t ID, float beacon){
+    float dist;
     // some examples for later implementation
 
   //  float x_0, y_0; //get coordinates of a beacon
    // float i = 0;//for example beacon 1
-
+    dist = UWB[ID][beacon].back()[0];
    //x_0 = environment.uwb_beacon[i][0];
    //y_0 = environment.uwb_beacon[i][1]; 
 
     //get the first range measurement for the agent with ID to beacon i
    // UWB[ID][i][1];
 
-
+return dist;
     //get the last updated range measurements for the agent to beacon 1
     //cout<<"agent "<<ID<<" distance of "<<en<<" to beacon 1 "<< " (x:"<< environment.uwb_beacon[0][0]<<", y:"<<environment.uwb_beacon[0][1]<<") at timestamp "<<UWB[ID][0].back()[1]<< endl;
     //cout<<"agent "<<ID<<" distance of "<<UWB[ID][1].back()[0]<<" to beacon 2 "<< " (x:"<< environment.uwb_beacon[1][0]<<", y:"<<environment.uwb_beacon[1][1]<<") at timestamp "<<UWB[ID][1].back()[1]<< endl;
@@ -55,6 +55,7 @@ void beacon_twr::measurement(const uint16_t ID){
 
     for (size_t k = 0; k <= ID; k++)   {
     for (size_t i = 0; i < 8; i++){
+        ekf_state_estimator testl;
         UWB.push_back(std::vector<std::vector<std::vector<float>>>());
         UWB[k].push_back(std::vector<std::vector<float>>());
         UWB[k][i].push_back(std::vector<float>());
