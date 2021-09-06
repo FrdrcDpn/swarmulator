@@ -43,7 +43,7 @@ void beacon_twr::measurement2pos(const uint16_t ID){
 
 
     //get the last updated range measurements for the agent to beacon 1
-    //cout<<"agent "<<ID<<" distance of "<<UWB[ID][0].back()[0]<<" to beacon 1 "<< " (x:"<< environment.uwb_beacon[0][0]<<", y:"<<environment.uwb_beacon[0][1]<<") at timestamp "<<UWB[ID][0].back()[1]<< endl;
+    //cout<<"agent "<<ID<<" distance of "<<en<<" to beacon 1 "<< " (x:"<< environment.uwb_beacon[0][0]<<", y:"<<environment.uwb_beacon[0][1]<<") at timestamp "<<UWB[ID][0].back()[1]<< endl;
     //cout<<"agent "<<ID<<" distance of "<<UWB[ID][1].back()[0]<<" to beacon 2 "<< " (x:"<< environment.uwb_beacon[1][0]<<", y:"<<environment.uwb_beacon[1][1]<<") at timestamp "<<UWB[ID][1].back()[1]<< endl;
    // cout<<"agent "<<ID<<" distance of "<<UWB[ID][2].back()[0]<<" to beacon 3 "<< " (x:"<< environment.uwb_beacon[2][0]<<", y:"<<environment.uwb_beacon[2][1]<<") at timestamp "<<UWB[ID][2].back()[1]<< endl;
     //cout<<"agent "<<ID<<" distance of "<<UWB[ID][3].back()[0]<<" to beacon 4 "<< " (x:"<< environment.uwb_beacon[3][0]<<", y:"<<environment.uwb_beacon[3][1]<<") at timestamp "<<UWB[ID][3].back()[1]<< endl;

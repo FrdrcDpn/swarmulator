@@ -1,6 +1,7 @@
 #ifndef EKF_STATE_ESTIMATOR_H
 #define EKF_STATE_ESTIMATOR_H
 #include "controller.h"
+#include "beacon.h"
 
 extern "C" {
 #include "ekf_range.h"
@@ -15,7 +16,10 @@ class ekf_state_estimator
   float simtime_seconds_store;
 
 public:
-  struct discrete_ekf_no_north ekf_rl;
+  int anchor_index = 0;
+  struct EnuCoor_f speed;
+  struct EnuCoor_f pos;
+  struct EKFRange ekf;
   ekf_state_estimator();
   ~ekf_state_estimator() {};
   void init_ekf_filter();

@@ -7,7 +7,7 @@
 using namespace std;
 UWBSIM_controller::UWBSIM_controller(): Controller()
 {
-  ekf_range_init(EKFRange,0,0,0,0,0,0);
+  
   set_max_sensor_range(SENSOR_MAX_RANGE);
   wp_ID = 0;
 	x_wp = 0;
@@ -17,7 +17,7 @@ UWBSIM_controller::UWBSIM_controller(): Controller()
 //actual controller codea
 void UWBSIM_controller::get_velocity_command(const uint16_t ID, float &v_x, float &v_y)
 {
-
+filter.run(ID);
 float K = 1;
 float current_x_location = s[ID]->get_position(0);
 float current_y_location = s[ID]->get_position(1);

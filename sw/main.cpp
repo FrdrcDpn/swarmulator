@@ -42,7 +42,7 @@ float simtime_seconds = 0; // Initial simulation time
 bool program_running  = false; // Program running, initiated false until the beginning
 Environment environment; // Environment walls
 std::string identifier; // Log name identifier
-
+std::vector<std::vector<std::vector<std::vector<float>>>> UWB;
 /**
  * The main function launches separate threads that control independent
  * functions of the code. All threads are designed to be optional with the

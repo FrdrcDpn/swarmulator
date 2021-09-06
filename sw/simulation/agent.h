@@ -37,6 +37,7 @@ public:
   bool manual;
   float manualpsi_delta;
   random_generator rg;
+  
   Controller *controller = new CONTROLLER;
   Beacon *beacon = new BEACON;
 

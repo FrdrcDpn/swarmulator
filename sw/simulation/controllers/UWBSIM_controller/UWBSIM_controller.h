@@ -6,11 +6,15 @@
 #include <iostream>
 #include "controller.h"
 #include "randomgenerator.h"
+#include "ekf_range.h"
+#include "UWBSIM_controller/ekf_state_estimator.h"
 
 #define COMMAND_LOCAL 1
 
 class UWBSIM_controller: public Controller
 {
+
+	ekf_state_estimator filter;
 public:
 	int wp_ID;
 	float x_distance_to_waypoint;
