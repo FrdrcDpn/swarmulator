@@ -2,11 +2,12 @@
 #include "draw.h"
 #include "auxiliary.h"
 #include <cmath>
-
+#include "ekf_range.h"
 #define SENSOR_MAX_RANGE 1.8
 using namespace std;
 UWBSIM_controller::UWBSIM_controller(): Controller()
 {
+  ekf_range_init(EKFRange,0,0,0,0,0,0);
   set_max_sensor_range(SENSOR_MAX_RANGE);
   wp_ID = 0;
 	x_wp = 0;
