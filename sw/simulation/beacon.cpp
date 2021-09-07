@@ -8,6 +8,7 @@
 using namespace std;
 Beacon::Beacon()
 {
+   
 }
 
 // input agent ID, output vector of ranges to beacon

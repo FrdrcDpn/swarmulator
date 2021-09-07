@@ -27,7 +27,6 @@ public:
    * Destructor
    */
   virtual ~Agent() {};
-
   uint16_t ID; // ID of agent
   bool activated; // Set true if the agent is active
   float dt;

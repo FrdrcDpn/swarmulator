@@ -6,11 +6,10 @@
 #include <iostream>
 #include <stdint.h>
 #include "omniscient_observer.h"
-#include "ekf_state_estimator.h"
+
 /**
  * Parent class defining a beacon. The dynamic implementation is handled in children classes.
  */
-class ekf_state_estimator;
 
 class Beacon
         {
@@ -20,7 +19,7 @@ public:
      */
     
     Beacon();
-    //std::vector<std::vector<std::vector<std::vector<float>>>> UWB;
+    std::vector<std::vector<std::vector<std::vector<float>>>> UWB;
     std::vector<float> range_beacon(const uint16_t ID);
     std::vector<float> ground_truth(const uint16_t ID);
     

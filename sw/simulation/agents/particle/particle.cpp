@@ -9,6 +9,7 @@ particle::particle(int i, std::vector<float> s, float tstep)
   dt = tstep;
   orientation = 0.0;
   controller->set_saturation(1.0);
+  
 }
 
 std::vector<float> particle::state_update(std::vector<float> state)
@@ -16,7 +17,10 @@ std::vector<float> particle::state_update(std::vector<float> state)
   // NED frame
   // x+ towards North
   // y+ towards East
-  //beacon->measurement2pos(ID);
+  beacon->measurement(ID);
+  controller->UWB = beacon->UWB;
+  
+  //distanceuwb=beacon->returnUWBdata(ID, 1);
   float v_x = 0.0;
   float v_y = 0.0;
   controller->get_velocity_command(ID, v_x, v_y);

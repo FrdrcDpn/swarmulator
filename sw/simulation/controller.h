@@ -29,6 +29,7 @@ public:
    * Destructor
    */
   ~Controller() {};
+  std::vector<std::vector<std::vector<std::vector<float>>>> UWB;
   float _ddes_x; // Desired equilibrium distance_x
   float _ddes_y; // Desired equilibrium distance_y
   float _kr; // Repulsion gain

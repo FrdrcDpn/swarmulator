@@ -29,12 +29,12 @@ void beacon_twr::ranges_terminal(const uint16_t ID){
 //noise_type 3 = heavy tailed gamma noise
 
 float beacon_twr::returnUWBdata(const uint16_t ID, float beacon){
-    float dist;
+    
     // some examples for later implementation
 
   //  float x_0, y_0; //get coordinates of a beacon
    // float i = 0;//for example beacon 1
-    dist = UWB[ID][beacon].back()[0];
+   float dist = UWB[ID][beacon].back()[0];
    //x_0 = environment.uwb_beacon[i][0];
    //y_0 = environment.uwb_beacon[i][1]; 
 
@@ -55,14 +55,13 @@ void beacon_twr::measurement(const uint16_t ID){
 
     for (size_t k = 0; k <= ID; k++)   {
     for (size_t i = 0; i < 8; i++){
-        ekf_state_estimator testl;
         UWB.push_back(std::vector<std::vector<std::vector<float>>>());
         UWB[k].push_back(std::vector<std::vector<float>>());
         UWB[k][i].push_back(std::vector<float>());
         
         x_0 = environment.uwb_beacon[i][0];
         y_0 = environment.uwb_beacon[i][1]; 
-
+        
 
         dx0 = s[ID]->get_position(0) - x_0;
         dy0 = s[ID]->get_position(1) - y_0;
@@ -74,19 +73,19 @@ void beacon_twr::measurement(const uint16_t ID){
         }
         else if (param->noise_type() == 1){
             UWB[k][i].push_back({d,simtime_seconds});
-        
+       
         }
         else if (param->noise_type() == 2){
             UWB[k][i].push_back({add_ht_cauchy_noise(d),simtime_seconds});
             //environment.uwb_beacon[i].push_back();
             //UWB[ID][i].push_back(add_ht_cauchy_noise(d));
-            
+           
         }
         else if (param->noise_type() == 3){
             UWB[k][i].push_back({add_ht_gamma_noise(d),simtime_seconds});
            // environment.uwb_beacon[i].push_back();
            // UWB[ID][i].push_back(add_ht_gamma_noise(d));
-            
+           
         }
         
         
