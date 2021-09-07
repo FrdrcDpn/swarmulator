@@ -19,7 +19,7 @@ UWBSIM_controller::UWBSIM_controller(): Controller()
 void UWBSIM_controller::get_velocity_command(const uint16_t ID, float &v_x, float &v_y)
 {
 
-filter.UWB = UWB;
+//filter.UWB = UWB;
 filter.run(ID);
 float K = 1;
 

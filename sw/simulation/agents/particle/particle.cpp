@@ -18,7 +18,7 @@ std::vector<float> particle::state_update(std::vector<float> state)
   // x+ towards North
   // y+ towards East
   beacon->measurement(ID);
-  controller->UWB = beacon->UWB;
+  //controller->UWB = beacon->UWB;
   
   //distanceuwb=beacon->returnUWBdata(ID, 1);
   float v_x = 0.0;

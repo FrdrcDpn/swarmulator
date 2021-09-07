@@ -31,7 +31,7 @@ void beacon_twr::ranges_terminal(const uint16_t ID){
 float beacon_twr::returnUWBdata(const uint16_t ID, float beacon){
     
     // some examples for later implementation
-
+mtx_bcn.lock();
   //  float x_0, y_0; //get coordinates of a beacon
    // float i = 0;//for example beacon 1
    float dist = UWB[ID][beacon].back()[0];
@@ -40,7 +40,7 @@ float beacon_twr::returnUWBdata(const uint16_t ID, float beacon){
 
     //get the first range measurement for the agent with ID to beacon i
    // UWB[ID][i][1];
-
+mtx_bcn.unlock();
 return dist;
     //get the last updated range measurements for the agent to beacon 1
     //cout<<"agent "<<ID<<" distance of "<<en<<" to beacon 1 "<< " (x:"<< environment.uwb_beacon[0][0]<<", y:"<<environment.uwb_beacon[0][1]<<") at timestamp "<<UWB[ID][0].back()[1]<< endl;
@@ -55,6 +55,7 @@ void beacon_twr::measurement(const uint16_t ID){
 
     for (size_t k = 0; k <= ID; k++)   {
     for (size_t i = 0; i < 8; i++){
+        mtx_bcn.lock();
         UWB.push_back(std::vector<std::vector<std::vector<float>>>());
         UWB[k].push_back(std::vector<std::vector<float>>());
         UWB[k][i].push_back(std::vector<float>());
@@ -69,23 +70,23 @@ void beacon_twr::measurement(const uint16_t ID){
         if (param->noise_type() == 0){
         
           UWB[k][i].push_back({d,simtime_seconds});
-          
+          mtx_bcn.unlock();
         }
         else if (param->noise_type() == 1){
             UWB[k][i].push_back({d,simtime_seconds});
-       
+            mtx_bcn.unlock();
         }
         else if (param->noise_type() == 2){
             UWB[k][i].push_back({add_ht_cauchy_noise(d),simtime_seconds});
             //environment.uwb_beacon[i].push_back();
             //UWB[ID][i].push_back(add_ht_cauchy_noise(d));
-           
+           mtx_bcn.unlock();
         }
         else if (param->noise_type() == 3){
             UWB[k][i].push_back({add_ht_gamma_noise(d),simtime_seconds});
            // environment.uwb_beacon[i].push_back();
            // UWB[ID][i].push_back(add_ht_gamma_noise(d));
-           
+           mtx_bcn.unlock();
         }
         
         

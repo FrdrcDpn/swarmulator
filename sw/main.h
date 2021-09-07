@@ -20,5 +20,5 @@ extern std::unique_ptr<parameters_t> param; // XML parameters from conf file
 extern float realtimefactor; // Real time factor of simulation
 extern Environment environment; // Vector holding the environment
 extern std::string identifier; // String identifier for FIFO pipe
-//xtern std::vector<std::vector<std::vector<std::vector<float>>>> UWB;
+extern std::vector<std::vector<std::vector<std::vector<float>>>> UWB;
 #endif /*MAIN_H*/

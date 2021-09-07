@@ -19,7 +19,6 @@ public:
      */
     
     Beacon();
-    std::vector<std::vector<std::vector<std::vector<float>>>> UWB;
     std::vector<float> range_beacon(const uint16_t ID);
     std::vector<float> ground_truth(const uint16_t ID);
     

@@ -66,7 +66,9 @@ void ekf_state_estimator::run_ekf_filter()
   auto random_beacon = uni(rng);
   std::cout<<random_beacon<<std::endl;
   //for now update using random anchor 0-3 
+  mtx_bcn.lock();
   dist = UWB[ID][random_beacon].back()[0];
+  mtx_bcn.unlock();
   anchor ={environment.uwb_beacon[random_beacon][0], environment.uwb_beacon[random_beacon][1], 0.f };
 
   //get our UWB measurements and update the estimate with new anchor (for now only anchor)

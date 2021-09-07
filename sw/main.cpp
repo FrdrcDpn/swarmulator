@@ -38,12 +38,13 @@ uint nagents; // Number of agents in the simulation
 std::vector<Agent *> s; // Set up the agents
 std::shared_mutex mtx; // Mutex needed to lock threads
 std::shared_mutex mtx_env; // Mutex needed to lock threads
-std::shared_mutex bcn;
+std::shared_mutex mtx_bcn; // Mutex needed for thread safe access of UWB data
 float realtimefactor; // Real time factor of simulation
 float simtime_seconds = 0; // Initial simulation time
 bool program_running  = false; // Program running, initiated false until the beginning
 Environment environment; // Environment walls
 std::string identifier; // Log name identifier
+std::vector<std::vector<std::vector<std::vector<float>>>> UWB;
 
 /**
  * The main function launches separate threads that control independent
