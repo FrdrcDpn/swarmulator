@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <iostream>
 #include "beacon.h"
+
 class beacon_twr: public Beacon
 {
 
@@ -16,7 +17,8 @@ public:
      */
     //std::vector<std::vector<std::vector<float>> UWB;
     beacon_twr();
-    
+
+    float next_measurement_time = 0;
     float returnUWBdata(const uint16_t ID, float beacon);
     void ranges_terminal(const uint16_t ID);
     //void measurement();

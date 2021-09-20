@@ -7,16 +7,20 @@ particle::particle(int i, std::vector<float> s, float tstep)
   state = s;
   ID = i;
   dt = tstep;
+  beacon->dynamic_beacon_init(ID); 
   orientation = 0.0;
   controller->set_saturation(1.0);
   
-}
+ 
+  }
 
 std::vector<float> particle::state_update(std::vector<float> state)
 {
+  
   // NED frame
   // x+ towards North
   // y+ towards East
+  beacon->dynamic_beacon_update(ID);
   beacon->measurement(ID);
   //controller->UWB = beacon->UWB;
   

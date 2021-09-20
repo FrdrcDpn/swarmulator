@@ -8,7 +8,7 @@ SRC_FOLDER = sw
 
 CONTROLLER?=aggregation
 AGENT?=particle
-BEACON?=uwb_testbeacon
+BEACON?=beacon_twr
 
 CONTROLLER_INCLUDE=\"$(CONTROLLER).h\"
 AGENT_INCLUDE=\"$(AGENT).h\"
@@ -67,10 +67,6 @@ ifeq ($(CONTROLLER),pytorch)
 OPT += -L $(TORCH_LIB_HOME)/lib -lc10 -L $(TORCH_LIB_HOME)/lib -ltorch_cpu
 INC_DIRS += $(shell find $(TORCH_LIB_HOME) -type d) ## Add torchlib include folder, if present
 endif
-
-# If using beacon, load the library!
-OPT += -L/usr/lib/python3.8/config-3.8-x86_64-linux-gnu -L/usr/lib  -lcrypt -lpthread -ldl  -lutil -lm -lm -lpython3.8
-
 
 # Prepare includes
 INC_PARAMS = $(foreach d, $(INC_DIRS), -I$d) # Each include folder must have a -I before it

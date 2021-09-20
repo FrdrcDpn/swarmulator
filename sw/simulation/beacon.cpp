@@ -11,6 +11,34 @@ Beacon::Beacon()
    
 }
 
+void Beacon::dynamic_beacon_init(const uint16_t ID){
+  // if we use dynamic beacons, add the agent's estimated position to the dynamic beacon vector
+  // if the vector is not initialised, do so
+
+if(param->dynamic_beacons() == 1){
+    mtx_bcn.lock();
+  dynamic_uwb_beacon.push_back(std::vector<float>());
+  dynamic_uwb_beacon[ID].push_back(0.0);
+  dynamic_uwb_beacon[ID].push_back(0.0);
+  dynamic_uwb_beacon[ID].push_back(1.0);
+  mtx_bcn.unlock();
+}
+
+}
+
+void Beacon::dynamic_beacon_update(const uint16_t ID){
+  // if we use dynamic beacons, add the agent's estimated position to the dynamic beacon vector
+  // update with estimated state
+  
+if(param->dynamic_beacons() == 1){
+    mtx_bcn.lock();
+  dynamic_uwb_beacon[ID][0] = s[ID]->get_state(0);
+  dynamic_uwb_beacon[ID][1] = s[ID]->get_state(1);
+  mtx_bcn.unlock();
+}
+
+}
+
 // input agent ID, output vector of ranges to beacon
 std::vector<float> Beacon::range_beacon(const uint16_t ID){
     float b1, r1;

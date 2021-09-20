@@ -3,10 +3,13 @@
 #include "main.h"
 #include "txtwrite.h"
 #include <boost/math/special_functions/gamma.hpp>
-
+#include <random>
 #define EPSILON 0.001
 using namespace std;
+
 beacon_twr::beacon_twr() {
+beacon_alg = "beacon_twr";
+next_measurement_time = simtime_seconds;
 
 }
 
@@ -29,12 +32,13 @@ void beacon_twr::ranges_terminal(const uint16_t ID){
 //noise_type 3 = heavy tailed gamma noise
 
 float beacon_twr::returnUWBdata(const uint16_t ID, float beacon){
-    
+    // function that returns the latest distance entry of uwb data
+
     // some examples for later implementation
 mtx_bcn.lock();
   //  float x_0, y_0; //get coordinates of a beacon
    // float i = 0;//for example beacon 1
-   float dist = UWB[ID][beacon].back()[0];
+   float dist = UWB[ID].back()[0];
    //x_0 = environment.uwb_beacon[i][0];
    //y_0 = environment.uwb_beacon[i][1]; 
 
@@ -52,55 +56,111 @@ return dist;
 
 void beacon_twr::measurement(const uint16_t ID){
     float x_0, y_0, dx0, dy0, d;
+    random_device rd;  // Will be used to obtain a seed for the random number engine
+    mt19937 rng(rd()); // random-number engine used (Mersenne-Twister in this case)
+    uniform_real_distribution<> dis(0.1*param->UWB_interval(), 2*0.1*param->UWB_interval());
+    bool static_beacon = false;
+    bool dynamic_beacon = false;
+    //thread safe vector operation to access UWB data
 
-    for (size_t k = 0; k <= ID; k++)   {
-    for (size_t i = 0; i < 8; i++){
-        mtx_bcn.lock();
-        UWB.push_back(std::vector<std::vector<std::vector<float>>>());
-        UWB[k].push_back(std::vector<std::vector<float>>());
-        UWB[k][i].push_back(std::vector<float>());
-        
-        x_0 = environment.uwb_beacon[i][0];
-        y_0 = environment.uwb_beacon[i][1]; 
-        
+    mtx_bcn.lock();
+    uniform_int_distribution<int> uni(0,6+dynamic_uwb_beacon.size()); // guaranteed unbiased
+    mtx_bcn.unlock();
+    //only take measurements on defined interval with noise
+    if(simtime_seconds>=next_measurement_time){
+    
+    //take measurements from a random beacon that is enabled
+    int random_beacon = uni(rng);
+    bool beacon_selected = false; 
 
-        dx0 = s[ID]->get_position(0) - x_0;
-        dy0 = s[ID]->get_position(1) - y_0;
-        d = sqrt(dx0*dx0 + dy0*dy0);
-        if (param->noise_type() == 0){
-        
-          UWB[k][i].push_back({d,simtime_seconds});
-          mtx_bcn.unlock();
+    // check whether the random beacon is enabled, and whether dynamic or not (if using dynamic beacons is enabled)
+    while(beacon_selected == false){
+        if(random_beacon >= 0 && random_beacon <=7){
+            if(environment.uwb_beacon[random_beacon][2]==0){
+            random_beacon= uni(rng);
+            }else if(environment.uwb_beacon[random_beacon][2]==1){
+            beacon_selected = true;
+            static_beacon = true;
+            }
         }
-        else if (param->noise_type() == 1){
-            UWB[k][i].push_back({d,simtime_seconds});
-            mtx_bcn.unlock();
+        if(random_beacon>7){
+            mtx_bcn.lock();
+            random_beacon = random_beacon-8;
+            if(dynamic_uwb_beacon[random_beacon][2]==0){
+            random_beacon= uni(rng);
+            }else if(dynamic_uwb_beacon[random_beacon][2]==1 && random_beacon == ID){
+            random_beacon= uni(rng);
+            }else if(dynamic_uwb_beacon[random_beacon][2]==1 && random_beacon != ID){
+            beacon_selected = true;
+            dynamic_beacon = true;
+            std::cout<<"agent "<<ID<<" ranges with agent "<<random_beacon<<std::endl;
+            }
+           mtx_bcn.unlock(); 
         }
-        else if (param->noise_type() == 2){
-            UWB[k][i].push_back({add_ht_cauchy_noise(d),simtime_seconds});
-            //environment.uwb_beacon[i].push_back();
-            //UWB[ID][i].push_back(add_ht_cauchy_noise(d));
-           mtx_bcn.unlock();
-        }
-        else if (param->noise_type() == 3){
-            UWB[k][i].push_back({add_ht_gamma_noise(d),simtime_seconds});
-           // environment.uwb_beacon[i].push_back();
-           // UWB[ID][i].push_back(add_ht_gamma_noise(d));
-           mtx_bcn.unlock();
-        }
-        
-        
     }
-   
-}}
+
+    // coordinates of the beacon
+    if(dynamic_beacon == true){
+        mtx_bcn.lock();
+    x_0 = dynamic_uwb_beacon[random_beacon][0];
+    y_0 = dynamic_uwb_beacon[random_beacon][1]; 
+    mtx_bcn.unlock();
+    }
+    if(static_beacon == true){
+    x_0 = environment.uwb_beacon[random_beacon][0];
+    y_0 = environment.uwb_beacon[random_beacon][1];
+    }
+     
+    //range towards the beacon
+    dx0 = s[ID]->get_position(0) - x_0;
+    dy0 = s[ID]->get_position(1) - y_0;
+    d = sqrt(dx0*dx0 + dy0*dy0);
+    
+    mtx_bcn.lock();
+    //initialise uwb dataset
+    UWB.push_back(std::vector<std::vector<float>>());
+    UWB[ID].push_back(std::vector<float>());
+    //add preferred noise on top of range measurements
+    if (param->noise_type() == 0){
+        // distance, x beacon, y beacon, simulation time
+        UWB[ID].push_back({d,x_0, y_0, simtime_seconds});
+        mtx_bcn.unlock();
+    }
+    else if (param->noise_type() == 1){
+        // distance, x beacon, y beacon, simulation time
+        UWB[ID].push_back({add_gaussian_noise(d),x_0, y_0, simtime_seconds});
+        mtx_bcn.unlock();
+    }
+    else if (param->noise_type() == 2){
+        // distance, x beacon, y beacon, simulation time
+        UWB[ID].push_back({add_ht_cauchy_noise(d),x_0, y_0, simtime_seconds});
+        mtx_bcn.unlock();
+    }
+    else if (param->noise_type() == 3){
+        // distance, x beacon, y beacon, simulation time
+        UWB[ID].push_back({add_ht_gamma_noise(d),x_0, y_0, simtime_seconds});
+        mtx_bcn.unlock();
+    }
+    }
+    //next measurement time interval
+    next_measurement_time = next_measurement_time + param->UWB_interval() + dis(rng) -0.1*param->UWB_interval();
+    std::cout<<"dynamic beacon"<<dynamic_beacon<<"static beacon"<<static_beacon<<std::endl;
+
+}
 
 float beacon_twr::add_gaussian_noise(float value) {
     float noisy_value;
     float mean = 0;
-    std::default_random_engine generator;
-    std::normal_distribution<double> dist(mean, param->gauss_sigma());
+
+     // Random seed
+    random_device rd;
+
+    // Initialize Mersenne Twister pseudo-random number generator
+    mt19937 gen(rd());
+    std::normal_distribution<double> dis(mean, param->gauss_sigma());
     // Add Gaussian noise
-    noisy_value = value + dist(generator);
+    noisy_value = value + value*dis(gen);
+    std::cout<<dis(gen)<<std::endl;
     return noisy_value;
 }
 
@@ -110,13 +170,13 @@ float beacon_twr::add_ht_cauchy_noise(float value){
     float tmp = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
     if (tmp < CDF_limit){
         //Gaussian CDF: F(x) = (1/2) * (1 + erf( (x-mu)/sqrt(2*sig^2) ))
-        return value + sqrt(2*pow(param->gauss_sigma(),2))*erfinvf(2*tmp/(2-cauchy_alpha)-1);
+        return value + value*sqrt(2*pow(param->gauss_sigma(),2))*erfinvf(2*tmp/(2-cauchy_alpha)-1);
     }
     else{
         //Cauchy CDF: F(x) = (1/pi) * arctan((x-x0)/gamma) + 1/2
         //Because of scaling with alpha (Area under CDF no longer 1), need to also start from -inf and then flip
         tmp = 1-tmp;
-        return value -param->htc_gamma()*tan(M_PI*(tmp/cauchy_alpha-0.5));
+        return value -value*param->htc_gamma()*tan(M_PI*(tmp/cauchy_alpha-0.5));
     }
 }
 
@@ -158,6 +218,6 @@ float beacon_twr::add_ht_gamma_noise(float value){
         // x(i+1) = x(i) - f(x) / f'(x)
         x = x - h;
     }
-    return x + value;
+    return value*x + value;
 }
 

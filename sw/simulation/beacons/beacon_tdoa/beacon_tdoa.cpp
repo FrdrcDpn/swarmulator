@@ -8,7 +8,7 @@
 using namespace std;
 #define EPSILON 0.001
 beacon_tdoa::beacon_tdoa() {
-
+beacon_alg = "beacon_tdoa";
 }
 
 void beacon_tdoa::ranges_terminal(const uint16_t ID){
@@ -68,11 +68,16 @@ void beacon_tdoa::measurement(const uint16_t ID){
 float beacon_tdoa::add_gaussian_noise(float value) {
     float noisy_value;
     float mean = 0;
-    std::default_random_engine generator;
+  
+       // Random seed
+    random_device rd;
 
-    std::normal_distribution<double> dist(mean, param->gauss_sigma());
+    // Initialize Mersenne Twister pseudo-random number generator
+    mt19937 gen(rd());
+    std::normal_distribution<double> dis(mean, param->gauss_sigma());
     // Add Gaussian noise
-    noisy_value = value + dist(generator);
+    noisy_value = value + dis(gen);
+
     return noisy_value;
 }
 

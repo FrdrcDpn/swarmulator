@@ -15,6 +15,7 @@ class ekf_state_estimator
   float simtime_seconds_store;
   
 public:
+
   float dist;
   struct EnuCoor_f anchor;
   struct EnuCoor_f speed;

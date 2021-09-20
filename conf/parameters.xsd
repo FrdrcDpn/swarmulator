@@ -2,6 +2,8 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:complexType name="parameters_t">
     <xs:sequence>
+      <xs:element name="dynamic_beacons" type="xs:float"/>
+      <xs:element name="UWB_interval" type="xs:float"/>
       <xs:element name="beacon_1_en" type="xs:float"/>
       <xs:element name="beacon_2_en" type="xs:float"/>
       <xs:element name="beacon_3_en" type="xs:float"/>

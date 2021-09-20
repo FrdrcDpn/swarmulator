@@ -20,5 +20,7 @@ extern std::unique_ptr<parameters_t> param; // XML parameters from conf file
 extern float realtimefactor; // Real time factor of simulation
 extern Environment environment; // Vector holding the environment
 extern std::string identifier; // String identifier for FIFO pipe
-extern std::vector<std::vector<std::vector<std::vector<float>>>> UWB;
+extern std::vector<std::vector<float>> dynamic_uwb_beacon;
+extern std::vector<std::vector<std::vector<float>>> UWB;
+extern std::string beacon_alg; //what kind of beacon localisation algorithm is used
 #endif /*MAIN_H*/

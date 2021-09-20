@@ -30,6 +30,7 @@ void txtwrite::txtwrite_state(ofstream &logfile)
       logfile << state_buff[i]->state.at(j) << " "; // log states
     }
     logfile << f; // fitness
+    
     logfile << endl; // new line
   }
 }
