@@ -73,22 +73,24 @@ void ekf_state_estimator::run_ekf_filter()
 
   //get the ranging and anchor data from our UWB dataset
   dist = UWB[ID].back()[0];
-  anchor ={UWB[ID].back()[1], UWB[ID].back()[2], 0.f };
+  anchor_0 ={UWB[ID].back()[1], UWB[ID].back()[2], 0.f };
 
   mtx_bcn.unlock();
 
   //input UWB measurements and update the estimate with new anchor (for now only anchor)
-  ekf_range_update_dist(&ekf,dist,anchor);
+  ekf_range_update_dist_twr(&ekf,dist,anchor_0);
   
-  }else if(beacon_alg== "beacon_tdoa"){
+  }
+  if(beacon_alg== "beacon_tdoa"){
   mtx_bcn.lock();
   //get the ranging data for our random beacon
   dist = UWB[ID].back()[0];
   //get the anchor data for our random anchor
-  anchor ={UWB[ID].back()[1], UWB[ID].back()[2], 0.f };
+  anchor_0 ={UWB[ID].back()[1], UWB[ID].back()[2], 0.f };
+  anchor_1 ={UWB[ID].back()[3], UWB[ID].back()[4], 0.f };
   mtx_bcn.unlock();
   //get our UWB measurements and update the estimate with new anchor (for now only anchor)
-  ekf_range_update_dist(&ekf,dist,anchor);
+  ekf_range_update_dist_tdoa(&ekf,dist,anchor_0, anchor_1);
   }
 
   //update our position and speed values

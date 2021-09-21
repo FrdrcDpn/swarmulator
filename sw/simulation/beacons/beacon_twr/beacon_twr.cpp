@@ -56,16 +56,18 @@ return dist;
 
 void beacon_twr::measurement(const uint16_t ID){
     float x_0, y_0, dx0, dy0, d;
+
     random_device rd;  // Will be used to obtain a seed for the random number engine
     mt19937 rng(rd()); // random-number engine used (Mersenne-Twister in this case)
     uniform_real_distribution<> dis(0.1*param->UWB_interval(), 2*0.1*param->UWB_interval());
     bool static_beacon = false;
     bool dynamic_beacon = false;
+    
     //thread safe vector operation to access UWB data
-
     mtx_bcn.lock();
     uniform_int_distribution<int> uni(0,6+dynamic_uwb_beacon.size()); // guaranteed unbiased
     mtx_bcn.unlock();
+
     //only take measurements on defined interval with noise
     if(simtime_seconds>=next_measurement_time){
     
@@ -111,33 +113,34 @@ void beacon_twr::measurement(const uint16_t ID){
     y_0 = environment.uwb_beacon[random_beacon][1];
     }
      
-    //range towards the beacon
+    //generate twr measurements
     dx0 = s[ID]->get_position(0) - x_0;
     dy0 = s[ID]->get_position(1) - y_0;
     d = sqrt(dx0*dx0 + dy0*dy0);
-    
-    mtx_bcn.lock();
+
     //initialise uwb dataset
+    mtx_bcn.lock();
     UWB.push_back(std::vector<std::vector<float>>());
     UWB[ID].push_back(std::vector<float>());
-    //add preferred noise on top of range measurements
+
+    //add preferred noise on top of twr measurements
     if (param->noise_type() == 0){
-        // distance, x beacon, y beacon, simulation time
+        // twr measurement, x beacon, y beacon, simulation time
         UWB[ID].push_back({d,x_0, y_0, simtime_seconds});
         mtx_bcn.unlock();
     }
     else if (param->noise_type() == 1){
-        // distance, x beacon, y beacon, simulation time
+        // twr measurement, x beacon, y beacon, simulation time
         UWB[ID].push_back({add_gaussian_noise(d),x_0, y_0, simtime_seconds});
         mtx_bcn.unlock();
     }
     else if (param->noise_type() == 2){
-        // distance, x beacon, y beacon, simulation time
+        // twr measurement, x beacon, y beacon, simulation time
         UWB[ID].push_back({add_ht_cauchy_noise(d),x_0, y_0, simtime_seconds});
         mtx_bcn.unlock();
     }
     else if (param->noise_type() == 3){
-        // distance, x beacon, y beacon, simulation time
+        // twr measurement, x beacon, y beacon, simulation time
         UWB[ID].push_back({add_ht_gamma_noise(d),x_0, y_0, simtime_seconds});
         mtx_bcn.unlock();
     }

@@ -140,7 +140,7 @@ void ekf_range_predict(struct EKFRange *ekf_range)
  * X = X + K(z-h(X))
  * P = (I-KH)P
  */
-void ekf_range_update_dist(struct EKFRange *ekf_range, float dist, struct EnuCoor_f anchor)
+void ekf_range_update_dist_twr(struct EKFRange *ekf_range, float dist, struct EnuCoor_f anchor)
 {
   const float dx = ekf_range->state[0] - anchor.x;
   const float dy = ekf_range->state[2] - anchor.y;
@@ -188,6 +188,62 @@ void ekf_range_update_dist(struct EKFRange *ekf_range, float dist, struct EnuCoo
   }
 }
 
+void ekf_range_update_dist_tdoa(struct EKFRange *ekf_range, float dist, struct EnuCoor_f anchor, struct EnuCoor_f anchor_1)
+{
+  const float dx0 = ekf_range->state[0] - anchor.x;
+  const float dy0 = ekf_range->state[2] - anchor.y;
+  const float dz0 = ekf_range->state[4] - anchor.z;
+
+  const float dx1 = ekf_range->state[0] - anchor_1.x;
+  const float dy1 = ekf_range->state[2] - anchor_1.y;
+  const float dz1 = ekf_range->state[4] - anchor_1.z;
+
+  const float d0 = sqrt(dx0*dx0 + dy0*dy0 +dz0*dz0);
+  const float d1 = sqrt(dx1*dx1 + dy1*dy1 + dz1*dz1);
+  const float norm = d1-d0;
+  
+  // build measurement error
+  const float res = dist - norm;
+
+  // build Jacobian of observation model for anchor i
+  float Hi[] = { ((ekf_range->state[0] - anchor_1.x) / d1 - ( ekf_range->state[0]- anchor.x) / d0), 0.f, ((ekf_range->state[2] - anchor_1.y) / d1 - ( ekf_range->state[2]- anchor.y) / d0), 0.f, ((ekf_range->state[4] - anchor_1.z) / d1 - ( ekf_range->state[4]- anchor.z) / d0), 0.f };
+  // compute kalman gain K = P*Ht (H*P*Ht + R)^-1
+  // S = H*P*Ht + R
+  const float S =
+    Hi[0] * Hi[0] * ekf_range->P[0][0] +
+    Hi[2] * Hi[2] * ekf_range->P[2][2] +
+    Hi[4] * Hi[4] * ekf_range->P[4][4] +
+    Hi[0] * Hi[2] * (ekf_range->P[0][2] + ekf_range->P[2][0]) +
+    Hi[0] * Hi[4] * (ekf_range->P[0][4] + ekf_range->P[4][0]) +
+    Hi[2] * Hi[4] * (ekf_range->P[2][4] + ekf_range->P[4][2]) +
+    ekf_range->R_dist;
+  if (fabsf(S) < 1e-5) {
+    return; // don't inverse S if it is too small
+  }
+  // finally compute gain and correct state
+  float K[6];
+  for (int i = 0; i < 6; i++) {
+    K[i] = (Hi[0] * ekf_range->P[i][0] + Hi[2] * ekf_range->P[i][2] + Hi[4] * ekf_range->P[i][4]) / S;
+    ekf_range->state[i] += K[i] * res;
+  }
+  // precompute K*H and store current P
+  float KH_tmp[6][6];
+  float P_tmp[6][6];
+  for (int i = 0; i < 6; i++) {
+    for (int j = 0; j < 6; j++) {
+      KH_tmp[i][j] = K[i] * Hi[j];
+      P_tmp[i][j] = ekf_range->P[i][j];
+    }
+  }
+  // correct covariance P = (I-K*H)*P = P - K*H*P
+  for (int i = 0; i < 6; i++) {
+    for (int j = 0; j < 6; j++) {
+      for (int k = 0; k < 6; k++) {
+        ekf_range->P[i][j] -= KH_tmp[i][k] * P_tmp[k][j];
+      }
+    }
+  }
+}
 //void ekf_range_update_speed(struct EKFRange *ekf_range, float speed, uint8_t type)
 //{
   //(void) ekf_range;

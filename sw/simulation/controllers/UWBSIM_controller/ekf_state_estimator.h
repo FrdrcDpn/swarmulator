@@ -17,7 +17,8 @@ class ekf_state_estimator
 public:
 
   float dist;
-  struct EnuCoor_f anchor;
+  struct EnuCoor_f anchor_0;
+  struct EnuCoor_f anchor_1;
   struct EnuCoor_f speed;
   struct EnuCoor_f pos;
   struct EKFRange ekf;

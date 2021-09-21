@@ -121,7 +121,17 @@ extern void ekf_range_predict(struct EKFRange *ekf_range);
  * @param[in] dist new distance measurement
  * @param[in] anchor position of the anchor from which the distance is measured
  */
-extern void ekf_range_update_dist(struct EKFRange *ekf_range, float dist, struct EnuCoor_f anchor);
+extern void ekf_range_update_dist_twr(struct EKFRange *ekf_range, float dist, struct EnuCoor_f anchor);
+
+/** Update step based on each new distance data
+ *
+ * @param[in] ekf_range EKFRange structure
+ * @param[in] dist new tdoa measurement
+ * @param[in] anchor position of the first anchor from which the tdoa measurement is measured
+ * @param[in] anchor position of the second anchor from which the tdoa measurement is measured
+ */
+extern void ekf_range_update_dist_tdoa(struct EKFRange *ekf_range, float dist, struct EnuCoor_f anchor, struct EnuCoor_f anchor_1);
+
 
 /** Update step based on speed measure
  *

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <parameters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="parameters.xsd">
   <!-- Simulation -->
-  <dynamic_beacons>0</dynamic_beacons>
+  <dynamic_beacons>1</dynamic_beacons>
   <UWB_interval>0.04</UWB_interval> 
   <beacon_1_en>1</beacon_1_en>
   <beacon_2_en>1</beacon_2_en>
