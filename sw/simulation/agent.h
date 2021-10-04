@@ -31,6 +31,7 @@ public:
   bool activated; // Set true if the agent is active
   float dt;
   std::vector<float> state; // State vector
+  std::vector<float> state_ground; // State vector
   float orientation; // Orientation
   bool moving;
   float manualx, manualy;

@@ -149,7 +149,7 @@ void ekf_range_update_dist_twr(struct EKFRange *ekf_range, float dist, struct En
   // build measurement error
   const float res = dist - norm;
   // build Jacobian of observation model for anchor i
-  float Hi[] = { dx / norm, 0.f, dy / norm, 0.f, dz / norm, 0.f };
+  float Hi[] = { dx*dx*dx / norm, 0.f, dy*dy*dy / norm, 0.f, dz / norm, 0.f };
   // compute kalman gain K = P*Ht (H*P*Ht + R)^-1
   // S = H*P*Ht + R
   const float S =

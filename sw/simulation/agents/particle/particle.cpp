@@ -1,6 +1,7 @@
 #include "particle.h"
 #include "trigonometry.h"
 #include "draw.h"
+#include "random"
 
 particle::particle(int i, std::vector<float> s, float tstep)
 {
@@ -10,7 +11,7 @@ particle::particle(int i, std::vector<float> s, float tstep)
   beacon->dynamic_beacon_init(ID); 
   orientation = 0.0;
   controller->set_saturation(1.0);
-  
+  state_ground = state;
  
   }
 
@@ -22,8 +23,12 @@ std::vector<float> particle::state_update(std::vector<float> state)
   // y+ towards East
   beacon->dynamic_beacon_update(ID);
   beacon->measurement(ID);
+
   //controller->UWB = beacon->UWB;
-  
+    //controller->UWB = beacon->UWB;
+    std::random_device rd;
+  std::mt19937 mt(rd());
+  std::uniform_real_distribution<double> dist(-0.5, 0.5);
   //distanceuwb=beacon->returnUWBdata(ID, 1);
   float v_x = 0.0;
   float v_y = 0.0;
@@ -36,8 +41,21 @@ std::vector<float> particle::state_update(std::vector<float> state)
   rotate_xy(v_x, v_y, orientation, vxr, vyr);
 
   // Acceleration
-  state.at(4) = 2 * (vxr - state[2]); // Acceleration x
-  state.at(5) = 2 * (vyr - state[3]); // Acceleration y
+  state_ground.at(4) = 2 * (vxr - state_ground[2]); // Acceleration x
+  state_ground.at(5) = 2 * (vyr - state_ground[3]); // Acceleration y
+
+  // Velocity
+  state_ground.at(2) += state_ground[4] * dt; // Velocity x
+  state_ground.at(3) += state_ground[5] * dt; // Velocity y
+
+  // Position
+  state_ground.at(0) += state_ground[2] * dt + 0.5 * state_ground[4] * pow(dt, 2); // Position x
+  state_ground.at(1) += state_ground[3] * dt + 0.5 * state_ground[5] * pow(dt, 2); // Position y
+
+
+  // Acceleration
+  state.at(4) = 2 * (vxr - state[2])+dist(mt); // Acceleration x
+  state.at(5) = 2 * (vyr - state[3])+dist(mt); // Acceleration y
 
   // Velocity
   state.at(2) += state[4] * dt; // Velocity x

@@ -19,31 +19,32 @@ void UWBSIM_controller::get_velocity_command(const uint16_t ID, float &v_x, floa
 {
 
 filter.run(ID);
-float K = 1;
+float K = 0.2;
 
 //run with estimated position
 float current_x_location =filter.pos.x;
 float current_y_location =filter.pos.y;
-
+//float current_x_location =s[ID]->state[0];
+//float current_y_location =s[ID]->state[1];
 x_distance_to_waypoint = x_wp - current_x_location;
 y_distance_to_waypoint = y_wp - current_y_location; 
 
 
-if(sqrt(x_distance_to_waypoint*x_distance_to_waypoint+y_distance_to_waypoint*y_distance_to_waypoint)<0.5&& wp_ID==0){
- x_wp = -17.5;
- y_wp = -17.5;
+if(sqrt(x_distance_to_waypoint*x_distance_to_waypoint+y_distance_to_waypoint*y_distance_to_waypoint)<0.1&& wp_ID==0){
+ x_wp = -15;
+ y_wp = -15;
  wp_ID=1;
-}else if (sqrt(x_distance_to_waypoint*x_distance_to_waypoint+y_distance_to_waypoint*y_distance_to_waypoint)<0.5 && wp_ID==1){
- x_wp = 17.5;
- y_wp = -17.5;
+}else if (sqrt(x_distance_to_waypoint*x_distance_to_waypoint+y_distance_to_waypoint*y_distance_to_waypoint)<0.1 && wp_ID==1){
+ x_wp = 15;
+ y_wp = -15;
  wp_ID=2;
-}else if (sqrt(x_distance_to_waypoint*x_distance_to_waypoint+y_distance_to_waypoint*y_distance_to_waypoint)<0.5 && wp_ID==2){
-  x_wp = 17.5;
-  y_wp = 17.5;
+}else if (sqrt(x_distance_to_waypoint*x_distance_to_waypoint+y_distance_to_waypoint*y_distance_to_waypoint)<0.1 && wp_ID==2){
+  x_wp = 15;
+  y_wp = 15;
   wp_ID=3;
-}else if (sqrt(x_distance_to_waypoint*x_distance_to_waypoint+y_distance_to_waypoint*y_distance_to_waypoint)<0.5 && wp_ID==3){
-  x_wp = -17.5;
-  y_wp = 17.5;
+}else if (sqrt(x_distance_to_waypoint*x_distance_to_waypoint+y_distance_to_waypoint*y_distance_to_waypoint)<0.1 && wp_ID==3){
+  x_wp = -15;
+  y_wp = 15;
   wp_ID=0;
 }
 

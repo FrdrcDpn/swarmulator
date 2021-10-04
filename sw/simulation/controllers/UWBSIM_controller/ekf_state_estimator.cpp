@@ -45,8 +45,8 @@ void ekf_state_estimator::init_ekf_filter()
       EKF_Q, EKF_R_DIST, EKF_R_SPEED, 0.1f);
 
   //update and set initial states
-  pos={s[ID]->get_state(0), s[ID]->get_state(1), 0.f };
-  speed={s[ID]->get_state(2), s[ID]->get_state(3), 0.f };
+  pos={s[ID]->state_ground[0], s[ID]->state_ground[1], 0.f };
+  speed={s[ID]->state_ground[2], s[ID]->state_ground[3], 0.f };
   ekf_range_set_state(&ekf,pos,speed);
 
   initialized = true;
@@ -59,8 +59,8 @@ void ekf_state_estimator::run_ekf_filter()
   //update and set states
   float xpos = s[ID]->get_state(0);
   float ypos = s[ID]->get_state(1);  
-  pos={s[ID]->get_state(0), s[ID]->get_state(1), 0.f };
-  speed={s[ID]->get_state(2), s[ID]->get_state(3), 0.f };
+  pos={s[ID]->state_ground[0], s[ID]->state_ground[1], 0.f };
+  speed={s[ID]->state_ground[2], s[ID]->state_ground[3], 0.f };
   ekf_range_set_state(&ekf,pos,speed);
   ekf.dt = simtime_seconds - simtime_seconds_store;
   simtime_seconds_store = simtime_seconds;
