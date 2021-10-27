@@ -44,9 +44,12 @@ void ekf_state_estimator::init_ekf_filter()
   ekf_range_init(&ekf, EKF_P0_POS, EKF_P0_SPEED,
       EKF_Q, EKF_R_DIST, EKF_R_SPEED, 0.1f);
 
+
   //update and set initial states
+  
   pos={s[ID]->state_ground[0], s[ID]->state_ground[1], 0.f };
   speed={s[ID]->state_ground[2], s[ID]->state_ground[3], 0.f };
+  
   ekf_range_set_state(&ekf,pos,speed);
 
   initialized = true;
@@ -59,6 +62,7 @@ void ekf_state_estimator::run_ekf_filter()
   //update and set states
   float xpos = s[ID]->get_state(0);
   float ypos = s[ID]->get_state(1);  
+
   pos={s[ID]->state_ground[0], s[ID]->state_ground[1], 0.f };
   speed={s[ID]->state_ground[2], s[ID]->state_ground[3], 0.f };
   ekf_range_set_state(&ekf,pos,speed);
@@ -72,7 +76,7 @@ void ekf_state_estimator::run_ekf_filter()
   mtx_bcn.lock();
 
   //get the ranging and anchor data from our UWB dataset
-  dist = UWB[ID].back()[0];
+  dist = abs(UWB[ID].back()[0]);
   anchor_0 ={UWB[ID].back()[1], UWB[ID].back()[2], 0.f };
 
   mtx_bcn.unlock();
@@ -97,16 +101,19 @@ void ekf_state_estimator::run_ekf_filter()
   pos = ekf_range_get_pos(&ekf);
   speed = ekf_range_get_speed(&ekf);
 
+  
+
   //float zpos = 0;
   std::cout<<"predicted x: "<<pos.x<<" real x: "<< xpos <<" delta x: "<<pos.x-xpos<<" for agent: "<<ID<<std::endl;
   std::cout<<"predicted y: "<<pos.y<<" real y: "<< ypos <<" delta y: "<<pos.y-ypos<<" for agent: "<<ID<<std::endl;
   //std::cout<<"predicted z: "<<pos.z<<" real z: "<< zpos <<" delta z: "<<pos.z-zpos<<" for agent: "<<ID<<std::endl;
 }
 
-void ekf_state_estimator::run(uint16_t ID_in)
+void ekf_state_estimator::run(uint16_t ID_in, int m)
 {
   if (!initialized) {
     ID = ID_in;
+    mode = m; 
     init_ekf_filter();
    // std::cout<<"Running ekf for agent ID: "<<ID<<std::endl;
   } else {

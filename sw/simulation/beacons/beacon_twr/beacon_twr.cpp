@@ -114,8 +114,8 @@ void beacon_twr::measurement(const uint16_t ID){
     }
      
     //generate twr measurements
-    dx0 = s[ID]->get_position(0) - x_0;
-    dy0 = s[ID]->get_position(1) - y_0;
+    dx0 = s[ID]->state[0] - x_0;
+    dy0 = s[ID]->state[1] - y_0;
     d = sqrt(dx0*dx0 + dy0*dy0);
 
     //initialise uwb dataset

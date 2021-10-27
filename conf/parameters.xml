@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <parameters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="parameters.xsd">
   <!-- Simulation -->
-  <dynamic_beacons>1</dynamic_beacons>
+  <dynamic_beacons>0</dynamic_beacons>
   <UWB_interval>0.01</UWB_interval> 
   <beacon_1_en>1</beacon_1_en>
   <beacon_2_en>1</beacon_2_en>
@@ -11,23 +11,23 @@
   <beacon_6_en>0</beacon_6_en>
   <beacon_7_en>0</beacon_7_en>
   <beacon_8_en>0</beacon_8_en>
-  <x_beacon_1>20</x_beacon_1>
-  <y_beacon_1>20</y_beacon_1>
-  <x_beacon_2>20</x_beacon_2>
-  <y_beacon_2>-20</y_beacon_2>
-  <x_beacon_3>-20</x_beacon_3>
-  <y_beacon_3>-20</y_beacon_3>
-  <x_beacon_4>-20</x_beacon_4>
-  <y_beacon_4>20</y_beacon_4>
+  <x_beacon_1>10</x_beacon_1>
+  <y_beacon_1>10</y_beacon_1>
+  <x_beacon_2>10</x_beacon_2>
+  <y_beacon_2>-10</y_beacon_2>
+  <x_beacon_3>-10</x_beacon_3>
+  <y_beacon_3>-10</y_beacon_3>
+  <x_beacon_4>-10</x_beacon_4>
+  <y_beacon_4>10</y_beacon_4>
   <x_beacon_5>0</x_beacon_5>
-  <y_beacon_5>20</y_beacon_5>
-  <x_beacon_6>20</x_beacon_6>
+  <y_beacon_5>10</y_beacon_5>
+  <x_beacon_6>10</x_beacon_6>
   <y_beacon_6>0</y_beacon_6>
   <x_beacon_7>0</x_beacon_7>
-  <y_beacon_7>-20</y_beacon_7>
-  <x_beacon_8>-20</x_beacon_8>
+  <y_beacon_7>-10</y_beacon_7>
+  <x_beacon_8>-10</x_beacon_8>
   <y_beacon_8>0</y_beacon_8>
-  <noise_type>3</noise_type>
+  <noise_type>1</noise_type>
   <gauss_sigma>0.2</gauss_sigma>
   <htc_gamma>0.1</htc_gamma>
   <htc_ratio>1.0</htc_ratio>
@@ -37,7 +37,7 @@
   <htg_scale>1.0</htg_scale>
   <simulation_updatefreq>20</simulation_updatefreq>
   <simulation_realtimefactor>300</simulation_realtimefactor>
-  <time_limit>500</time_limit>
+  <time_limit>10000</time_limit>
   <!-- (seconds). Use time_limit > 0 to set a limit. If = 0, then the simulation runs indefinitely. -->
   <environment>square</environment>
   <!-- See the folder conf/environments/ for available environments. 
@@ -48,7 +48,7 @@
   <scale>0.2</scale>
   <mouse_drag_speed>0.3</mouse_drag_speed>
   <mouse_zoom_speed>0.4</mouse_zoom_speed>
-  <zoom>-40</zoom>
+  <zoom>-20</zoom>
   <!-- Start up zoom, bounded -90 and 9 -->
   <animation_updatefreq>25</animation_updatefreq>
   <!-- Logger -->

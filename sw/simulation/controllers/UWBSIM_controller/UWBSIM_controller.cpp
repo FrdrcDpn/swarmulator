@@ -18,8 +18,14 @@ UWBSIM_controller::UWBSIM_controller(): Controller()
 void UWBSIM_controller::get_velocity_command(const uint16_t ID, float &v_x, float &v_y)
 {
 
-filter.run(ID);
-float K = 0.2;
+filter.run(ID,1);
+//filter_estimate.run(ID,1);
+float K = 0.1;
+//s[ID]->state_ground.at(0) = filter.pos.x;
+//s[ID]->state_ground.at(1) = filter.pos.y;
+
+//s[ID]->state_ground.at(2) = filter.speed.x;
+//s[ID]->state_ground.at(3) = filter.speed.y;
 
 //run with estimated position
 float current_x_location =filter.pos.x;
@@ -29,22 +35,23 @@ float current_y_location =filter.pos.y;
 x_distance_to_waypoint = x_wp - current_x_location;
 y_distance_to_waypoint = y_wp - current_y_location; 
 
-
+std::cout<<x_distance_to_waypoint<<"xdist"<<std::endl;
+std::cout<<y_distance_to_waypoint<<"ydist"<<std::endl;
 if(sqrt(x_distance_to_waypoint*x_distance_to_waypoint+y_distance_to_waypoint*y_distance_to_waypoint)<0.1&& wp_ID==0){
- x_wp = -15;
- y_wp = -15;
+ x_wp = -1.5;
+ y_wp = -1.5;
  wp_ID=1;
 }else if (sqrt(x_distance_to_waypoint*x_distance_to_waypoint+y_distance_to_waypoint*y_distance_to_waypoint)<0.1 && wp_ID==1){
- x_wp = 15;
- y_wp = -15;
+ x_wp = 1.5;
+ y_wp = -1.5;
  wp_ID=2;
 }else if (sqrt(x_distance_to_waypoint*x_distance_to_waypoint+y_distance_to_waypoint*y_distance_to_waypoint)<0.1 && wp_ID==2){
-  x_wp = 15;
-  y_wp = 15;
+  x_wp = 1.5;
+  y_wp = 1.5;
   wp_ID=3;
 }else if (sqrt(x_distance_to_waypoint*x_distance_to_waypoint+y_distance_to_waypoint*y_distance_to_waypoint)<0.1 && wp_ID==3){
-  x_wp = -15;
-  y_wp = 15;
+  x_wp = -1.5;
+  y_wp = 1.5;
   wp_ID=0;
 }
 
@@ -54,11 +61,13 @@ if (abs(x_distance_to_waypoint)> 0){
   v_x=0;
 }
 
+
 if (abs(y_distance_to_waypoint)> 0){
   v_y = K * y_distance_to_waypoint;
 }else{
   v_y=0;
 }
+
   wall_avoidance_turn(ID, v_x, v_y, SENSOR_MAX_RANGE);
 }
 
