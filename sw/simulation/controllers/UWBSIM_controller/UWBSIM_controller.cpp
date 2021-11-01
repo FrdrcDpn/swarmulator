@@ -20,7 +20,7 @@ void UWBSIM_controller::get_velocity_command(const uint16_t ID, float &v_x, floa
 
 filter.run(ID,1);
 //filter_estimate.run(ID,1);
-float K = 0.1;
+float K = 1.5;
 //s[ID]->state_ground.at(0) = filter.pos.x;
 //s[ID]->state_ground.at(1) = filter.pos.y;
 
@@ -35,8 +35,8 @@ float current_y_location =filter.pos.y;
 x_distance_to_waypoint = x_wp - current_x_location;
 y_distance_to_waypoint = y_wp - current_y_location; 
 
-std::cout<<x_distance_to_waypoint<<"xdist"<<std::endl;
-std::cout<<y_distance_to_waypoint<<"ydist"<<std::endl;
+//std::cout<<x_distance_to_waypoint<<"xdist"<<std::endl;
+//std::cout<<y_distance_to_waypoint<<"ydist"<<std::endl;
 if(sqrt(x_distance_to_waypoint*x_distance_to_waypoint+y_distance_to_waypoint*y_distance_to_waypoint)<0.1&& wp_ID==0){
  x_wp = -1.5;
  y_wp = -1.5;

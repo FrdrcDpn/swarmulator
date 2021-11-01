@@ -88,13 +88,16 @@ void main_simulation_thread(int argc, char *argv[], std::string id)
         ID++;
       }
     }
-
+    
     // Generate the agents in the initial positions
     for (uint16_t ID = 0; ID < nagents; ID++) {
+      x0[ID]= 0.0;
+      y0[ID]= 0.0;
+      t0[ID]= 0.0;
       // Initial state vector
       // [position_x, position y, vel_x=0, vel_y=0, acc_x=0, acc_y=0, psi, psi_rate]
+      //std::vector<float> state = {x0[ID], y0[ID], 0.0, 0.0, 0.0, 0.0, t0[ID], 0.0};
       std::vector<float> state = {x0[ID], y0[ID], 0.0, 0.0, 0.0, 0.0, t0[ID], 0.0};
-      
       create_new_agent(ID, state); // Create a new agent
     }
   }

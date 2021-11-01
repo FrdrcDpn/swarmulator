@@ -33,6 +33,7 @@ std::unique_ptr<parameters_t> param(parameters("conf/parameters.xml", xml_schema
 /**
  * Global variables used throughout simulation
  */
+
 uint nagents; // Number of agents in the simulation
 std::vector<Agent *> s; // Set up the agents
 std::shared_mutex mtx; // Mutex needed to lock threads

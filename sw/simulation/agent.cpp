@@ -3,6 +3,7 @@
 Agent::Agent()
 {
   activated = false;
+  
 }
 
 float Agent::get_position(uint16_t dim)
