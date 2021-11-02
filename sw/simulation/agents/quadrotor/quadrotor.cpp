@@ -15,7 +15,7 @@ quadrotor::quadrotor(int i, std::vector<float> s, float tstep)
   beacon->dynamic_beacon_init(ID); 
   orientation = 0.0;
   controller->set_saturation(1.0);
-  state_desired = s;
+  state_desired = state;
 
   }
 

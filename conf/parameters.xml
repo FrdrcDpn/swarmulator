@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <parameters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="parameters.xsd">
   <!-- Simulation -->
-  <dynamic_beacons>0</dynamic_beacons>
+  <enable_UWB>0</enable_UWB>
+  <dynamic_beacons>1</dynamic_beacons>
   <UWB_interval>0.01</UWB_interval> 
-  <beacon_1_en>1</beacon_1_en>
-  <beacon_2_en>1</beacon_2_en>
-  <beacon_3_en>1</beacon_3_en>
-  <beacon_4_en>1</beacon_4_en>
+  <beacon_1_en>0</beacon_1_en>
+  <beacon_2_en>0</beacon_2_en>
+  <beacon_3_en>0</beacon_3_en>
+  <beacon_4_en>0</beacon_4_en>
   <beacon_5_en>0</beacon_5_en>
   <beacon_6_en>0</beacon_6_en>
   <beacon_7_en>0</beacon_7_en>
@@ -37,7 +38,7 @@
   <htg_scale>1.0</htg_scale>
   <simulation_updatefreq>40</simulation_updatefreq>
   <simulation_realtimefactor>150</simulation_realtimefactor>
-  <time_limit>70</time_limit>
+  <time_limit>140</time_limit>
   <!-- (seconds). Use time_limit > 0 to set a limit. If = 0, then the simulation runs indefinitely. -->
   <environment>square</environment>
   <!-- See the folder conf/environments/ for available environments. 

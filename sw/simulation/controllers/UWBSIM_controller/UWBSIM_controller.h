@@ -19,6 +19,8 @@ class UWBSIM_controller: public Controller
 	ekf_state_estimator filter_estimate;
 public:
 	int wp_ID;
+	float current_x_location;
+	float current_y_location;
 	float x_distance_to_waypoint;
 	float y_distance_to_waypoint;
 	float x_wp;

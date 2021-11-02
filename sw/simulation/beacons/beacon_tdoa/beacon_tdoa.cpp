@@ -51,7 +51,7 @@ void beacon_tdoa::measurement(const uint16_t ID){
 
     //thread safe vector operation to access UWB data
     mtx_bcn.lock();
-    uniform_int_distribution<int> uni(0,6+dynamic_uwb_beacon.size()); // guaranteed unbiased
+    uniform_int_distribution<int> uni(0,7+dynamic_uwb_beacon.size()); // guaranteed unbiased
     mtx_bcn.unlock();
 
     //only take measurements on defined interval with noise
@@ -79,7 +79,14 @@ void beacon_tdoa::measurement(const uint16_t ID){
             if(dynamic_uwb_beacon[random_beacon_1][2]==0){
             random_beacon_1= uni(rng);
             }else if(dynamic_uwb_beacon[random_beacon_1][2]==1 && random_beacon_1 == ID){
-            random_beacon_1= uni(rng);
+                   if(s.size() == 1 ){
+                    beacon_1_selected = true;
+                    static_beacon_1 = true;
+                    random_beacon_1 = 1;
+                }
+                else{
+                    random_beacon_1= uni(rng);
+                }
             }else if(dynamic_uwb_beacon[random_beacon_1][2]==1 && random_beacon_1 != ID){
             beacon_1_selected = true;
             dynamic_beacon_1 = true;
@@ -108,7 +115,14 @@ void beacon_tdoa::measurement(const uint16_t ID){
             if(dynamic_uwb_beacon[random_beacon_2][2]==0){
             random_beacon_2= uni(rng);
             }else if(dynamic_uwb_beacon[random_beacon_2][2]==1 && random_beacon_2 == ID){
-            random_beacon_2= uni(rng);
+                   if(s.size() == 1 ){
+                    beacon_2_selected = true;
+                    static_beacon_2 = true;
+                    random_beacon_2 = 2;
+                }
+                else{
+                    random_beacon_2= uni(rng);
+                }
             }else if(dynamic_uwb_beacon[random_beacon_2][2]==1 && random_beacon_2 != ID){
             beacon_2_selected = true;
             dynamic_beacon_2 = true;

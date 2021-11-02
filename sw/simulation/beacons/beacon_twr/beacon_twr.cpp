@@ -65,7 +65,7 @@ void beacon_twr::measurement(const uint16_t ID){
     
     //thread safe vector operation to access UWB data
     mtx_bcn.lock();
-    uniform_int_distribution<int> uni(0,6+dynamic_uwb_beacon.size()); // guaranteed unbiased
+    uniform_int_distribution<int> uni(0,7+dynamic_uwb_beacon.size()); // guaranteed unbiased
     mtx_bcn.unlock();
 
     //only take measurements on defined interval with noise
@@ -85,13 +85,22 @@ void beacon_twr::measurement(const uint16_t ID){
             static_beacon = true;
             }
         }
+        
         if(random_beacon>7){
             mtx_bcn.lock();
             random_beacon = random_beacon-8;
             if(dynamic_uwb_beacon[random_beacon][2]==0){
             random_beacon= uni(rng);
             }else if(dynamic_uwb_beacon[random_beacon][2]==1 && random_beacon == ID){
-            random_beacon= uni(rng);
+                if(s.size() == 1 ){
+                    beacon_selected = true;
+                    static_beacon = true;
+                    random_beacon = 1;
+                }
+                else{
+                    random_beacon= uni(rng);
+                }
+            
             }else if(dynamic_uwb_beacon[random_beacon][2]==1 && random_beacon != ID){
             beacon_selected = true;
             dynamic_beacon = true;
@@ -163,7 +172,7 @@ float beacon_twr::add_gaussian_noise(float value) {
     std::normal_distribution<double> dis(mean, param->gauss_sigma());
     // Add Gaussian noise
     noisy_value = value + value*dis(gen);
-    std::cout<<dis(gen)<<std::endl;
+   
     return noisy_value;
 }
 

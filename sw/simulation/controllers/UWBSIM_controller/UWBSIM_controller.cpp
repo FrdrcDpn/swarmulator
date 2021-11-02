@@ -17,8 +17,16 @@ UWBSIM_controller::UWBSIM_controller(): Controller()
 //actual controller codea
 void UWBSIM_controller::get_velocity_command(const uint16_t ID, float &v_x, float &v_y)
 {
-
 filter.run(ID,1);
+
+if(param->enable_UWB() == 0){
+ current_x_location =s[ID]->state_desired[0];
+ current_y_location =s[ID]->state_desired[1];
+}else{;
+ current_x_location =filter.pos.x;
+ current_y_location =filter.pos.y;
+}
+
 //filter_estimate.run(ID,1);
 float K = 1.5;
 //s[ID]->state_ground.at(0) = filter.pos.x;
@@ -28,8 +36,8 @@ float K = 1.5;
 //s[ID]->state_ground.at(3) = filter.speed.y;
 
 //run with estimated position
-float current_x_location =filter.pos.x;
-float current_y_location =filter.pos.y;
+//float current_x_location =filter.pos.x;
+//float current_y_location =filter.pos.y;
 //float current_x_location =s[ID]->state[0];
 //float current_y_location =s[ID]->state[1];
 x_distance_to_waypoint = x_wp - current_x_location;

@@ -32,8 +32,8 @@ void Beacon::dynamic_beacon_update(const uint16_t ID){
   
 if(param->dynamic_beacons() == 1){
     mtx_bcn.lock();
-  dynamic_uwb_beacon[ID][0] = s[ID]->get_state(0);
-  dynamic_uwb_beacon[ID][1] = s[ID]->get_state(1);
+  dynamic_uwb_beacon[ID][0] = s[ID]->state_desired[0];
+  dynamic_uwb_beacon[ID][1] = s[ID]->state_desired[1];
   mtx_bcn.unlock();
 }
 
