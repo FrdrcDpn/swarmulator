@@ -7,6 +7,8 @@
 #include "auxiliary.h"
 #include "math.h"
 #include <vector>
+#include <random>
+
 quadrotor::quadrotor(int i, std::vector<float> s, float tstep)
 {
   state = s;
@@ -15,71 +17,82 @@ quadrotor::quadrotor(int i, std::vector<float> s, float tstep)
   beacon->dynamic_beacon_init(ID); 
   orientation = 0.0;
   controller->set_saturation(1.0);
-  state_desired = state;
-
-  }
-
+  state_estimate = s;
+  state_desired_traj = s;
+  init = false; 
+}
 std::vector<float> quadrotor::state_update(std::vector<float> state)
 {
-  
+  std::random_device rd;     // only used once to initialise (seed) engine
+  std::mt19937 gen(rd());    // random-number engine used (Mersenne-Twister in this case)
+  std::normal_distribution<float> dis(0, param->noise_motor_sigma());
+
   // y+ towards East
   beacon->dynamic_beacon_update(ID);
   beacon->measurement(ID);
   
   float v_x ;
   float v_y ;
-  controller->get_velocity_command(ID, v_x, v_y);
-  controller->saturate(v_x);
-  controller->saturate(v_y);
+  
+  //controller->saturate(v_x);
+  //controller->saturate(v_y);
   moving = controller->moving;
-
+  
+  controller->get_velocity_command(ID, v_x, v_y);
   //float vxr, vyr;
   //rotate_xy(v_x, v_y, orientation, vxr, vyr);
-  
-  // Acceleration
-  state_desired.at(4) =  (v_x - state_desired[2]); // Acceleration x
-  state_desired.at(5) =  (v_y - state_desired[3]); // Acceleration y
-  // Velocity
-  state_desired.at(2) += state_desired[4] * dt; // Velocity x
-  state_desired.at(3) += state_desired[5] * dt; // Velocity y
-  // Position
-  state_desired.at(0) += state_desired[2] * dt + 0.5 * state_desired[4] * pow(dt, 2); // Position x
-  state_desired.at(1) += state_desired[3] * dt + 0.5 * state_desired[5] * pow(dt, 2); // Position y
 
-  
-  DesiredX = state_desired[0];
-  DesiredY = state_desired[1];
+  //generate desired trajectory to fly with our quadrotor based on inputs of velocity controller
+
+
+  //input desired position to our quadrotor eom
+  //DesiredX = state_desired_traj[0];
+  //DesiredY = state_desired_traj[1];
+ //if(init == false){
+ //  s[ID]->state_estimate[0] = 0;
+//   s[ID]->state_estimate[1] = 0;
+ //  s[ID]->state_estimate[2] = 0;
+ //  s[ID]->state_estimate[3] = 0;
+ //  init = true; 
+ //}
+  DesiredX = v_x; 
+  DesiredY = v_y;
   DesiredZ = 0;
 
-  // torque input for motors (Ux)
-  float Kpx = 1.5; 
-  float Kdx = 0.3;
-  float Kix = 0.0001; 
+  std::cout<<DesiredX <<" desired X "<<DesiredY<<"Desired Y "<<std::endl;
+  // torque input for motors (Ux) x direction
+  float Kpx = 10; 
+  float Kdx = 1;
+  float Kix = 0; 
 
   float errorSumXp = errorSumX + ( DesiredX - x );
 
   errorSumX = errorSumXp;
-  float dDesiredXp = ( DesiredX - DesiredXpre ) / dt;
-  dDesiredX = dDesiredXp;
+
+  dDesiredX = ( DesiredX - DesiredXpre ) / dt;
   DesiredXpre = DesiredX;
+  ddDesiredX = ( dDesiredX - dDesiredXpre ) / dt;
+  dDesiredXpre = dDesiredX;
 
-  float Ux = Kpx*( DesiredX - x  ) + Kdx*( dDesiredX - dx ) + Kix*errorSumX;
+  float Ux = Kpx*( DesiredX - x ) + Kdx*( dDesiredX - dx ) + Kix*errorSumX +dis(gen);
 
-  // torque input for motors (Uy)
-  float Kpy = 1.5; 
-  float Kdy = 0.3; 
-  float Kiy = 0.0001; 
+  // torque input for motors (Uy) y direction
+  float Kpy = 10; 
+  float Kdy = 1;
+  float Kiy = 0; 
 
-  errorSumY = errorSumY + ( DesiredY - y );
+  errorSumY = errorSumY + ( DesiredY - y);
 
   dDesiredY = ( DesiredY - DesiredYpre ) / dt;
   DesiredYpre = DesiredY;
+  ddDesiredY = ( dDesiredY - dDesiredYpre ) / dt;
+  dDesiredYpre = dDesiredY;
 
-  float Uy = Kpy*(DesiredY - y  ) + Kdy*( dDesiredY - dy ) + Kiy*errorSumY;
+  float Uy = Kpy*(DesiredY - y  ) + Kdy*( dDesiredY - dy) + Kiy*errorSumY +dis(gen);
 
-  // torque input for motors (U1)
-  float Kpz = 5; 
-  float Kdz = 2; 
+  // torque input for motors (U1) throttle
+  float Kpz = 20; 
+  float Kdz = 0.3; 
   float Kiz = 0.001; 
 
   errorSumZ = errorSumZ + ( DesiredZ - z );
@@ -87,54 +100,53 @@ std::vector<float> quadrotor::state_update(std::vector<float> state)
   dDesiredZ = ( DesiredZ - DesiredZpre ) / dt;
   DesiredZpre = DesiredZ;
 
-  float U1 = Kpz*( DesiredZ - z ) + Kdz*( dDesiredZ - dz ) + Kiz*errorSumZ; 
-
+  float U1 = Kpz*( DesiredZ - z ) + Kdz*( dDesiredZ - dz ) + Kiz*errorSumZ + dis(gen); 
   // desired phi and theta
 
   if(isnan(wrapToPi_f(-(m*(Uy*cos(Psi) - Ux*sin(Psi)))/(U1*(pow(cos(Psi),2) + pow(sin(Psi),2)))))){
     DesiredPhi = -Uy/g; 
   }else{
     DesiredPhi = wrapToPi_f(-(m*(Uy*cos(Psi) - Ux*sin(Psi)))/(U1*(pow(cos(Psi),2) + pow(sin(Psi),2))));
+  
   }
 
   if(isnan(wrapToPi_f( (m*(Ux*cos(Psi) + Uy*sin(Psi)))/(U1*(pow(cos(Psi),2) + pow(sin(Psi),2)))))){
     DesiredTheta = Ux/g;
   }else{
     DesiredTheta = wrapToPi_f( (m*(Ux*cos(Psi) + Uy*sin(Psi)))/(U1*(pow(cos(Psi),2) + pow(sin(Psi),2))));
+   
   }
 
 
-  // calculate U2
-  float KpP = 5;
-  float KdP = 1; 
-  float KiP = 1;
+  // calculate U2 roll
+  float KpP = 0.5;
+  float KdP = 0.001; 
+  float KiP = 0;
 
 
   errorSumPhi = errorSumPhi + ( DesiredPhi - Phi );
 
   dDesiredPhi = ( DesiredPhi - DesiredPhipre ) / dt;
   DesiredPhipre = DesiredPhi;
-  float U2 = KpP*( DesiredPhi - Phi ) + KdP*( dDesiredPhi - dPhi )  + KiP*errorSumPhi;
+  float U2 = KpP*( DesiredPhi - Phi ) + KdP*( dDesiredPhi - dPhi )  + KiP*errorSumPhi+dis(gen);
   
-  // calculate U3
-  float KpT = 5; 
-  float KdT = 1; 
-  float KiT = 1;
+  // calculate U3 pitch
+  float KpT = 0.5; 
+  float KdT = 0.001; 
+  float KiT = 0;
 
   errorSumTheta = errorSumTheta + ( DesiredTheta - Theta );
 
   dDesiredTheta = (DesiredTheta-DesiredThetapre)/dt;
   DesiredThetapre = DesiredTheta;
 
-  float U3 = KpT*( DesiredTheta - Theta ) + KdT*( dDesiredTheta - dTheta ) + KiT*errorSumTheta;
-  
-  // calculate U4
-  float KpS = 10; 
-  float KdS = 1; 
-  float KiS = 1;
+  float U3 = KpT*( DesiredTheta - Theta ) + KdT*( dDesiredTheta - dTheta ) + KiT*errorSumTheta+dis(gen);
+  // calculate U4 yaw
+  float KpS = 5; 
+  float KdS = 0.0001; 
+  float KiS = 0;
 
-  float U4 = KpS*( 0 - Psi ) + KdS*( 0 - dPsi );
-
+  float U4 = KpS*( 0 - Psi ) + KdS*( 0 - dPsi )+dis(gen);
   // now lets solve the ODE's of the quadrotor
 
   // x direction
@@ -168,16 +180,20 @@ std::vector<float> quadrotor::state_update(std::vector<float> state)
   ddPsi = (1/Jz)*U4;
   dPsi = dPsi + ddPsi*dt;
   Psi = Psi + dPsi*dt;
-
-  std::cout<<x<<std::endl;
-  std::cout<<y<<std::endl;
-  std::cout<<z<<std::endl;
-  std::cout<<dx<<std::endl;
-  std::cout<<dy<<std::endl;
-  std::cout<<dz<<std::endl;
-  std::cout<<Theta<<std::endl;
-  std::cout<<Phi<<std::endl;
  
+  // desired trajectory acceleration
+  state_desired_traj.at(4) =  ddDesiredX; // Acceleration x
+  state_desired_traj.at(5) =  ddDesiredY; // Acceleration y
+  // desired trajectory velocity
+  state_desired_traj.at(2) = dDesiredX; // Velocity x
+  state_desired_traj.at(3) = dDesiredY; // Velocity y
+  // desired trajectory position
+  state_desired_traj.at(0) = DesiredX; // Position x
+  state_desired_traj.at(1) = DesiredY; // Position y
+
+  //update our states 
+  //actual attained state of the quadrotor according to linearised dynamics
+
   // Acceleration
   state.at(4) = ddx; // Acceleration x
   state.at(5) = ddy; // Acceleration y
@@ -187,6 +203,8 @@ std::vector<float> quadrotor::state_update(std::vector<float> state)
   // Position
   state.at(0) = x; // Position x
   state.at(1) = y; // Position y
+
+  
   return state;
 }
 

@@ -2,11 +2,12 @@
 <parameters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="parameters.xsd">
   <!-- Simulation -->
   <enable_UWB>0</enable_UWB>
-  <dynamic_beacons>1</dynamic_beacons>
-  <UWB_interval>0.01</UWB_interval> 
-  <beacon_1_en>0</beacon_1_en>
-  <beacon_2_en>0</beacon_2_en>
-  <beacon_3_en>0</beacon_3_en>
+  <dynamic_beacons>0</dynamic_beacons>
+  <UWB_frequency>100</UWB_frequency> 
+  <IMU_frequency>500</IMU_frequency> 
+  <beacon_1_en>1</beacon_1_en>
+  <beacon_2_en>1</beacon_2_en>
+  <beacon_3_en>1</beacon_3_en>
   <beacon_4_en>0</beacon_4_en>
   <beacon_5_en>0</beacon_5_en>
   <beacon_6_en>0</beacon_6_en>
@@ -28,6 +29,8 @@
   <y_beacon_7>-5</y_beacon_7>
   <x_beacon_8>-5</x_beacon_8>
   <y_beacon_8>0</y_beacon_8>
+  <acc_noise_sigma>0.02</acc_noise_sigma>
+  <noise_motor_sigma>0</noise_motor_sigma>
   <noise_type>3</noise_type>
   <gauss_sigma>0.2</gauss_sigma>
   <htc_gamma>0.1</htc_gamma>
@@ -36,9 +39,9 @@
   <htg_k>2.0</htg_k>
   <htg_lambda>3.5</htg_lambda>
   <htg_scale>1.0</htg_scale>
-  <simulation_updatefreq>40</simulation_updatefreq>
-  <simulation_realtimefactor>150</simulation_realtimefactor>
-  <time_limit>140</time_limit>
+  <simulation_updatefreq>1000</simulation_updatefreq>
+  <simulation_realtimefactor>1000000</simulation_realtimefactor>
+  <time_limit>0</time_limit>
   <!-- (seconds). Use time_limit > 0 to set a limit. If = 0, then the simulation runs indefinitely. -->
   <environment>square</environment>
   <!-- See the folder conf/environments/ for available environments. 
@@ -51,7 +54,7 @@
   <mouse_zoom_speed>0.4</mouse_zoom_speed>
   <zoom>-10</zoom>
   <!-- Start up zoom, bounded -90 and 9 -->
-  <animation_updatefreq>25</animation_updatefreq>
+  <animation_updatefreq>200</animation_updatefreq>
   <!-- Logger -->
   <logger_updatefreq>2</logger_updatefreq>
   <!-- Additional parameters -->

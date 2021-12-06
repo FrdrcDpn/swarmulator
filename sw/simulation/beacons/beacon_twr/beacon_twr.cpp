@@ -59,7 +59,7 @@ void beacon_twr::measurement(const uint16_t ID){
 
     random_device rd;  // Will be used to obtain a seed for the random number engine
     mt19937 rng(rd()); // random-number engine used (Mersenne-Twister in this case)
-    uniform_real_distribution<> dis(0.1*param->UWB_interval(), 2*0.1*param->UWB_interval());
+    uniform_real_distribution<> dis(0.1*1.0/param->UWB_frequency(), 2*0.1*1.0/param->UWB_frequency());
     bool static_beacon = false;
     bool dynamic_beacon = false;
     
@@ -153,10 +153,15 @@ void beacon_twr::measurement(const uint16_t ID){
         UWB[ID].push_back({add_ht_gamma_noise(d),x_0, y_0, simtime_seconds});
         mtx_bcn.unlock();
     }
-    }
     //next measurement time interval
-    next_measurement_time = next_measurement_time + param->UWB_interval() + dis(rng) -0.1*param->UWB_interval();
     std::cout<<"dynamic beacon"<<dynamic_beacon<<"static beacon"<<static_beacon<<std::endl;
+    next_measurement_time = simtime_seconds + 1.0/param->UWB_frequency() + dis(rng) -0.1*1.0/param->UWB_frequency();
+    beacon_measurement = true;
+    }else{
+        beacon_measurement = false;
+    }
+    
+    
 
 }
 
@@ -171,7 +176,7 @@ float beacon_twr::add_gaussian_noise(float value) {
     mt19937 gen(rd());
     std::normal_distribution<double> dis(mean, param->gauss_sigma());
     // Add Gaussian noise
-    noisy_value = value + value*dis(gen);
+    noisy_value = value + dis(gen);
    
     return noisy_value;
 }
@@ -182,13 +187,13 @@ float beacon_twr::add_ht_cauchy_noise(float value){
     float tmp = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
     if (tmp < CDF_limit){
         //Gaussian CDF: F(x) = (1/2) * (1 + erf( (x-mu)/sqrt(2*sig^2) ))
-        return value + value*sqrt(2*pow(param->gauss_sigma(),2))*erfinvf(2*tmp/(2-cauchy_alpha)-1);
+        return value + sqrt(2*pow(param->gauss_sigma(),2))*erfinvf(2*tmp/(2-cauchy_alpha)-1);
     }
     else{
         //Cauchy CDF: F(x) = (1/pi) * arctan((x-x0)/gamma) + 1/2
         //Because of scaling with alpha (Area under CDF no longer 1), need to also start from -inf and then flip
         tmp = 1-tmp;
-        return value -value*param->htc_gamma()*tan(M_PI*(tmp/cauchy_alpha-0.5));
+        return value -param->htc_gamma()*tan(M_PI*(tmp/cauchy_alpha-0.5));
     }
 }
 
@@ -230,6 +235,11 @@ float beacon_twr::add_ht_gamma_noise(float value){
         // x(i+1) = x(i) - f(x) / f'(x)
         x = x - h;
     }
-    return value*x + value;
+    //sometimes when initialising the function a nan is thrown
+    if (isnan(x + value)){
+        return value;
+    }else{
+    return x + value;}
 }
+
 

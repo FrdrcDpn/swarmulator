@@ -39,6 +39,7 @@ ekf_state_estimator::ekf_state_estimator()
 void ekf_state_estimator::init_ekf_filter()
 {
 
+ // s[ID]->state_estimate = s[ID]->state;
   //we leave the z variables 0; only 2D simulation for now
   //initialise the ekf with 0 values
   ekf_range_init(&ekf, EKF_P0_POS, EKF_P0_SPEED,
@@ -47,8 +48,8 @@ void ekf_state_estimator::init_ekf_filter()
 
   //update and set initial states
   
-  pos={s[ID]->state_desired[0], s[ID]->state_desired[1], 0.f };
-  speed={s[ID]->state_desired[2], s[ID]->state_desired[3], 0.f };
+  pos={s[ID]->state_estimate[0], s[ID]->state_estimate[1], 0.f };
+  speed={s[ID]->state_estimate[2], s[ID]->state_estimate[3], 0.f };
   
   ekf_range_set_state(&ekf,pos,speed);
 
@@ -63,13 +64,14 @@ void ekf_state_estimator::run_ekf_filter()
   float xpos = s[ID]->get_state(0);
   float ypos = s[ID]->get_state(1);  
 
-  pos={s[ID]->state_desired[0], s[ID]->state_desired[1], 0.f };
-  speed={s[ID]->state_desired[2], s[ID]->state_desired[3], 0.f };
+  pos={s[ID]->state_estimate[0], s[ID]->state_estimate[1], 0.f };
+  speed={s[ID]->state_estimate[2], s[ID]->state_estimate[3], 0.f };
   ekf_range_set_state(&ekf,pos,speed);
   ekf.dt = simtime_seconds - simtime_seconds_store;
   simtime_seconds_store = simtime_seconds;
   ekf_range_predict(&ekf);
   
+  //ekf_range_update_scalar(&ekf,s[ID]->state_estimate[0],s[ID]->state_estimate[1],0.f);
   // we have to update our ekf with different uwb measurements depending on the selected localisation scheme
   //tdoa, twr or different
   if(beacon_alg == "beacon_twr"){
@@ -101,7 +103,14 @@ void ekf_state_estimator::run_ekf_filter()
   pos = ekf_range_get_pos(&ekf);
   speed = ekf_range_get_speed(&ekf);
 
-  
+    // Acceleration
+  //s[ID]->state_estimate.at(4) =  (speed.x - s[ID]->state_estimate[2]); // Acceleration x
+  //s[ID]->state_estimate.at(5) =  (speed.y - s[ID]->state_estimate[3]); // Acceleration y
+  // Velocity
+
+
+ 
+
 
   //float zpos = 0;
   std::cout<<"predicted x: "<<pos.x<<" real x: "<< xpos <<" delta x: "<<pos.x-xpos<<" for agent: "<<ID<<std::endl;

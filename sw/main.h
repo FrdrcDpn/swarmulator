@@ -8,7 +8,8 @@
 #include "parameters.hxx" // Auto generated file at compile time
 #include "environment.h"
 #include "settings.h"
-
+extern bool moving_1;
+extern std::vector<std::vector<std::vector<float>>> beacon_measurement;
 extern uint nagents; // Number of agents in the swarm
 extern std::vector<Agent *> s; // Set up a vector of agents
 extern float simtime_seconds; // Adjusted simulation time (time according to simulation)

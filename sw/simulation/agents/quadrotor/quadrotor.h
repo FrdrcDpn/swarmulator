@@ -12,6 +12,7 @@
 class quadrotor: public Agent
 {
 public:
+  
   float nanfoundth = 0;
   float nanfoundph = 0;
   float x = 0;
@@ -42,9 +43,13 @@ public:
   float DesiredZ = 0;
   float dDesiredX = 0;
   float dDesiredY = 0;
+  float ddDesiredX = 0;
+  float ddDesiredY = 0;
   float dDesiredZ = 0;
   float DesiredXpre = 0;
   float DesiredYpre = 0;
+  float dDesiredXpre = 0;
+  float dDesiredYpre = 0;
   float DesiredZpre = 0;
   float DesiredPhi = 0;
   float dDesiredPhi = 0;
@@ -52,13 +57,13 @@ public:
   float dDesiredTheta = 0;
   float DesiredPhipre = 0;
   float DesiredThetapre = 0;
-  
+  bool init;
   //System Parameters:
-  float m  = 0.2;     // mass (Kg)
-  float L  = 0.25;      // arm length (m)
-  float Jx = 0.019688; // inertia seen at the rotation axis. (Kg.m^2)
-  float Jy = 0.019688; // inertia seen at the rotation axis. (Kg.m^2)
-  float Jz = 0.039380; // inertia seen at the rotation axis. (Kg.m^2)
+  float m  = 0.022;     // mass (Kg)
+  float L  = 0.042;//0.25;      // arm length (m)
+  float Jx = 0.0000091914;//0.019688; // inertia seen at the rotation axis. (Kg.m^2)
+  float Jy = 0.0000091914;//0.019688; // inertia seen at the rotation axis. (Kg.m^2)
+  float Jz = 0.000022800;//0.039380; // inertia seen at the rotation axis. (Kg.m^2)
   float g  = 9.81;      // acceleration due to gravity m/s^2
   /**
    * Constructor

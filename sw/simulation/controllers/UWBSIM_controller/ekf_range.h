@@ -121,8 +121,8 @@ extern void ekf_range_predict(struct EKFRange *ekf_range);
  * @param[in] dist new distance measurement
  * @param[in] anchor position of the anchor from which the distance is measured
  */
+extern void ekf_range_update_scalar(struct EKFRange *ekf_range, float x, float y, float z);
 extern void ekf_range_update_dist_twr(struct EKFRange *ekf_range, float dist, struct EnuCoor_f anchor);
-
 /** Update step based on each new distance data
  *
  * @param[in] ekf_range EKFRange structure

@@ -4,7 +4,8 @@
     <xs:sequence>
       <xs:element name="enable_UWB" type="xs:float"/>
       <xs:element name="dynamic_beacons" type="xs:float"/>
-      <xs:element name="UWB_interval" type="xs:float"/>
+      <xs:element name="UWB_frequency" type="xs:float"/>
+      <xs:element name="IMU_frequency" type="xs:float"/>
       <xs:element name="beacon_1_en" type="xs:float"/>
       <xs:element name="beacon_2_en" type="xs:float"/>
       <xs:element name="beacon_3_en" type="xs:float"/>
@@ -29,6 +30,8 @@
       <xs:element name="y_beacon_7" type="xs:float"/>
       <xs:element name="x_beacon_8" type="xs:float"/>
       <xs:element name="y_beacon_8" type="xs:float"/>
+      <xs:element name="acc_noise_sigma" type="xs:float"/>
+      <xs:element name="noise_motor_sigma" type="xs:float"/>
       <xs:element name="noise_type" type="xs:integer"/>
       <xs:element name="gauss_sigma" type="xs:float"/>
       <xs:element name="htc_gamma" type="xs:float"/>

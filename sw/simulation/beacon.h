@@ -19,6 +19,7 @@ public:
      */
     
     Beacon();
+    
     std::vector<float> range_beacon(const uint16_t ID);
     std::vector<float> ground_truth(const uint16_t ID);
     void dynamic_beacon_init(const uint16_t ID);
