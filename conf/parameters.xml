@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <parameters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="parameters.xsd">
   <!-- Simulation -->
-  <enable_UWB>0</enable_UWB>
+  <enable_UWB>1</enable_UWB>
   <dynamic_beacons>0</dynamic_beacons>
   <UWB_frequency>100</UWB_frequency> 
   <IMU_frequency>500</IMU_frequency> 

@@ -4,5 +4,5 @@
 # $3: How many agents in the simulation
 
 for (( i = 1; i <= $1; i++ )); do
-  ./run_n_simulations.sh $3 $2 & sleep 5
+  ./run_n_simulations.sh $2 $3 & sleep 5
 done
