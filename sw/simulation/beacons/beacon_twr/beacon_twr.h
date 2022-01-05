@@ -15,25 +15,25 @@ public:
     /**
      * Construction. beacon_twr is a child class of Beacon.
      */
-    //std::vector<std::vector<std::vector<float>> UWB;
     beacon_twr();
-    float next_measurement_time = 0;
-    float returnUWBdata(const uint16_t ID, float beacon);
+
+    // function to output some range info to terminal (not useful to be removed)
     void ranges_terminal(const uint16_t ID);
-    //void measurement();
+
+    // function to return some UWB data (not useful to be removed)
+    float returnUWBdata(const uint16_t ID, float beacon);
+    
+    // our TWR measurement function
     void measurement(const uint16_t ID);
 
-    /**
-    * @brief Return noisy value following ratio distribution of 2 known distributions
-    *
-    * @param value value to which noise is to be added
-    * @param gamma value
-    * @param ratio value
-    */
-
+    // function to add gaussian noise to measurements
     float add_gaussian_noise(float value);
+
+    // function to ht cauchy noise to measurements
     float add_ht_cauchy_noise(float value);
     float add_ht_gamma_noise(float value);
+
+    // function to add gamma noise to measurements
     double cdf_ht_gamma(double x);
     double deriv_cdf_ht_gamma(double x);
 };

@@ -2,17 +2,27 @@
 <parameters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="parameters.xsd">
   <!-- Simulation -->
   <enable_UWB>1</enable_UWB>
-  <dynamic_beacons>0</dynamic_beacons>
-  <UWB_frequency>100</UWB_frequency> 
+  <dynamic_beacons>1</dynamic_beacons>
+  <EKF_frequency>100</EKF_frequency> 
   <IMU_frequency>500</IMU_frequency> 
+  <UWB_signal_length>0.01</UWB_signal_length>
   <beacon_1_en>1</beacon_1_en>
   <beacon_2_en>1</beacon_2_en>
-  <beacon_3_en>1</beacon_3_en>
+  <beacon_3_en>0</beacon_3_en>
   <beacon_4_en>0</beacon_4_en>
   <beacon_5_en>0</beacon_5_en>
   <beacon_6_en>0</beacon_6_en>
   <beacon_7_en>0</beacon_7_en>
   <beacon_8_en>0</beacon_8_en>
+  <beacon_1_freq>80</beacon_1_freq>
+  <beacon_2_freq>80</beacon_2_freq>
+  <beacon_3_freq>80</beacon_3_freq>
+  <beacon_4_freq>80</beacon_4_freq>
+  <beacon_5_freq>80</beacon_5_freq>
+  <beacon_6_freq>80</beacon_6_freq>
+  <beacon_7_freq>80</beacon_7_freq>
+  <beacon_8_freq>80</beacon_8_freq>
+  <beacon_dynamic_freq>80</beacon_dynamic_freq>
   <x_beacon_1>5</x_beacon_1>
   <y_beacon_1>5</y_beacon_1>
   <x_beacon_2>5</x_beacon_2>

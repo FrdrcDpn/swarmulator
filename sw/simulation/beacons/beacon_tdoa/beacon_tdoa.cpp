@@ -2,17 +2,24 @@
 #include "agent.h"
 #include "main.h"
 #include <stdio.h>
-//#include <Python.h>
-//#include <pyhelper.h>
 #include <boost/math/special_functions/gamma.hpp>
 using namespace std;
 #define EPSILON 0.001
 
 beacon_tdoa::beacon_tdoa() {
 beacon_alg = "beacon_tdoa";
-next_measurement_time = simtime_seconds;
+
 }
 
+/*
+*in parameters file, change params file to define the noise type
+*noise_type 0 = no noise
+*noise_type 1 = gaussian noise
+*noise_type 2 = heavy tailed cauchy noise
+*noise_type 3 = heavy tailed gamma noise
+*/
+
+// function to output some range info to terminal (not useful to be removed)
 void beacon_tdoa::ranges_terminal(const uint16_t ID){
     //output ranges to all beacons in terminal
     float r1;
@@ -24,12 +31,8 @@ void beacon_tdoa::ranges_terminal(const uint16_t ID){
     }
     cout << endl;
 }
-//in parameters file, change params file to define the noise type
-//noise_type 0 = no noise
-//noise_type 1 = gaussian noise
-//noise_type 2 = heavy tailed cauchy noise
-//noise_type 3 = heavy tailed gamma noise
 
+// function to return some UWB data (not useful to be removed)
 float beacon_tdoa::returnUWBdata(const uint16_t ID, float beacon){
    // function that returns the latest distance entry of uwb data
    mtx_bcn.lock();
@@ -38,147 +41,51 @@ float beacon_tdoa::returnUWBdata(const uint16_t ID, float beacon){
    return dist;
 }
 
+// measurement function, called by controller at simulation frequency
+// constructs UWB measurement from available UWB beacons
 void beacon_tdoa::measurement(const uint16_t ID){
     float x_0, y_0, x_1, y_1, dx0, dy0, dx1, dy1, d0, d1, dd;
-
-    random_device rd;  // Will be used to obtain a seed for the random number engine
-    mt19937 rng(rd()); // random-number engine used (Mersenne-Twister in this case)
-    uniform_real_distribution<> dis(0.1*1.0/param->UWB_frequency(), 2*0.1*1.0/param->UWB_frequency());
+    
+    // initial values
     bool static_beacon_1 = false;
     bool dynamic_beacon_1 = false;
     bool static_beacon_2 = false;
     bool dynamic_beacon_2 = false;
-
-    //thread safe vector operation to access UWB data
-    mtx_bcn.lock();
-    uniform_int_distribution<int> uni(0,7+dynamic_uwb_beacon.size()); // guaranteed unbiased
-    mtx_bcn.unlock();
-
-    //only take measurements on defined interval with noise
-    if(simtime_seconds>=next_measurement_time){
-    
-    //take measurements from random beacons that are enabled
-    
     bool beacon_1_selected = false; 
-    
     bool beacon_2_selected = false; 
+  
+    // we make a copy of beacon state vector at moment of measurement (freeze in time)
+    std::vector<Beacon_gen *> b_0 = b; 
 
-    // check whether the first random beacon is enabled, and whether dynamic or not (if using dynamic beacons is enabled)
-    while(beacon_1_selected == false){
-         random_beacon_1 = uni(rng);
-        // if the random beacon index belongs to a dynamic beacon 
-        if(random_beacon_1 >= 0 && random_beacon_1 <=7){
-            // check if the selected beacon is enabled
-            // if so select static beacon
-            if(environment.uwb_beacon[random_beacon_1][2]==1){
-            beacon_1_selected = true;
-            static_beacon_1 = true;
-            std::cout<<"agent "<<ID<<" ranges with beacon "<<random_beacon_1<<std::endl;
-        
-        }}
+    // Now we random shuffle the vector to make sure a random broadcasting beacon is selected
+    std::random_shuffle (b_0.begin(), b_0.end() ); 
 
-        // if the random beacon index belongs to a static beacon
-        if(random_beacon_1>7){
-            mtx_bcn.lock();
-            // set the index for lookup in random beacon vector
-            random_beacon_1 = random_beacon_1-8;
-
-            // if the dynamic beacon is enabled, not equal to the agent itself and the ID of the agent not 0 select dynamic beacon
-            // I've put the ID 0 here because I don't want the first agent to be able to do dynamic ranging
-
-            if(dynamic_uwb_beacon[random_beacon_1][2]==1 && random_beacon_1 != ID && ID !=0){
-            beacon_1_selected = true;
-            dynamic_beacon_1 = true;
-            std::cout<<"agent "<<ID<<" ranges with agent "<<random_beacon_1<<std::endl;
-
-            // if the agent does have ID 0, choose a new beacon
-            // if the random beacon is equal to the ID of the agent
-            }
-            
-
-            //if the random beacon
-            
-          //  if(dynamic_uwb_beacon[random_beacon_1][2]==1 && random_beacon_1 == ID){
-                    //making sure that if there is only one drone, the program does not break
-                  // if(s.size() == 1 ){
-                  //  beacon_1_selected = true;
-                  //  static_beacon_1 = true;
-                  //  random_beacon_1 = 1;
-              //  }
-            //}
-                
-            
-            mtx_bcn.unlock(); 
-            
-           
+    // Now we loop over the shuffeled beacon state vector and we select 2 enabled and broadcasting beacons
+    for (uint16_t ID_b = 0; ID_b < b_0.size(); ID_b++) {
+        // first select beacon 1 
+        if(b_0[ID_b]->state_b[4] == 1.0 && beacon_1_selected == false){
+           x_0 = b_0[ID_b]->state_b[0]; // x-location of beacon from its state vector
+           y_0 = b_0[ID_b]->state_b[1]; // y-location of beacon from its state vector
+           beacon_1_selected = true; // we have selected the beacon
+           static_beacon_1 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
+           sel_beacon_1 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
         }
-    }
-
-    // check whether the second random beacon is enabled, and whether dynamic or not (if using dynamic beacons is enabled)
-    while(beacon_2_selected == false){
-        random_beacon_2 = uni(rng);
-        while(random_beacon_1 == random_beacon_2){
-            random_beacon_2 = uni(rng);
+        // now select beacon 2
+        if(b_0[ID_b]->state_b[4] == 1.0 && beacon_1_selected == true && beacon_2_selected == false && sel_beacon_1 != int(b_0[ID_b]->state_b[6])){
+           x_1 = b_0[ID_b]->state_b[0]; // x-location of beacon from its state vector
+           y_1 = b_0[ID_b]->state_b[1]; // y-location of beacon from its state vector
+           beacon_2_selected = true; // we have selected the beacon
+           static_beacon_2 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
+           float sel_beacon_2 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
+           std::cout<<"agent "<<ID<<" ranges with beacon "<<sel_beacon_1<<std::endl; // output the selected beacons to terminal (can be commented)
+           std::cout<<"agent "<<ID<<" ranges with beacon "<<sel_beacon_2<<std::endl; // output the selected beacons to terminal (can be commented)
         }
-        
-
-        if(random_beacon_2 >= 0 && random_beacon_2 <=7){
-
-            if(environment.uwb_beacon[random_beacon_2][2]==1 ){
-            beacon_2_selected = true;
-            static_beacon_2 = true;
-            std::cout<<"agent "<<ID<<" ranges with beacon "<<random_beacon_2<<std::endl;
-            }
-
-        
-        }
-
-        if(random_beacon_2>7){
-            mtx_bcn.lock();
-            random_beacon_2 = random_beacon_2-8;
-            
-            
-            //if(dynamic_uwb_beacon[random_beacon_2][2]==1 && random_beacon_2 == ID){
-             //      if(s.size() == 1 ){
-              //      beacon_2_selected = true;
-              //      static_beacon_2 = true;
-              //      random_beacon_2 = 2;
-             //   }
-           // }
-
-            if(dynamic_uwb_beacon[random_beacon_2][2]==1 && random_beacon_2 != ID && ID !=0){
-            beacon_2_selected = true;
-            dynamic_beacon_2 = true;
-            }
-            mtx_bcn.unlock(); 
-        }
-        }
+   }
+   
     
+    // if we have selected 2 available beacons during this measurement cycle, continue
+    if(beacon_1_selected == true && beacon_2_selected == true){
 
-    // coordinates of the first beacon
-    if(dynamic_beacon_1 == true){
-        mtx_bcn.lock();
-    x_0 = dynamic_uwb_beacon[random_beacon_1][0];
-    y_0 = dynamic_uwb_beacon[random_beacon_1][1]; 
-    mtx_bcn.unlock();
-    }
-    if(static_beacon_1 == true){
-    x_0 = environment.uwb_beacon[random_beacon_1][0];
-    y_0 = environment.uwb_beacon[random_beacon_1][1];
-    }
-
-    // coordinates of the second beacon
-    if(dynamic_beacon_2 == true){
-        mtx_bcn.lock();
-    x_1 = dynamic_uwb_beacon[random_beacon_2][0];
-    y_1 = dynamic_uwb_beacon[random_beacon_2][1]; 
-    mtx_bcn.unlock();
-    }
-    if(static_beacon_2 == true){
-    x_1 = environment.uwb_beacon[random_beacon_2][0];
-    y_1 = environment.uwb_beacon[random_beacon_2][1];
-    }
-    
     // generate tdoa measurements
     dx0 = s[ID]->state[0] - x_0;
     dy0 = s[ID]->state[1] - y_0;
@@ -190,12 +97,12 @@ void beacon_tdoa::measurement(const uint16_t ID){
     d1 = sqrt(dx1*dx1 + dy1*dy1);
     dd = d1-d0;
 
-    //initialise uwb dataset
+    //initialise uwb dataset to be used by EKF
     mtx_bcn.lock();
     UWB.push_back(std::vector<std::vector<float>>());
     UWB[ID].push_back(std::vector<float>());
 
-    //add preferred noise on top of tdoa measurements
+    //add preferred noise on top of tdoa measurements, defined in parameters file
     if (param->noise_type() == 0){
         // tdoa measurement, x beacon1, y beacon1, x beacon2, y beacon2, simulation time
         UWB[ID].push_back({dd,x_0, y_0,x_1,y_1, simtime_seconds});
@@ -217,26 +124,28 @@ void beacon_tdoa::measurement(const uint16_t ID){
         mtx_bcn.unlock();
     }
 
-    //next measurement time interval
+    // output to terminal whether the selected beacons are dynamic or static (can be commented)
     std::cout<<"dynamic beacon_1 "<<dynamic_beacon_1<<" static beacon_1 "<<static_beacon_1<<std::endl;
     std::cout<<"dynamic beacon_2 "<<dynamic_beacon_2<<" static beacon_2 "<<static_beacon_2<<std::endl;
-    next_measurement_time = simtime_seconds + 1.0/param->UWB_frequency() + dis(rng) -0.1*1.0/param->UWB_frequency();
+    
+    // if during this cycle a measurement is available, let the EKF know by pusing a 1 
     beacon_measurement.push_back(std::vector<std::vector<float>>());
     beacon_measurement[ID].push_back(std::vector<float>());
     beacon_measurement[ID].push_back({1});
-    }else{
-        beacon_measurement[ID].push_back({0});
-    }
-    
-
+   }else{
+    // if during this cycle no measurement is available, let the EKF know by pusing a 0 
+    beacon_measurement.push_back(std::vector<std::vector<float>>());
+    beacon_measurement[ID].push_back(std::vector<float>());
+    beacon_measurement[ID].push_back({0});
+   }
 }
    
-
+// function to add gaussian noise to UWB measurements
 float beacon_tdoa::add_gaussian_noise(float value) {
     float noisy_value;
     float mean = 0;
   
-       // Random seed
+    // Random seed
     random_device rd;
 
     // Initialize Mersenne Twister pseudo-random number generator
@@ -273,17 +182,11 @@ double beacon_tdoa::deriv_cdf_ht_cauchy(double x)
 
 //our ht_cauchy noise function, that solves for heavy tailed noise using Newton Rapson's method
 float beacon_tdoa::add_ht_cauchy_noise(float value){
-    // old python integration code
-    // CPyInstance hInstance;
-    // PyRun_SimpleString("import sys");
-    // PyRun_SimpleString("sys.path.append('sw/simulation/beacons/beacon_tdoa')");
-    // CPyObject pName = PyUnicode_FromString("noise");
-    // CPyObject pModule = PyImport_Import(pName);
-    // CPyObject pFunc = PyObject_GetAttrString(pModule, "getInteger");
-    // CPyObject pValue = PyObject_CallObject(pFunc, NULL);
 
-    double x = 0; //our starting estimate to solve the cdf using Newton Raphson's method
+    //our starting estimate to solve the cdf using Newton Raphson's method
+    double x = 0; 
     double h = cdf_ht_cauchy(x) / deriv_cdf_ht_cauchy(x);
+
     while (abs(h) >= EPSILON)
     {
         h = cdf_ht_cauchy(x)/deriv_cdf_ht_cauchy(x);
@@ -323,7 +226,9 @@ double beacon_tdoa::deriv_cdf_ht_gamma(double x)
 
 //our ht_gamma noise function, that solves for heavy tailed noise using Newton Rapson's method
 float beacon_tdoa::add_ht_gamma_noise(float value){
-    double x = 0; //our starting estimate to solve the cdf using Newton Raphson's method
+
+    //our starting estimate to solve the cdf using Newton Raphson's method
+    double x = 0; 
     double h = cdf_ht_gamma(x) / deriv_cdf_ht_gamma(x);
     while (abs(h) >= EPSILON)
     {

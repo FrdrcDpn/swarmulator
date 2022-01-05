@@ -7,12 +7,20 @@
 #define EPSILON 0.001
 using namespace std;
 
+/*
+*in parameters file, change params file to define the noise type
+*noise_type 0 = no noise
+*noise_type 1 = gaussian noise
+*noise_type 2 = heavy tailed cauchy noise
+*noise_type 3 = heavy tailed gamma noise
+*/
+
 beacon_twr::beacon_twr() {
 beacon_alg = "beacon_twr";
-next_measurement_time = simtime_seconds;
 
 }
 
+// function to output some range info to terminal (not useful to be removed)
 void beacon_twr::ranges_terminal(const uint16_t ID){
     //output ranges to all beacons in terminal
     float r1;
@@ -25,114 +33,59 @@ void beacon_twr::ranges_terminal(const uint16_t ID){
     cout << endl;
 }
 
-//in parameters file, change params file to define the noise type
-//noise_type 0 = no noise
-//noise_type 1 = gaussian noise
-//noise_type 2 = heavy tailed cauchy noise
-//noise_type 3 = heavy tailed gamma noise
-
+// function to return some UWB data (not useful to be removed)
 float beacon_twr::returnUWBdata(const uint16_t ID, float beacon){
     // function that returns the latest distance entry of uwb data
-
-    // some examples for later implementation
-mtx_bcn.lock();
-  //  float x_0, y_0; //get coordinates of a beacon
-   // float i = 0;//for example beacon 1
+    mtx_bcn.lock();
    float dist = UWB[ID].back()[0];
-   //x_0 = environment.uwb_beacon[i][0];
-   //y_0 = environment.uwb_beacon[i][1]; 
-
-    //get the first range measurement for the agent with ID to beacon i
-   // UWB[ID][i][1];
-mtx_bcn.unlock();
-return dist;
-    //get the last updated range measurements for the agent to beacon 1
-    //cout<<"agent "<<ID<<" distance of "<<en<<" to beacon 1 "<< " (x:"<< environment.uwb_beacon[0][0]<<", y:"<<environment.uwb_beacon[0][1]<<") at timestamp "<<UWB[ID][0].back()[1]<< endl;
-    //cout<<"agent "<<ID<<" distance of "<<UWB[ID][1].back()[0]<<" to beacon 2 "<< " (x:"<< environment.uwb_beacon[1][0]<<", y:"<<environment.uwb_beacon[1][1]<<") at timestamp "<<UWB[ID][1].back()[1]<< endl;
-   // cout<<"agent "<<ID<<" distance of "<<UWB[ID][2].back()[0]<<" to beacon 3 "<< " (x:"<< environment.uwb_beacon[2][0]<<", y:"<<environment.uwb_beacon[2][1]<<") at timestamp "<<UWB[ID][2].back()[1]<< endl;
-    //cout<<"agent "<<ID<<" distance of "<<UWB[ID][3].back()[0]<<" to beacon 4 "<< " (x:"<< environment.uwb_beacon[3][0]<<", y:"<<environment.uwb_beacon[3][1]<<") at timestamp "<<UWB[ID][3].back()[1]<< endl;
+    mtx_bcn.unlock();
+    return dist;
 }
 
-
+// measurement function, called by controller at simulation frequency
+// constructs UWB measurement from available UWB beacons
 void beacon_twr::measurement(const uint16_t ID){
     float x_0, y_0, dx0, dy0, d;
 
-    random_device rd;  // Will be used to obtain a seed for the random number engine
-    mt19937 rng(rd()); // random-number engine used (Mersenne-Twister in this case)
-    uniform_real_distribution<> dis(0.1*1.0/param->UWB_frequency(), 2*0.1*1.0/param->UWB_frequency());
-    bool static_beacon = false;
-    bool dynamic_beacon = false;
-    
-    //thread safe vector operation to access UWB data
-    mtx_bcn.lock();
-    uniform_int_distribution<int> uni(0,7+dynamic_uwb_beacon.size()); // guaranteed unbiased
-    mtx_bcn.unlock();
+    // initial values
+    bool static_beacon_1 = false;
+    bool dynamic_beacon_1 = false;
+    bool beacon_1_selected = false; 
 
-    //only take measurements on defined interval with noise
-    if(simtime_seconds>=next_measurement_time){
-    
-    //take measurements from a random beacon that is enabled
-    int random_beacon = uni(rng);
-    bool beacon_selected = false; 
 
-    // check whether the random beacon is enabled, and whether dynamic or not (if using dynamic beacons is enabled)
-    while(beacon_selected == false){
-        if(random_beacon >= 0 && random_beacon <=7){
-            if(environment.uwb_beacon[random_beacon][2]==0){
-            random_beacon= uni(rng);
-            }else if(environment.uwb_beacon[random_beacon][2]==1){
-            beacon_selected = true;
-            static_beacon = true;
-            }
+    // we make a copy of beacon state vector at moment of measurement (freeze in time)
+    std::vector<Beacon_gen *> b_0 = b; 
+
+    // Now we random shuffle the vector to make sure a random broadcasting beacon is selected
+    std::random_shuffle (b_0.begin(), b_0.end() ); 
+
+    // Now we loop over the shuffeled beacon state vector and we select 1 enabled and broadcasting beacon
+    for (uint16_t ID_b = 0; ID_b < b_0.size(); ID_b++) {
+        // first select beacon 1 
+        if(b_0[ID_b]->state_b[4] == 1.0 && beacon_1_selected == false){
+           x_0 = b_0[ID_b]->state_b[0]; // x-location of beacon from its state vector
+           y_0 = b_0[ID_b]->state_b[1]; // y-location of beacon from its state vector
+           beacon_1_selected = true; // we have selected the beacon
+           static_beacon_1 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
+           float sel_beacon_1 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
+           std::cout<<"agent "<<ID<<" ranges with beacon "<<sel_beacon_1<<std::endl; // output the selected beacons to terminal (can be commented)
         }
-        
-        if(random_beacon>7){
-            mtx_bcn.lock();
-            random_beacon = random_beacon-8;
-            if(dynamic_uwb_beacon[random_beacon][2]==0){
-            random_beacon= uni(rng);
-            }else if(dynamic_uwb_beacon[random_beacon][2]==1 && random_beacon == ID){
-                if(s.size() == 1 ){
-                    beacon_selected = true;
-                    static_beacon = true;
-                    random_beacon = 1;
-                }
-                else{
-                    random_beacon= uni(rng);
-                }
-            
-            }else if(dynamic_uwb_beacon[random_beacon][2]==1 && random_beacon != ID){
-            beacon_selected = true;
-            dynamic_beacon = true;
-            std::cout<<"agent "<<ID<<" ranges with agent "<<random_beacon<<std::endl;
-            }
-           mtx_bcn.unlock(); 
-        }
-    }
-
-    // coordinates of the beacon
-    if(dynamic_beacon == true){
-        mtx_bcn.lock();
-    x_0 = dynamic_uwb_beacon[random_beacon][0];
-    y_0 = dynamic_uwb_beacon[random_beacon][1]; 
-    mtx_bcn.unlock();
-    }
-    if(static_beacon == true){
-    x_0 = environment.uwb_beacon[random_beacon][0];
-    y_0 = environment.uwb_beacon[random_beacon][1];
-    }
+   }
+   
+    // if we have selected 1 available beacon during this measurement cycle, continue
+    if(beacon_1_selected == true){
      
     //generate twr measurements
     dx0 = s[ID]->state[0] - x_0;
     dy0 = s[ID]->state[1] - y_0;
     d = sqrt(dx0*dx0 + dy0*dy0);
 
-    //initialise uwb dataset
+    //initialise uwb dataset to be used by EKF
     mtx_bcn.lock();
     UWB.push_back(std::vector<std::vector<float>>());
     UWB[ID].push_back(std::vector<float>());
 
-    //add preferred noise on top of twr measurements
+    //add preferred noise on top of tdoa measurements, defined in parameters file
     if (param->noise_type() == 0){
         // twr measurement, x beacon, y beacon, simulation time
         UWB[ID].push_back({d,x_0, y_0, simtime_seconds});
@@ -153,18 +106,22 @@ void beacon_twr::measurement(const uint16_t ID){
         UWB[ID].push_back({add_ht_gamma_noise(d),x_0, y_0, simtime_seconds});
         mtx_bcn.unlock();
     }
-    //next measurement time interval
-    std::cout<<"dynamic beacon"<<dynamic_beacon<<"static beacon"<<static_beacon<<std::endl;
-    next_measurement_time = simtime_seconds + 1.0/param->UWB_frequency() + dis(rng) -0.1*1.0/param->UWB_frequency();
-    beacon_measurement = true;
-    }else{
-        beacon_measurement = false;
-    }
+    // output to terminal whether the selected beacons are dynamic or static (can be commented)
+    std::cout<<"dynamic beacon_1 "<<dynamic_beacon_1<<" static beacon_1 "<<static_beacon_1<<std::endl;
     
-    
-
+    // if during this cycle a measurement is available, let the EKF know by pusing a 1 
+    beacon_measurement.push_back(std::vector<std::vector<float>>());
+    beacon_measurement[ID].push_back(std::vector<float>());
+    beacon_measurement[ID].push_back({1});
+   }else{
+    // if during this cycle no measurement is available, let the EKF know by pusing a 0 
+    beacon_measurement.push_back(std::vector<std::vector<float>>());
+    beacon_measurement[ID].push_back(std::vector<float>());
+    beacon_measurement[ID].push_back({0});
+   }
 }
 
+// function to add gaussian noise to UWB measurements
 float beacon_twr::add_gaussian_noise(float value) {
     float noisy_value;
     float mean = 0;
@@ -181,6 +138,7 @@ float beacon_twr::add_gaussian_noise(float value) {
     return noisy_value;
 }
 
+//our ht_cauchy noise function, that solves for heavy tailed noise 
 float beacon_twr::add_ht_cauchy_noise(float value){
     float cauchy_alpha = (2*M_PI*param->htc_gamma()) / (sqrt(2*M_PI*pow(param->gauss_sigma(),2)) + M_PI*param->htc_gamma());
     float CDF_limit = (2-cauchy_alpha)*0.5;

@@ -36,9 +36,11 @@ std::unique_ptr<parameters_t> param(parameters("conf/parameters.xml", xml_schema
 bool moving_1;
 uint nagents; // Number of agents in the simulation
 std::vector<Agent *> s; // Set up the agents
+std::vector<Beacon_gen *> b; // Set up the becons
 std::shared_mutex mtx; // Mutex needed to lock threads
 std::shared_mutex mtx_env; // Mutex needed to lock threads
 std::shared_mutex mtx_bcn; // Mutex needed for thread safe access of UWB data
+std::shared_mutex mtx_b; // Mutex needed for thread safe access of UWB data
 std::vector<std::vector<std::vector<float>>> beacon_measurement;
 float realtimefactor; // Real time factor of simulation
 float simtime_seconds = 0; // Initial simulation time

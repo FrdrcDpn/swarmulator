@@ -4,8 +4,9 @@
     <xs:sequence>
       <xs:element name="enable_UWB" type="xs:float"/>
       <xs:element name="dynamic_beacons" type="xs:float"/>
-      <xs:element name="UWB_frequency" type="xs:float"/>
+      <xs:element name="EKF_frequency" type="xs:float"/>
       <xs:element name="IMU_frequency" type="xs:float"/>
+      <xs:element name="UWB_signal_length" type="xs:float"/>
       <xs:element name="beacon_1_en" type="xs:float"/>
       <xs:element name="beacon_2_en" type="xs:float"/>
       <xs:element name="beacon_3_en" type="xs:float"/>
@@ -14,6 +15,15 @@
       <xs:element name="beacon_6_en" type="xs:float"/>
       <xs:element name="beacon_7_en" type="xs:float"/>
       <xs:element name="beacon_8_en" type="xs:float"/>
+      <xs:element name="beacon_1_freq" type="xs:float"/>
+      <xs:element name="beacon_2_freq" type="xs:float"/>
+      <xs:element name="beacon_3_freq" type="xs:float"/>
+      <xs:element name="beacon_4_freq" type="xs:float"/>
+      <xs:element name="beacon_5_freq" type="xs:float"/>
+      <xs:element name="beacon_6_freq" type="xs:float"/>
+      <xs:element name="beacon_7_freq" type="xs:float"/>
+      <xs:element name="beacon_8_freq" type="xs:float"/>
+      <xs:element name="beacon_dynamic_freq" type="xs:float"/>
       <xs:element name="x_beacon_1" type="xs:float"/>
       <xs:element name="y_beacon_1" type="xs:float"/>
       <xs:element name="x_beacon_2" type="xs:float"/>

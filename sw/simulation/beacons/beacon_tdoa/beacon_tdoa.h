@@ -14,19 +14,27 @@ public:
      * Construction. beacon_tdoa is a child class of Beacon.
      */
     beacon_tdoa();
-    int distr_size;
-    int random_beacon_1;
-    int random_beacon_2;
-    float next_measurement_time = 0;
+
+    float sel_beacon_1 = 0; 
+
+    // function to output some range info to terminal (not useful to be removed)
     void ranges_terminal(const uint16_t ID);
-    //void measurement(const uint16_t ID,const uint16_t ID_beacon_0) { return 0; } ;
+    
+    // function to return some UWB data (not useful to be removed)
     float returnUWBdata(const uint16_t ID, float beacon);
+
+    // our TDOA measurement function
     void measurement(const uint16_t ID);
 
+    // function to add gaussian noise to measurements
     float add_gaussian_noise(float value);
+
+    // function to ht cauchy noise to measurements
     float add_ht_cauchy_noise(float value);
     double cdf_ht_cauchy(double x);
     double deriv_cdf_ht_cauchy(double x);
+
+    // function to add gamma noise to measurements
     float add_ht_gamma_noise(float value);
     double cdf_ht_gamma(double x);
     double deriv_cdf_ht_gamma(double x);

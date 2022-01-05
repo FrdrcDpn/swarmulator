@@ -109,7 +109,9 @@ if(param->enable_UWB() == 1 && beacon_measurement[ID].back()[0] == 1){
   s[ID]->state_estimate.at(1) = filter.pos.y; // Position y
   
   std::cout<<"BEACON UPDATE"<<std::endl;
- 
+
+    
+
 }
 
 
