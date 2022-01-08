@@ -8,7 +8,7 @@
   <UWB_signal_length>0.01</UWB_signal_length>
   <beacon_1_en>1</beacon_1_en>
   <beacon_2_en>1</beacon_2_en>
-  <beacon_3_en>0</beacon_3_en>
+  <beacon_3_en>1</beacon_3_en>
   <beacon_4_en>0</beacon_4_en>
   <beacon_5_en>0</beacon_5_en>
   <beacon_6_en>0</beacon_6_en>
@@ -22,7 +22,7 @@
   <beacon_6_freq>80</beacon_6_freq>
   <beacon_7_freq>80</beacon_7_freq>
   <beacon_8_freq>80</beacon_8_freq>
-  <beacon_dynamic_freq>80</beacon_dynamic_freq>
+  <beacon_dynamic_freq>40</beacon_dynamic_freq>
   <x_beacon_1>5</x_beacon_1>
   <y_beacon_1>5</y_beacon_1>
   <x_beacon_2>5</x_beacon_2>

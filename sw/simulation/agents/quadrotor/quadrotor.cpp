@@ -14,7 +14,7 @@ quadrotor::quadrotor(int i, std::vector<float> s, float tstep)
   state = s;
   ID = i;
   dt = tstep;
-  beacon->dynamic_beacon_init(ID); 
+ // beacon->dynamic_beacon_init(ID); 
   orientation = 0.0;
   controller->set_saturation(1.0);
   state_estimate = s;
@@ -28,7 +28,7 @@ std::vector<float> quadrotor::state_update(std::vector<float> state)
   std::normal_distribution<float> dis(0, param->noise_motor_sigma());
 
   // y+ towards East
-  beacon->dynamic_beacon_update(ID);
+  //beacon->dynamic_beacon_update(ID);
   beacon->measurement(ID);
   
   float v_x ;

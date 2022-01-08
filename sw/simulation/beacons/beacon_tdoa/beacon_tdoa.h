@@ -16,13 +16,13 @@ public:
     beacon_tdoa();
 
     float sel_beacon_1 = 0; 
-
+/*
     // function to output some range info to terminal (not useful to be removed)
     void ranges_terminal(const uint16_t ID);
     
     // function to return some UWB data (not useful to be removed)
     float returnUWBdata(const uint16_t ID, float beacon);
-
+*/
     // our TDOA measurement function
     void measurement(const uint16_t ID);
 

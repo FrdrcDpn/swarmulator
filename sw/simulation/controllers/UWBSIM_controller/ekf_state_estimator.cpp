@@ -78,7 +78,7 @@ void ekf_state_estimator::run_ekf_filter()
   mtx_bcn.lock();
 
   //get the ranging and anchor data from our UWB dataset
-  dist = abs(UWB[ID].back()[0]);
+  dist = UWB[ID].back()[0];
   anchor_0 ={UWB[ID].back()[1], UWB[ID].back()[2], 0.f };
 
   mtx_bcn.unlock();

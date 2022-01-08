@@ -11,6 +11,7 @@ Beacon::Beacon()
    
 }
 
+/*
 void Beacon::dynamic_beacon_init(const uint16_t ID){
   // if we use dynamic beacons, add the agent's estimated position to the dynamic beacon vector
   // if the vector is not initialised, do so
@@ -62,7 +63,7 @@ std::vector<float> Beacon::ground_truth(const uint16_t ID) {
     ground_truth.push_back(y);
     return ground_truth;
 }
-
+*/
 /* compute natural logarithm with a maximum error of 0.85089 ulp */
 //https://stackoverflow.com/questions/27229371/inverse-error-function-in-c
 float Beacon::new_logf(float a)

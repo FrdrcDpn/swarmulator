@@ -19,11 +19,12 @@ public:
      */
     
     Beacon();
-    
+    /*
     std::vector<float> range_beacon(const uint16_t ID);
     std::vector<float> ground_truth(const uint16_t ID);
     void dynamic_beacon_init(const uint16_t ID);
     void dynamic_beacon_update(const uint16_t ID);
+    */
     /**
      * Destructor
      */
@@ -52,7 +53,7 @@ public:
     *
     * @param ID agent
     */
-    virtual void ranges_terminal(const uint16_t ID)=0;
+   // virtual void ranges_terminal(const uint16_t ID)=0;
 
     /**
     * @brief Output twr range from agent to all active beacons to the terminal
@@ -61,7 +62,9 @@ public:
     */
    // virtual void measurement()=0;
     virtual void measurement(const uint16_t ID)=0;
+    /*
     virtual float returnUWBdata(const uint16_t ID, float beacon)=0;
+    */
     float new_logf(float a);
     float erfinvf (float a);
 };

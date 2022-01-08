@@ -107,7 +107,9 @@ if(param->enable_UWB() == 1 && beacon_measurement[ID].back()[0] == 1){
   // Position
   s[ID]->state_estimate.at(0) = filter.pos.x; // Position x
   s[ID]->state_estimate.at(1) = filter.pos.y; // Position y
-  
+
+  //measurement is 'used', push back 0 to measurement vector
+  beacon_measurement[ID].push_back({0});
   std::cout<<"BEACON UPDATE"<<std::endl;
 
     

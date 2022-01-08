@@ -18,7 +18,7 @@ beacon_alg = "beacon_tdoa";
 *noise_type 2 = heavy tailed cauchy noise
 *noise_type 3 = heavy tailed gamma noise
 */
-
+/*
 // function to output some range info to terminal (not useful to be removed)
 void beacon_tdoa::ranges_terminal(const uint16_t ID){
     //output ranges to all beacons in terminal
@@ -40,7 +40,7 @@ float beacon_tdoa::returnUWBdata(const uint16_t ID, float beacon){
    mtx_bcn.unlock();
    return dist;
 }
-
+*/
 // measurement function, called by controller at simulation frequency
 // constructs UWB measurement from available UWB beacons
 void beacon_tdoa::measurement(const uint16_t ID){
@@ -63,23 +63,44 @@ void beacon_tdoa::measurement(const uint16_t ID){
     // Now we loop over the shuffeled beacon state vector and we select 2 enabled and broadcasting beacons
     for (uint16_t ID_b = 0; ID_b < b_0.size(); ID_b++) {
         // first select beacon 1 
-        if(b_0[ID_b]->state_b[4] == 1.0 && beacon_1_selected == false){
+        if(ID==0){if(b_0[ID_b]->state_b[4] == 1.0 && beacon_1_selected == false && ID+8!=b_0[ID_b]->state_b[6]&& int(b_0[ID_b]->state_b[5]) == 0.0){
            x_0 = b_0[ID_b]->state_b[0]; // x-location of beacon from its state vector
            y_0 = b_0[ID_b]->state_b[1]; // y-location of beacon from its state vector
            beacon_1_selected = true; // we have selected the beacon
            static_beacon_1 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
+           dynamic_beacon_1 = bool(b_0[ID_b]->state_b[5]);
            sel_beacon_1 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
         }
         // now select beacon 2
-        if(b_0[ID_b]->state_b[4] == 1.0 && beacon_1_selected == true && beacon_2_selected == false && sel_beacon_1 != int(b_0[ID_b]->state_b[6])){
+        if(b_0[ID_b]->state_b[4] == 1.0 && beacon_1_selected == true && beacon_2_selected == false && sel_beacon_1 != int(b_0[ID_b]->state_b[6])&& ID+8!=b_0[ID_b]->state_b[6]&& int(b_0[ID_b]->state_b[5]) == 0.0){
            x_1 = b_0[ID_b]->state_b[0]; // x-location of beacon from its state vector
            y_1 = b_0[ID_b]->state_b[1]; // y-location of beacon from its state vector
            beacon_2_selected = true; // we have selected the beacon
            static_beacon_2 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
+           dynamic_beacon_2 = bool(b_0[ID_b]->state_b[5]); 
            float sel_beacon_2 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
            std::cout<<"agent "<<ID<<" ranges with beacon "<<sel_beacon_1<<std::endl; // output the selected beacons to terminal (can be commented)
            std::cout<<"agent "<<ID<<" ranges with beacon "<<sel_beacon_2<<std::endl; // output the selected beacons to terminal (can be commented)
+        }}else{
+        if(b_0[ID_b]->state_b[4] == 1.0 && beacon_1_selected == false && ID+8!=b_0[ID_b]->state_b[6]){
+           x_0 = b_0[ID_b]->state_b[0]; // x-location of beacon from its state vector
+           y_0 = b_0[ID_b]->state_b[1]; // y-location of beacon from its state vector
+           beacon_1_selected = true; // we have selected the beacon
+           static_beacon_1 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
+           dynamic_beacon_1 = bool(b_0[ID_b]->state_b[5]);
+           sel_beacon_1 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
         }
+        // now select beacon 2
+        if(b_0[ID_b]->state_b[4] == 1.0 && beacon_1_selected == true && beacon_2_selected == false && sel_beacon_1 != int(b_0[ID_b]->state_b[6])&& ID+8!=b_0[ID_b]->state_b[6]){
+           x_1 = b_0[ID_b]->state_b[0]; // x-location of beacon from its state vector
+           y_1 = b_0[ID_b]->state_b[1]; // y-location of beacon from its state vector
+           beacon_2_selected = true; // we have selected the beacon
+           static_beacon_2 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
+           dynamic_beacon_2 = bool(b_0[ID_b]->state_b[5]); 
+           float sel_beacon_2 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
+           std::cout<<"agent "<<ID<<" ranges with beacon "<<sel_beacon_1<<std::endl; // output the selected beacons to terminal (can be commented)
+           std::cout<<"agent "<<ID<<" ranges with beacon "<<sel_beacon_2<<std::endl; // output the selected beacons to terminal (can be commented)
+        }}
    }
    
     

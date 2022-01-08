@@ -16,13 +16,13 @@ public:
      * Construction. beacon_twr is a child class of Beacon.
      */
     beacon_twr();
-
+/*
     // function to output some range info to terminal (not useful to be removed)
     void ranges_terminal(const uint16_t ID);
 
     // function to return some UWB data (not useful to be removed)
     float returnUWBdata(const uint16_t ID, float beacon);
-    
+    */
     // our TWR measurement function
     void measurement(const uint16_t ID);
 
