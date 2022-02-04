@@ -15,8 +15,6 @@ class ekf_state_estimator
   float simtime_seconds_store;
   
 public:
-  int mode;
-  float dist;
   struct EnuCoor_f anchor_0;
   struct EnuCoor_f anchor_1;
   struct EnuCoor_f speed;
@@ -26,7 +24,7 @@ public:
   ~ekf_state_estimator() {};
   void init_ekf_filter();
   void run_ekf_filter();
-  void run(uint16_t ID_in, int mode);
+  void run(uint16_t ID_in);
 };
 
 #endif /*EKF_STATE_ESTIMATOR_H*/

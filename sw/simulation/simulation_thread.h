@@ -57,35 +57,35 @@ void main_simulation_thread(int argc, char *argv[], std::string id)
   for (uint16_t ID_b = 0; ID_b < 8; ID_b++) {
     if(ID_b == 0){
       // state= x location, y location, enabled, frequency, broadcasting, static/dynamic, ID
-    std::vector<float> state_b = {param->x_beacon_1(), param->y_beacon_1(), param->beacon_1_en(), param->beacon_1_freq(), 0.0, 0.0, float(ID_b)};
+    std::vector<float> state_b = {param->x_beacon_1(), param->y_beacon_1(), param->beacon_1_en(), param->beacon_1_freq(), 0.0, 0.0, float(ID_b),0.0,0.0};
     create_new_beacon(ID_b, state_b); // Create a new beacon
     }
     if(ID_b == 1){
-    std::vector<float> state_b = {param->x_beacon_2(), param->y_beacon_2(), param->beacon_2_en(), param->beacon_2_freq(), 0.0, 0.0, float(ID_b)};
+    std::vector<float> state_b = {param->x_beacon_2(), param->y_beacon_2(), param->beacon_2_en(), param->beacon_2_freq(), 0.0, 0.0, float(ID_b),0.0,0.0};
     create_new_beacon(ID_b, state_b); // Create a new beacon
     }
     if(ID_b == 2){
-    std::vector<float> state_b = {param->x_beacon_3(), param->y_beacon_3(), param->beacon_3_en(), param->beacon_3_freq(), 0.0, 0.0, float(ID_b)};
+    std::vector<float> state_b = {param->x_beacon_3(), param->y_beacon_3(), param->beacon_3_en(), param->beacon_3_freq(), 0.0, 0.0, float(ID_b),0.0,0.0};
     create_new_beacon(ID_b, state_b); // Create a new beacon
     }
     if(ID_b == 3){
-    std::vector<float> state_b = {param->x_beacon_4(), param->y_beacon_4(), param->beacon_4_en(), param->beacon_4_freq(), 0.0, 0.0, float(ID_b)};
+    std::vector<float> state_b = {param->x_beacon_4(), param->y_beacon_4(), param->beacon_4_en(), param->beacon_4_freq(), 0.0, 0.0, float(ID_b),0.0,0.0};
     create_new_beacon(ID_b, state_b); // Create a new beacon
     }
     if(ID_b == 4){
-    std::vector<float> state_b = {param->x_beacon_5(), param->y_beacon_5(), param->beacon_5_en(), param->beacon_5_freq(), 0.0, 0.0, float(ID_b)};
+    std::vector<float> state_b = {param->x_beacon_5(), param->y_beacon_5(), param->beacon_5_en(), param->beacon_5_freq(), 0.0, 0.0, float(ID_b),0.0,0.0};
     create_new_beacon(ID_b, state_b); // Create a new beacon
     }
     if(ID_b == 5){
-    std::vector<float> state_b = {param->x_beacon_6(), param->y_beacon_6(), param->beacon_6_en(), param->beacon_6_freq(), 0.0, 0.0, float(ID_b)};
+    std::vector<float> state_b = {param->x_beacon_6(), param->y_beacon_6(), param->beacon_6_en(), param->beacon_6_freq(), 0.0, 0.0, float(ID_b),0.0,0.0};
     create_new_beacon(ID_b, state_b); // Create a new beacon
     }
     if(ID_b == 6){
-    std::vector<float> state_b = {param->x_beacon_7(), param->y_beacon_7(), param->beacon_7_en(), param->beacon_7_freq(), 0.0, 0.0, float(ID_b)};
+    std::vector<float> state_b = {param->x_beacon_7(), param->y_beacon_7(), param->beacon_7_en(), param->beacon_7_freq(), 0.0, 0.0, float(ID_b),0.0,0.0};
     create_new_beacon(ID_b, state_b); // Create a new beacon
     }
     if(ID_b == 7){
-    std::vector<float> state_b = {param->x_beacon_8(), param->y_beacon_8(), param->beacon_8_en(), param->beacon_8_freq(), 0.0, 0.0, float(ID_b)};
+    std::vector<float> state_b = {param->x_beacon_8(), param->y_beacon_8(), param->beacon_8_en(), param->beacon_8_freq(), 0.0, 0.0, float(ID_b),0.0,0.0};
     create_new_beacon(ID_b, state_b); // Create a new beacon
     }
     
@@ -129,7 +129,7 @@ void main_simulation_thread(int argc, char *argv[], std::string id)
     for (uint16_t ID = 0; ID < nagents; ID++) {
       x0[ID]= 0.0;
       y0[ID]= 0.0;
-       t0[ID]= 0.0;
+      t0[ID]= 0.0;
       // Initial state vector
       // [position_x, position y, vel_x=0, vel_y=0, acc_x=0, acc_y=0, psi, psi_rate]
       //std::vector<float> state = {x0[ID], y0[ID], 0.0, 0.0, 0.0, 0.0, t0[ID], 0.0};
@@ -140,7 +140,7 @@ void main_simulation_thread(int argc, char *argv[], std::string id)
       // If dynamic beacons are enabled we will use the agent's estimate as beacon location!!
 
       // state= x location, y location, enabled, frequency, broadcasting, static/dynamic, ID
-      std::vector<float> state_b = {x0[ID], y0[ID], param->dynamic_beacons(), param->beacon_dynamic_freq(), 0.0, 1.0, float(ID+8)};
+      std::vector<float> state_b = {x0[ID], y0[ID], param->dynamic_beacons(), param->beacon_dynamic_freq(), 0.0, 1.0, float(ID+8),0.0,0.0};
       create_new_beacon(ID+8, state_b); // Create a new beacon
     }
   }
@@ -161,10 +161,12 @@ void main_simulation_thread(int argc, char *argv[], std::string id)
         if (simtime_seconds > param->time_limit()) {
 
           mtx.lock(); // Lock main mutex
+          mtx_bcn.lock();
           mtx_env.lock(); // Lock environment mutex
           terminalinfo::debug_msg("Sending message");
           f.send(evaluate_fitness()); // Send FIFO message
           mtx_env.unlock(); // Unlock environment mutex
+          mtx_bcn.unlock();
           mtx.unlock(); // Unlock main mutex
 
           program_running = false; // Get ready to quit

@@ -5,6 +5,7 @@
   <dynamic_beacons>1</dynamic_beacons>
   <EKF_frequency>100</EKF_frequency> 
   <IMU_frequency>500</IMU_frequency> 
+  <UWB_frequency>70</UWB_frequency> 
   <UWB_signal_length>0.01</UWB_signal_length>
   <beacon_1_en>1</beacon_1_en>
   <beacon_2_en>1</beacon_2_en>
@@ -14,15 +15,15 @@
   <beacon_6_en>0</beacon_6_en>
   <beacon_7_en>0</beacon_7_en>
   <beacon_8_en>0</beacon_8_en>
-  <beacon_1_freq>80</beacon_1_freq>
-  <beacon_2_freq>80</beacon_2_freq>
-  <beacon_3_freq>80</beacon_3_freq>
-  <beacon_4_freq>80</beacon_4_freq>
-  <beacon_5_freq>80</beacon_5_freq>
-  <beacon_6_freq>80</beacon_6_freq>
-  <beacon_7_freq>80</beacon_7_freq>
-  <beacon_8_freq>80</beacon_8_freq>
-  <beacon_dynamic_freq>40</beacon_dynamic_freq>
+  <beacon_1_freq>100</beacon_1_freq>
+  <beacon_2_freq>100</beacon_2_freq>
+  <beacon_3_freq>100</beacon_3_freq>q
+  <beacon_4_freq>100</beacon_4_freq>
+  <beacon_5_freq>100</beacon_5_freq>
+  <beacon_6_freq>100</beacon_6_freq>
+  <beacon_7_freq>100</beacon_7_freq>
+  <beacon_8_freq>100</beacon_8_freq>
+  <beacon_dynamic_freq>130</beacon_dynamic_freq>
   <x_beacon_1>5</x_beacon_1>
   <y_beacon_1>5</y_beacon_1>
   <x_beacon_2>5</x_beacon_2>
@@ -39,8 +40,8 @@
   <y_beacon_7>-5</y_beacon_7>
   <x_beacon_8>-5</x_beacon_8>
   <y_beacon_8>0</y_beacon_8>
-  <acc_noise_sigma>0.02</acc_noise_sigma>
-  <noise_motor_sigma>0</noise_motor_sigma>
+  <acc_noise_sigma>0.005</acc_noise_sigma>
+  <noise_motor_sigma>0.005</noise_motor_sigma>
   <noise_type>3</noise_type>
   <gauss_sigma>0.2</gauss_sigma>
   <htc_gamma>0.1</htc_gamma>
@@ -49,6 +50,7 @@
   <htg_k>2.0</htg_k>
   <htg_lambda>3.5</htg_lambda>
   <htg_scale>1.0</htg_scale>
+  <terminaloutput>0.0</terminaloutput>
   <simulation_updatefreq>1000</simulation_updatefreq>
   <simulation_realtimefactor>1000000</simulation_realtimefactor>
   <time_limit>0</time_limit>
@@ -59,7 +61,7 @@
   <!-- Animation -->
   <window_width>800</window_width>
   <window_height>800</window_height>
-  <scale>0.2</scale>
+  <scale>0.15</scale>
   <mouse_drag_speed>0.3</mouse_drag_speed>
   <mouse_zoom_speed>0.4</mouse_zoom_speed>
   <zoom>-10</zoom>
@@ -68,7 +70,7 @@
   <!-- Logger -->
   <logger_updatefreq>2</logger_updatefreq>
   <!-- Additional parameters -->
-  <policy></policy>
+  <policy/>
   <fitness>aggregation_clusters</fitness>
   <!--new_parameter_name>default value</new_parameter_name-->
 </parameters>

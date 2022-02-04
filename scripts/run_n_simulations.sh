@@ -19,7 +19,9 @@ for (( i = 1; i <= $1; i++ )); do
 	# Run code
 	md=$(date +%Y-%m-%d-%T);
 	ma=$(date +%Y-%m-%d-%T -d "+1 seconds") #backup time
-	./swarmulator $2
+
+    ./swarmulator $2  
+	
 	sleep 1 # Give it some time to close
 
 	# Move latest log to directory

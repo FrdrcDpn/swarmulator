@@ -38,93 +38,121 @@ ekf_state_estimator::ekf_state_estimator()
 
 void ekf_state_estimator::init_ekf_filter()
 {
-
- // s[ID]->state_estimate = s[ID]->state;
   //we leave the z variables 0; only 2D simulation for now
   //initialise the ekf with 0 values
   ekf_range_init(&ekf, EKF_P0_POS, EKF_P0_SPEED,
       EKF_Q, EKF_R_DIST, EKF_R_SPEED, 0.1f);
 
-
-  //update and set initial states
-  
+  // Initialise the EKF struct by setting the state to our estimate
   pos={s[ID]->state_estimate[0], s[ID]->state_estimate[1], 0.f };
   speed={s[ID]->state_estimate[2], s[ID]->state_estimate[3], 0.f };
-  
   ekf_range_set_state(&ekf,pos,speed);
 
   initialized = true;
   simtime_seconds_store = simtime_seconds;
-
 }
 
 void ekf_state_estimator::run_ekf_filter()
 {
-  //update and set states
-  float xpos = s[ID]->get_state(0);
-  float ypos = s[ID]->get_state(1);  
-
-  pos={s[ID]->state_estimate[0], s[ID]->state_estimate[1], 0.f };
-  speed={s[ID]->state_estimate[2], s[ID]->state_estimate[3], 0.f };
-  ekf_range_set_state(&ekf,pos,speed);
   ekf.dt = simtime_seconds - simtime_seconds_store;
-  simtime_seconds_store = simtime_seconds;
+   // Initialise the EKF struct by setting the state to our estimate
+ 
+ // Initialise the EKF struct by setting the state to our estimate
+    // Initialise the EKF struct by setting the state to our estimate
+  //pos={s[ID]->state_estimate[0], s[ID]->state_estimate[1], 0.f };
+  //speed={s[ID]->state_estimate[2], s[ID]->state_estimate[3], 0.f };
+  //ekf_range_set_state(&ekf,pos,speed);
+  // prediction step
   ekf_range_predict(&ekf);
   
-  //ekf_range_update_scalar(&ekf,s[ID]->state_estimate[0],s[ID]->state_estimate[1],0.f);
+  // IMU update step
+  ekf_range_update_scalar(&ekf,float(s[ID]->imu_state_estimate[2]), float(s[ID]->imu_state_estimate[3]),0.0);
+
   // we have to update our ekf with different uwb measurements depending on the selected localisation scheme
   //tdoa, twr or different
+ //  mtx_bcn.lock();
+ mtx_e.lock();
+  // only perform update step when there are available UWB measurements 
+  
+  //if(param->enable_UWB() == 1 && beacon_measurement[ID].back()[0] == 1){
+    if(param->enable_UWB() == 1 && s[ID]->UWBm[5] == 1){
+// prediction step
+  
+  // update step in case the beacon algorithm is TWR
   if(beacon_alg == "beacon_twr"){
-  mtx_bcn.lock();
-
+ 
   //get the ranging and anchor data from our UWB dataset
-  dist = UWB[ID].back()[0];
-  anchor_0 ={UWB[ID].back()[1], UWB[ID].back()[2], 0.f };
-
-  mtx_bcn.unlock();
+  
+  float dist = abs(s[ID]->UWBm[0]);
+  anchor_0 ={s[ID]->UWBm[1], s[ID]->UWBm[2], 0.f };
+ 
+  
 
   //input UWB measurements and update the estimate with new anchor (for now only anchor)
   ekf_range_update_dist_twr(&ekf,dist,anchor_0);
   
   }
+
+  // update step in case the beacon algorithm is TDOA
   if(beacon_alg== "beacon_tdoa"){
-  mtx_bcn.lock();
-  //get the ranging data for our random beacon
-  dist = UWB[ID].back()[0];
-  //get the anchor data for our random anchor
-  anchor_0 ={UWB[ID].back()[1], UWB[ID].back()[2], 0.f };
-  anchor_1 ={UWB[ID].back()[3], UWB[ID].back()[4], 0.f };
-  mtx_bcn.unlock();
-  //get our UWB measurements and update the estimate with new anchor (for now only anchor)
+ 
+  //get the ranging and anchor data from our UWB dataset
+ // float dist = UWB[ID].back()[0];
+ // anchor_0 ={UWB[ID].back()[1], UWB[ID].back()[2], 0.f };
+ // anchor_1 ={UWB[ID].back()[3], UWB[ID].back()[4], 0.f };
+  float dist = s[ID]->UWBm[0];
+  anchor_0 ={s[ID]->UWBm[1], s[ID]->UWBm[2], 0.f };
+  anchor_1 ={s[ID]->UWBm[3], s[ID]->UWBm[4], 0.f };
+  
+
+  //input UWB measurements and update the estimate with anchors (for now only anchor)
   ekf_range_update_dist_tdoa(&ekf,dist,anchor_0, anchor_1);
   }
-
-  //update our position and speed values
+  s[ID]->UWBm.at(5) = 0;
+  //UWB measuremend has been 'used', push back 0 to measurement vector
+ // beacon_measurement[ID].push_back({0});
+  
+if(param->terminaloutput()==1.0){
+  //output to terminal
+  std::cout<<"BEACON UPDATE"<<std::endl;
+}
+ 
+  }
+mtx_e.unlock();
+  // Write our measurements to the EKF estimate variable
   pos = ekf_range_get_pos(&ekf);
   speed = ekf_range_get_speed(&ekf);
-
-    // Acceleration
-  //s[ID]->state_estimate.at(4) =  (speed.x - s[ID]->state_estimate[2]); // Acceleration x
-  //s[ID]->state_estimate.at(5) =  (speed.y - s[ID]->state_estimate[3]); // Acceleration y
-  // Velocity
-
-
  
+ 
+  s[ID]->ekf_estimate.at(2) = speed.x; // Velocity x
+  s[ID]->ekf_estimate.at(3) = speed.y; // Velocity y
+  
+  s[ID]->ekf_estimate.at(0) = pos.x; // Position x
+  s[ID]->ekf_estimate.at(1) = pos.y; // Position y
+ 
+  
+  s[ID]->state_estimate.at(2) = speed.x; // Velocity x
+  s[ID]->state_estimate.at(3) = speed.y; // Velocity y
+  
+  s[ID]->state_estimate.at(0) = pos.x; // Position x
+  s[ID]->state_estimate.at(1) = pos.y; // Position y
 
-
-  //float zpos = 0;
+  //Some operations to show interesting stuff in terminal
+  float xpos = s[ID]->get_state(0);
+  float ypos = s[ID]->get_state(1); 
+  if(param->terminaloutput()==1.0){
   std::cout<<"predicted x: "<<pos.x<<" real x: "<< xpos <<" delta x: "<<pos.x-xpos<<" for agent: "<<ID<<std::endl;
   std::cout<<"predicted y: "<<pos.y<<" real y: "<< ypos <<" delta y: "<<pos.y-ypos<<" for agent: "<<ID<<std::endl;
-  //std::cout<<"predicted z: "<<pos.z<<" real z: "<< zpos <<" delta z: "<<pos.z-zpos<<" for agent: "<<ID<<std::endl;
+  }
+  simtime_seconds_store = simtime_seconds;
+  //mtx_bcn.unlock();
 }
 
-void ekf_state_estimator::run(uint16_t ID_in, int m)
+void ekf_state_estimator::run(uint16_t ID_in)
 {
   if (!initialized) {
     ID = ID_in;
-    mode = m; 
     init_ekf_filter();
-   // std::cout<<"Running ekf for agent ID: "<<ID<<std::endl;
   } else {
     run_ekf_filter();
   }

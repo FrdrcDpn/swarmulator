@@ -29,7 +29,7 @@ public:
    */
   ~Environment() {};
 
-  void define_uwb_beacon();
+
   /**
    * @brief Define the initial obstacle list according to the list in conf/environments/.txt
    * You can indicate obstacle list in the conf/parameters.xml file, under <environment>

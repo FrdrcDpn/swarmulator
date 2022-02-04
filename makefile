@@ -6,9 +6,9 @@ TARGET = swarmulator # application name
 BUILD_FOLDER = build
 SRC_FOLDER = sw
 
-CONTROLLER?=aggregation
-AGENT?=particle
-BEACON?=beacon_twr
+CONTROLLER?=UWBSIM_controller
+AGENT?=quadrotor
+BEACON?=beacon_tdoa
 
 CONTROLLER_INCLUDE=\"$(CONTROLLER).h\"
 AGENT_INCLUDE=\"$(AGENT).h\"

@@ -32,11 +32,15 @@ std::vector<float> Beacon_gen::beacon_status_update(std::vector<float> state_b){
 }
 
 
-// if the beacon is a dynamic beacon, update the sate with the state estimate of the agent
+// if the beacon is a dynamic beacon, update the sate with the state estimate of the agent and the des state with the des traj of the agent
 std::vector<float> Beacon_gen::beacon_dynamic_state_update(std::vector<float> state_b){
-      if(state_b[5]==1.0 && state_b[2] == 1.0){
+  
+      if(state_b[5] == 1.0){
       state_b[0] = s[ID_b-8]->state_estimate[0];
       state_b[1] = s[ID_b-8]->state_estimate[1];
+      state_b[7] = s[ID_b-8]->state[0]; 
+      state_b[8] = s[ID_b-8]->state[1];
+      
     }
   return state_b;
 }

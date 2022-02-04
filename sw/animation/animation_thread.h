@@ -39,17 +39,31 @@ void main_loop_function()
   drawer.axis_label(); // Axis label
   environment.animate(); // Animate the environment walls
 
-  // Draw all robots
+  // Draw all robot's
   uint r = s.size();
   if (r > 0) {
     for (uint16_t ID = 0; ID < r; ID++) {
       // Input: ID, p_x global, p_y global, orientation global
-      drawer.agent(ID, s[ID]->state.at(0), s[ID]->state.at(1), s[ID]->orientation);
+      drawer.agent_trajectory(ID, s[ID]->state.at(0), s[ID]->state.at(1), s[ID]->orientation);
+      drawer.agent_estimate(ID, s[ID]->state_estimate.at(0), s[ID]->state_estimate.at(1), s[ID]->orientation);
+      drawer.agent_estimate(ID, s[ID]->ekf_estimate.at(0), s[ID]->ekf_estimate.at(1), s[ID]->orientation);
       // Input: ID, p_x global, p_y global, v_x global, v_y global
       drawer.velocity_arrow(ID,  s[ID]->state.at(0), s[ID]->state.at(1), s[ID]->state.at(2), s[ID]->state.at(3));
     }
   }
 
+  if(param->enable_UWB() == 1){
+   // Draw all beacons
+  uint l = b.size();
+  if (l > 0) {
+    for (uint16_t ID_b = 0; ID_b < l; ID_b++) {
+      // If our beacon is enabled, draw its position
+      if(b[ID_b]->state_b[2]==1){
+      drawer.uwb_beacon(b[ID_b]->state_b.at(0), b[ID_b]->state_b.at(1));
+      }
+    }
+  }
+  }
   // Swap buffers (color buffers, makes previous render visible)
   glutSwapBuffers();
 

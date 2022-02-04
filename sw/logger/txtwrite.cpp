@@ -30,7 +30,7 @@ void txtwrite::txtwrite_state(ofstream &logfile)
       logfile << state_buff[i]->state.at(j) << " "; // log states
     }
     for (uint16_t j = 0; j < 2; j++) { // position state 0 and 1
-      logfile << state_buff[i]->state_estimate.at(j) << " "; // log states
+      logfile << state_buff[i]->ekf_estimate.at(j) << " "; // log states
     }
     for (uint16_t j = 0; j < 2; j++) { // position state 0 and 1
       logfile << state_buff[i]->state_desired_traj.at(j) << " "; // log states

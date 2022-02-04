@@ -45,7 +45,8 @@ struct EKFRange {
   float Q[EKF_RANGE_DIM][EKF_RANGE_DIM];  ///< process noise matrix
   float R_dist;                           ///< measurement noise on distances (assumed the same for all anchors)
   float R_speed;                          ///< measurement noise on speed (assumed the same for all axis)
-  float dt;                               ///< prediction step (in seconds)
+  float dt;                              ///< prediction step (in seconds)
+ 
 };
 
 

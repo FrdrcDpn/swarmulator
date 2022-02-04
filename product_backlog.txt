@@ -1,9 +1,0 @@
-# PRODUCT BACKLOG - TODO LIST
-
-- implement noise function gaussian + Cauchy
-- create TWR child class of beacon, and test with new agent
-- create TDOA child class of beacon, and test with new agent
-
-- uwb ground truth function
-- logging uwb values
-

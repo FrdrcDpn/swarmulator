@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <condition_variable>
 #include <chrono>
-
+#include "draw.h"
 #include "settings.h"
 #include "randomgenerator.h"
 #include "environment.h"
@@ -23,15 +23,15 @@
 void run_beacon_simulation_step(const int &ID_b)
 {
   while (program_running) {
-    bool ready = (b.size() == 8 || simtime_seconds > 0.);
+    bool ready = (b.size() == 8+nagents || simtime_seconds > 0.);
     if (ready) {
-     // mtx.lock_shared();
+      mtx_bcn.lock_shared();
       // put here the beacon update functions
      std::vector<float> b_0 = b.at(ID_b)->state_b;
-     std::vector<float> b_n = b.at(ID_b)->beacon_status_update(b_0); // State update
-     std::vector<float> b_p = b.at(ID_b)->beacon_status_update(b_n); // State update for dynamic beacons
+     std::vector<float> b_n = b.at(ID_b)->beacon_dynamic_state_update(b_0); // State update for dynamic beacons
+     std::vector<float> b_p = b.at(ID_b)->beacon_status_update(b_n); // State update
      b.at(ID_b)->state_b = b_p; // Update
-     //mtx.unlock_shared();
+     mtx_bcn.unlock_shared();
 }
 }
 }

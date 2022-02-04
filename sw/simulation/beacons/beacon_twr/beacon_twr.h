@@ -11,7 +11,7 @@ class beacon_twr: public Beacon
 
 
 public:
-
+    float next_UWB_measurement_time;
     /**
      * Construction. beacon_twr is a child class of Beacon.
      */

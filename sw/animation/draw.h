@@ -117,7 +117,8 @@ public:
    * @param orientation The orientation of the robot
    */
   void agent(const uint16_t &ID, const float &x, const float &y, const float &orientation);
-
+  void agent_estimate(const uint16_t &ID, const float &x, const float &y, const float &orientation);
+  void agent_trajectory(const uint16_t &ID, const float &x, const float &y, const float &orientation);
   /**
    * Draw a line showing the velocity of the agent
    *

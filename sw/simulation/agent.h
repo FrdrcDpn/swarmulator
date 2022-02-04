@@ -31,7 +31,10 @@ public:
   bool activated; // Set true if the agent is active
   float dt;
   std::vector<float> state; // State vector
+  std::vector<float> UWBm; // State vector
   std::vector<float> state_estimate; // State vector
+  std::vector<float> imu_state_estimate; // State vector
+  std::vector<float> ekf_estimate; // State vector
   std::vector<float> state_desired_traj; // State vector
 
   float orientation; // Orientation

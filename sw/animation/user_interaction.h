@@ -87,7 +87,12 @@ void keyboard_callback(unsigned char key, __attribute__((unused)) int a, __attri
         terminalinfo::info_msg("Drawing new agent.");
         random_generator rg;
         std::vector<float> states = {pointer_y, pointer_x, 0.0, 0.0, 0.0, 0.0, rg.uniform_float(-M_PI, M_PI), 0.0}; // Initial positions/states
-        create_new_agent(s.size(), states);
+        float ID = s.size();
+        create_new_agent(ID, states);
+
+         // state= x location, y location, enabled, frequency, broadcasting, static/dynamic, ID
+        std::vector<float> state_b = {pointer_y, pointer_x, param->dynamic_beacons(), param->beacon_dynamic_freq(), 0.0, 1.0, float(ID+8)};
+        create_new_beacon(ID+8, state_b); // Create a new beacon
         break;
       }
     case 'm': // Toggle the real time parameter between 1 and default, so as to better understand what's going on

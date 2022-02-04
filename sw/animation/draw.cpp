@@ -17,18 +17,49 @@ void draw::uwb_beacon(const float &xb, const float &yb)
     glPushMatrix();
     glTranslatef(yb * xrat, xb * yrat, 0.0);
     glRotatef(90, 0.0, 0.0, 1.0);
-    glColor3ub(200, 000, 000); // Red
-    point();
+
+    glBegin(GL_POLYGON);
+    float scl = 0.125;
+    glColor3ub(255, 0, 255); // fushia :P
+    glVertex2f(-1 * scl,  1 * scl);
+    glVertex2f(-1 * scl, -1 * scl);
+    glVertex2f(1.0 * scl,  0 * scl);
+    glEnd();
+
+    glColor3ub(255, 255, 255); // White
+    glPopMatrix();
+    
     glPopMatrix();
 }
 
 void draw::data()
 {
-  glRasterPos2f((-3.9 / zoom_scale - center_x), (-3.9 / zoom_scale - center_y));
-  glColor3ub(255, 255, 255); // White
+  if(param->enable_UWB() == 1){
+  glColor3ub(255, 0, 255);
+  glRasterPos2f((-3.9 / zoom_scale - center_x), (-3.3 / zoom_scale - center_y));
+  std::stringstream kk;
+  kk << "UWB Beacons";
+  glutBitmapString(GLUT_BITMAP_8_BY_13, (unsigned char *)kk.str().c_str());
+  }
+  glColor3ub(0, 191, 255);
+  glRasterPos2f((-3.9 / zoom_scale - center_x), (-3.5 / zoom_scale - center_y));
   std::stringstream ss;
-  ss << "Time[s]:" << simtime_seconds << " \t" << "Fitness: " << evaluate_fitness();
+  ss << "Realtime trajectory position";
   glutBitmapString(GLUT_BITMAP_8_BY_13, (unsigned char *)ss.str().c_str());
+  
+  glColor3ub(124, 252, 000);
+  glRasterPos2f((-3.9 / zoom_scale - center_x), (-3.7 / zoom_scale - center_y));
+  std::stringstream dd;
+  dd << "Realtime EKF position estimate";
+  glutBitmapString(GLUT_BITMAP_8_BY_13, (unsigned char *)dd.str().c_str());
+  
+  glColor3ub(255, 255, 255); // White
+  glRasterPos2f((-3.9 / zoom_scale - center_x), (-3.9 / zoom_scale - center_y));
+  std::stringstream pp;
+  pp << "Time[s]:" << simtime_seconds << " \t" << "Fitness: " << evaluate_fitness();
+  glutBitmapString(GLUT_BITMAP_8_BY_13, (unsigned char *)pp.str().c_str());
+  
+
 }
 
 void draw::axis_label()
@@ -171,6 +202,53 @@ void draw::agent(const uint16_t &ID, const float &x, const float &y, const float
   glRotatef(90.0 - rad2deg(orientation), 0.0, 0, 1);
   s[ID]->animation(); // Uses the animation function defined by the agent in use
   s[ID]->controller->animation(ID); // Draws additional stuff from the controller, such as sensors
+  agent_number(ID);
+  glPopMatrix();
+}
+
+void draw::agent_estimate(const uint16_t &ID, const float &x, const float &y, const float &orientation)
+{
+  glPushMatrix();
+  glTranslatef(y * xrat, x * yrat, 0.0); // ENU to NED
+  glRotatef(90.0 - rad2deg(orientation), 0.0, 0, 1);
+  glPushMatrix();
+
+  glBegin(GL_POLYGON);
+  float scl = 0.2;
+  glColor3ub(124, 252, 000); // green ish
+  glVertex2f(-1 * scl,  1 * scl);
+  glVertex2f(-1 * scl, -1 * scl);
+  glVertex2f(1.0 * scl,  0 * scl);
+  glEnd();
+
+  glColor3ub(255, 255, 255); // White
+  glPopMatrix();
+  
+  agent_number(ID);
+  glPopMatrix();
+}
+
+
+void draw::agent_trajectory(const uint16_t &ID, const float &x, const float &y, const float &orientation)
+{
+  glPushMatrix();
+  glTranslatef(y * xrat, x * yrat, 0.0); // ENU to NED
+  glRotatef(90.0 - rad2deg(orientation), 0.0, 0, 1);
+  //s[ID]->animation(); // Uses the animation function defined by the agent in use
+  //s[ID]->controller->animation(ID); // Draws additional stuff from the controller, such as sensors
+  glPushMatrix();
+
+  glBegin(GL_POLYGON);
+  float scl = 0.2;
+  glColor3ub(0, 191, 255); // deepsky blue :P
+  glVertex2f(-1 * scl,  1 * scl);
+  glVertex2f(-1 * scl, -1 * scl);
+  glVertex2f(1.0 * scl,  0 * scl);
+  glEnd();
+
+  glColor3ub(255, 255, 255); // White
+  glPopMatrix();
+  
   agent_number(ID);
   glPopMatrix();
 }

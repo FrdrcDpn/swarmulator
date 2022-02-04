@@ -25,7 +25,7 @@
 
 #include "ekf_range.h"
 #include <math.h>
-
+#include <stdio.h>
 void ekf_range_init(struct EKFRange *ekf_range, float P0_pos, float P0_speed, float Q_sigma2, float R_dist, float R_speed, float dt)
 {
   int i,j;
@@ -140,17 +140,22 @@ void ekf_range_predict(struct EKFRange *ekf_range)
  * X = X + K(z-h(X))
  * P = (I-KH)P
  */
-void ekf_range_update_scalar(struct EKFRange *ekf_range, float x,float y,float z)
+
+void ekf_range_update_scalar(struct EKFRange *ekf_range, float vx, float vy, float vz)
 {
-  const float dx = ekf_range->state[0];
-  const float dy = ekf_range->state[2];
-  const float dz = ekf_range->state[4];
+
+  const float dx = vx-ekf_range->state[1];
+  const float dy = vy-ekf_range->state[3];
+  const float dz = vz-ekf_range->state[5];
   const float norm = sqrtf(dx * dx + dy * dy + dz * dz);
   // build measurement error
-  const float res = sqrtf(x * x + y * y + z * z) - norm;
+  const float res = norm;
+  // build Jacobian of observation model for anchor i
   float Hi[] = { dx/ norm, 0.f, dy / norm, 0.f, dz / norm, 0.f };
+
   // compute kalman gain K = P*Ht (H*P*Ht + R)^-1
   // S = H*P*Ht + R
+  
   const float S =
     Hi[0] * Hi[0] * ekf_range->P[0][0] +
     Hi[2] * Hi[2] * ekf_range->P[2][2] +
@@ -159,14 +164,12 @@ void ekf_range_update_scalar(struct EKFRange *ekf_range, float x,float y,float z
     Hi[0] * Hi[4] * (ekf_range->P[0][4] + ekf_range->P[4][0]) +
     Hi[2] * Hi[4] * (ekf_range->P[2][4] + ekf_range->P[4][2]) +
     ekf_range->R_dist;
-  if (fabsf(S) < 1e-5) {
-    return; // don't inverse S if it is too small
-  }
+  
   // finally compute gain and correct state
   float K[6];
   for (int i = 0; i < 6; i++) {
     K[i] = (Hi[0] * ekf_range->P[i][0] + Hi[2] * ekf_range->P[i][2] + Hi[4] * ekf_range->P[i][4]) / S;
-    ekf_range->state[i] += K[i] * res;
+    ekf_range->state[i] += K[i]*res;
   }
   // precompute K*H and store current P
   float KH_tmp[6][6];
@@ -253,7 +256,8 @@ void ekf_range_update_dist_tdoa(struct EKFRange *ekf_range, float dist, struct E
   const float res = dist - norm;
 
   // build Jacobian of observation model for anchor i
-  float Hi[] = { ((ekf_range->state[0] - anchor_1.x) / d1 - ( ekf_range->state[0]- anchor.x) / d0), 0.f, ((ekf_range->state[2] - anchor_1.y) / d1 - ( ekf_range->state[2]- anchor.y) / d0), 0.f, ((ekf_range->state[4] - anchor_1.z) / d1 - ( ekf_range->state[4]- anchor.z) / d0), 0.f };
+  float Hi[] = { (dx1 / d1 - dx0 / d0), 0.f, (dy1 / d1 - dy0 / d0), 0.f, (dz1 / d1 - dz0 / d0), 0.f };
+ 
   // compute kalman gain K = P*Ht (H*P*Ht + R)^-1
   // S = H*P*Ht + R
   const float S =
@@ -263,7 +267,7 @@ void ekf_range_update_dist_tdoa(struct EKFRange *ekf_range, float dist, struct E
     Hi[0] * Hi[2] * (ekf_range->P[0][2] + ekf_range->P[2][0]) +
     Hi[0] * Hi[4] * (ekf_range->P[0][4] + ekf_range->P[4][0]) +
     Hi[2] * Hi[4] * (ekf_range->P[2][4] + ekf_range->P[4][2]) +
-    ekf_range->R_dist;
+   ekf_range->R_dist;
   if (fabsf(S) < 1e-5) {
     return; // don't inverse S if it is too small
   }

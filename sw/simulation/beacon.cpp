@@ -68,8 +68,12 @@ std::vector<float> Beacon::ground_truth(const uint16_t ID) {
 //https://stackoverflow.com/questions/27229371/inverse-error-function-in-c
 float Beacon::new_logf(float a)
 {
-    float i, m, r, s, t;
-    int e;
+    float i = 0; 
+    float m = 0;
+    float r = 0; 
+    float s = 0; 
+    float t = 0;
+    int e = 0;
 
     m = frexpf (a, &e);
     if (m < 0.666666667f) { // 0x1.555556p-1
@@ -105,7 +109,9 @@ float Beacon::new_logf(float a)
 //https://stackoverflow.com/questions/27229371/inverse-error-function-in-c
 float Beacon::erfinvf (float a)
 {
-    float p, r, t;
+    float p = 0; 
+    float r = 0; 
+    float t = 0;
     t = fmaf (a, 0.0f - a, 1.0f);
     t = new_logf(t);
     if (fabsf(t) > 6.125f) { // maximum ulp error = 2.35793

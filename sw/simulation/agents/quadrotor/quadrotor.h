@@ -12,7 +12,8 @@
 class quadrotor: public Agent
 {
 public:
-  
+  float maxacc = 0;
+  float maxvel = 0;
   float nanfoundth = 0;
   float nanfoundph = 0;
   float x = 0;
@@ -57,7 +58,7 @@ public:
   float dDesiredTheta = 0;
   float DesiredPhipre = 0;
   float DesiredThetapre = 0;
-  bool init;
+ 
   //System Parameters:
   float m  = 0.022;     // mass (Kg)
   float L  = 0.042;//0.25;      // arm length (m)

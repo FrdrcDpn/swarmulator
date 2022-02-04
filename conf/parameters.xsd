@@ -6,6 +6,7 @@
       <xs:element name="dynamic_beacons" type="xs:float"/>
       <xs:element name="EKF_frequency" type="xs:float"/>
       <xs:element name="IMU_frequency" type="xs:float"/>
+      <xs:element name="UWB_frequency" type="xs:float"/>
       <xs:element name="UWB_signal_length" type="xs:float"/>
       <xs:element name="beacon_1_en" type="xs:float"/>
       <xs:element name="beacon_2_en" type="xs:float"/>
@@ -50,6 +51,7 @@
       <xs:element name="htg_k" type="xs:float"/>
       <xs:element name="htg_lambda" type="xs:float"/>
       <xs:element name="htg_scale" type="xs:float"/>
+      <xs:element name="terminaloutput" type="xs:float"/>
       <xs:element name="simulation_updatefreq" type="xs:float"/>
       <xs:element name="simulation_realtimefactor" type="xs:float"/>
       <xs:element name="time_limit" type="xs:float"/>

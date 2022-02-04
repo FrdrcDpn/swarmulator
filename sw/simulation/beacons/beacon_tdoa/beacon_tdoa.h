@@ -14,8 +14,9 @@ public:
      * Construction. beacon_tdoa is a child class of Beacon.
      */
     beacon_tdoa();
-
+    float next_UWB_measurement_time = 0;
     float sel_beacon_1 = 0; 
+  
 /*
     // function to output some range info to terminal (not useful to be removed)
     void ranges_terminal(const uint16_t ID);

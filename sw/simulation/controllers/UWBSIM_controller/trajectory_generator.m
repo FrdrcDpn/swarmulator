@@ -133,23 +133,48 @@ t=1:8499;
 Datax=[t.' transpose(truePosition1(:,1)).'];
 Datay=[t.' transpose(truePosition1(:,1)).'];
 
-figure(1)
-plot(truePosition1(:,1),truePosition1(:,2),'b*')
-title('Position')
-axis([-2,2,-2,2])
-axis square
-xlabel('X')
-ylabel('Y')
-grid on
-hold on
+subplot(1,2,1) 
+plot(truePosition2(:,2), truePosition2(:,1), 'b*','DisplayName','Trajectory')
+xlim([-6 6])
+ylim([-6 6])
+xlabel('X position [m]')
+ylabel('Y position [m]')
+title("Trajectory agent 1")
+lgd = legend;
+lgd.NumColumns = 1;
+
+subplot(1,2,2) 
+plot(truePosition1(:,1), truePosition1(:,2), 'b*','DisplayName','Trajectory')
+
+lgd = legend;
+lgd.NumColumns = 1;
+
+xlim([-2.5 2.5])
+ylim([-2.5 2.5])
+xlabel('X position [m]')
+ylabel('Y position [m]')
+title("Trajectory agent 2")
+
+sgtitle('Trajectory agents Case Study 1') 
 
 
-figure(2)
-plot(truePosition2(:,1),truePosition2(:,2),'b*')
-title('Position')
-axis([-2,2,-2,2])
-axis square
-xlabel('X')
-ylabel('Y')
-grid on
-hold on
+%figure(1)
+%plot(truePosition1(:,1),truePosition1(:,2),'b*')
+%title('Position')
+%axis([-2,2,-2,2])
+%axis square
+%%xlabel('X')
+%ylabel('Y')
+%grid on
+%hold on
+
+
+%figure(2)
+%plot(truePosition2(:,1),truePosition2(:,2),'b*')
+%title('Position')
+%axis([-2,2,-2,2])
+%axis square
+%xlabel('X')
+%ylabel('Y')
+%grid on
+%hold on
