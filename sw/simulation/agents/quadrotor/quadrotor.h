@@ -12,6 +12,8 @@
 class quadrotor: public Agent
 {
 public:
+  
+  float next_IMU_measurement_time = 0;
   float maxacc = 0;
   float maxvel = 0;
   float nanfoundth = 0;
@@ -25,13 +27,13 @@ public:
   float z = 0;
   float dz = 0;
   float ddz = 0;
-  float Phi = 0;
+  float Phi = 0.0000001;
   float dPhi = 0;
   float ddPhi = 0;
-  float Theta =0;
+  float Theta =0.0000001;
   float dTheta = 0;
   float ddTheta = 0;
-  float Psi = float(M_PI)/3;
+  float Psi = 0;
   float dPsi = 0;
   float ddPsi = 0;
   float errorSumX = 0;
@@ -58,7 +60,9 @@ public:
   float dDesiredTheta = 0;
   float DesiredPhipre = 0;
   float DesiredThetapre = 0;
- 
+  float maxTheta = 0; 
+  float maxPhi = 0; 
+  float maxPsi = 0; 
   //System Parameters:
   float m  = 0.022;     // mass (Kg)
   float L  = 0.042;//0.25;      // arm length (m)

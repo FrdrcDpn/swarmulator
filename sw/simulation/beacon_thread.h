@@ -32,7 +32,13 @@ void run_beacon_simulation_step(const int &ID_b)
      std::vector<float> b_p = b.at(ID_b)->beacon_status_update(b_n); // State update
      b.at(ID_b)->state_b = b_p; // Update
      mtx_bcn.unlock_shared();
-}
+     
+        // Run the local clock
+      // If param->simulation_realtimefactor()=0, which can be set in conf/parameters.xml, the thread will not sleep and just run at full speed.
+      if (param->simulation_realtimefactor() > 0) {
+        int t_wait = (int)1e6 / (param->simulation_updatefreq() * param->simulation_realtimefactor());
+        std::this_thread::sleep_for(std::chrono::microseconds(t_wait));
+      }}
 }
 }
 

@@ -16,16 +16,18 @@ Beacon_gen::Beacon_gen(int i, std::vector<float> b)
 std::vector<float> Beacon_gen::beacon_status_update(std::vector<float> state_b){
     // start of signal
     if(simtime_seconds>=next_measurement_time){
+      end_measurement_time = simtime_seconds + param->UWB_signal_length();
       if(state_b[2]==1.0 && state_b[4] == 0.0){
         state_b[4] = 1.0;
-        end_measurement_time = simtime_seconds + param->UWB_signal_length();
+        
         }
     }
     // end of signal, next signal after frequency interval
     if(simtime_seconds>=end_measurement_time){
+      next_measurement_time = simtime_seconds + 1.0/state_b[3];
       if(state_b[2]==1.0 && state_b[4] == 1.0){
         state_b[4] = 0.0;
-        next_measurement_time = simtime_seconds + 1.0/state_b[3];
+        
       }    
     }
   return state_b;

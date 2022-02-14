@@ -107,7 +107,7 @@ void beacon_twr::measurement(const uint16_t ID){
    
     // if we have selected 1 available beacon during this measurement cycle, continue
     if(beacon_1_selected == true&& simtime_seconds>=next_UWB_measurement_time){
-     
+     next_UWB_measurement_time = next_UWB_measurement_time + 1.0/param->UWB_frequency();
     //generate twr measurements
     dx0 = s[ID]->state[0] - x_0;
     dy0 = s[ID]->state[1] - y_0;
@@ -121,32 +121,32 @@ void beacon_twr::measurement(const uint16_t ID){
     //add preferred noise on top of tdoa measurements, defined in parameters file
     if (param->noise_type() == 0){
         // twr measurement, x beacon, y beacon, simulation time
-        s[ID]->UWBm.at(0) = d;
-        s[ID]->UWBm.at(1) = x_a_0;
-        s[ID]->UWBm.at(2) = y_a_0;
+        s[ID]->UWBm[0] = d;
+        s[ID]->UWBm[1] = x_a_0;
+        s[ID]->UWBm[2] = y_a_0;
        // UWB[ID].push_back({d,x_a_0, y_a_0, simtime_seconds});
        // mtx_bcn.unlock();
     }
     else if (param->noise_type() == 1){
-        s[ID]->UWBm.at(0) = add_gaussian_noise(d);
-        s[ID]->UWBm.at(1) = x_a_0;
-        s[ID]->UWBm.at(2) = y_a_0;
+        s[ID]->UWBm[0] = add_gaussian_noise(d);
+        s[ID]->UWBm[1] = x_a_0;
+        s[ID]->UWBm[2] = y_a_0;
         // twr measurement, x beacon, y beacon, simulation time
        // UWB[ID].push_back({add_gaussian_noise(d),x_a_0, y_a_0, simtime_seconds});
        // mtx_bcn.unlock();
     }
     else if (param->noise_type() == 2){
-        s[ID]->UWBm.at(0) = add_ht_cauchy_noise(d);
-        s[ID]->UWBm.at(1) = x_a_0;
-        s[ID]->UWBm.at(2) = y_a_0;
+        s[ID]->UWBm[0] = add_ht_cauchy_noise(d);
+        s[ID]->UWBm[1] = x_a_0;
+        s[ID]->UWBm[2] = y_a_0;
         // twr measurement, x beacon, y beacon, simulation time
        // UWB[ID].push_back({add_ht_cauchy_noise(d),x_a_0, y_a_0, simtime_seconds});
       //  mtx_bcn.unlock();
     }
     else if (param->noise_type() == 3){
-        s[ID]->UWBm.at(0) = add_ht_gamma_noise(d);
-        s[ID]->UWBm.at(1) = x_a_0;
-        s[ID]->UWBm.at(2) = y_a_0;
+        s[ID]->UWBm[0] = add_ht_gamma_noise(d);
+        s[ID]->UWBm[1] = x_a_0;
+        s[ID]->UWBm[2] = y_a_0;
         // twr measurement, x beacon, y beacon, simulation time
        // UWB[ID].push_back({add_ht_gamma_noise(d),x_a_0, y_a_0, simtime_seconds});
        // mtx_bcn.unlock();
@@ -160,8 +160,8 @@ void beacon_twr::measurement(const uint16_t ID){
    // beacon_measurement[ID].push_back(std::vector<float>());
    // beacon_measurement[ID].push_back({1});
 
-   s[ID]->UWBm.at(5) = 1 ;
-    next_UWB_measurement_time = simtime_seconds + 1.0/param->UWB_frequency();
+   s[ID]->UWBm[5] = 1 ;
+    
    }else{
 
     // if during this cycle no measurement is available, let the EKF know by pusing a 0 

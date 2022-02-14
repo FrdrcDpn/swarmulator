@@ -14,17 +14,19 @@ class UWBSIM_controller: public Controller
 {
 	std::ifstream inFile1;
 	std::ifstream inFile2;
-	ekf_state_estimator filter;
+	std::ifstream inFile3;
+	
 	
 public:
-	
-
-	float next_measurement_time = 0;
-	float next_EKF_measurement_time = 0;
+    ekf_state_estimator filter;
+	float next_trajectory_time ;
+	float next_measurement_time ;
+	float next_EKF_measurement_time ;
 	
 	UWBSIM_controller();
 	virtual void get_velocity_command(const uint16_t ID, float &v_x, float &v_y);
 	virtual void animation(const uint16_t ID);
 };
+
 
 #endif /*UWBSIM_CONTROLLER_H*/

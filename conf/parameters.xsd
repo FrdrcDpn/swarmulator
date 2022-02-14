@@ -2,10 +2,26 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:complexType name="parameters_t">
     <xs:sequence>
+    <xs:element name="Kpphi" type="xs:float"/>
+      <xs:element name="Kiphi" type="xs:float"/>
+      <xs:element name="Kdphi" type="xs:float"/>
+      <xs:element name="Kptheta" type="xs:float"/>
+      <xs:element name="Kitheta" type="xs:float"/>
+      <xs:element name="Kdtheta" type="xs:float"/>
+      <xs:element name="Kpx" type="xs:float"/>
+      <xs:element name="Kix" type="xs:float"/>
+      <xs:element name="Kdx" type="xs:float"/>
+      <xs:element name="Kpy" type="xs:float"/>
+      <xs:element name="Kiy" type="xs:float"/>
+      <xs:element name="Kdy" type="xs:float"/>
+      <xs:element name="Kpz" type="xs:float"/>
+      <xs:element name="Kiz" type="xs:float"/>
+      <xs:element name="Kdz" type="xs:float"/>
       <xs:element name="enable_UWB" type="xs:float"/>
       <xs:element name="dynamic_beacons" type="xs:float"/>
       <xs:element name="EKF_frequency" type="xs:float"/>
       <xs:element name="IMU_frequency" type="xs:float"/>
+      <xs:element name="trajectory_frequency" type="xs:float"/>
       <xs:element name="UWB_frequency" type="xs:float"/>
       <xs:element name="UWB_signal_length" type="xs:float"/>
       <xs:element name="beacon_1_en" type="xs:float"/>

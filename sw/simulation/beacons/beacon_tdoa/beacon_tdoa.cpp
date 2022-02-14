@@ -44,6 +44,7 @@ float beacon_tdoa::returnUWBdata(const uint16_t ID, float beacon){
 // measurement function, called by controller at simulation frequency
 // constructs UWB measurement from available UWB beacons
 void beacon_tdoa::measurement(const uint16_t ID){
+    
     float x_0,y_0,x_1,y_1,dx0,dy0,dx1,dy1,d0,d1,dd,x_a_0,y_a_0,x_a_1,y_a_1;
 
     // initial values
@@ -64,7 +65,7 @@ void beacon_tdoa::measurement(const uint16_t ID){
     // Now we loop over the shuffeled beacon state vector and we select 2 enabled and broadcasting beacons
     for (uint16_t ID_b = 0; ID_b < b_0.size(); ID_b++) {
         // first select beacon 1 
-        if(ID==0){if(b_0[ID_b]->state_b[4] == 1.0 && beacon_1_selected == false && ID+8!=b_0[ID_b]->state_b[6]&& int(b_0[ID_b]->state_b[5]) == 0.0){
+        if(ID==0 || ID==1){if(b_0[ID_b]->state_b[4] == 1.0 && beacon_1_selected == false && ID+8!=b_0[ID_b]->state_b[6]&& int(b_0[ID_b]->state_b[5]) == 0.0){
           //if we have a static beacon
            if(b_0[ID_b]->state_b[5]==0.0){
             x_0 = b_0[ID_b]->state_b[0]; // x-location of static beacon from its state vector
@@ -152,6 +153,7 @@ void beacon_tdoa::measurement(const uint16_t ID){
     
     // if we have selected 2 available beacons during this measurement cycle, continue
     if(beacon_1_selected == true && beacon_2_selected == true && simtime_seconds>=next_UWB_measurement_time){
+        next_UWB_measurement_time = next_UWB_measurement_time + 1.0/param->UWB_frequency();
     // generate tdoa measurements
     dx0 = s[ID]->state[0] - x_0;
     dy0 = s[ID]->state[1] - y_0;
@@ -233,7 +235,7 @@ void beacon_tdoa::measurement(const uint16_t ID){
     s[ID]->UWBm.at(5) = 1 ;
    // beacon_measurement[ID].push_back({1});
    // mtx_e.unlock();
-    next_UWB_measurement_time = simtime_seconds + 1.0/param->UWB_frequency();
+    
    }
 }
    

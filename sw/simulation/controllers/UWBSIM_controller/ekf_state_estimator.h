@@ -1,25 +1,20 @@
 #ifndef EKF_STATE_ESTIMATOR_H
 #define EKF_STATE_ESTIMATOR_H
 #include "controller.h"
-
-extern "C" {
-#include "ekf_range.h"
-}
+#include "ekf.h"
 
 
 class ekf_state_estimator
 {
-
+  
+public:
+  struct speed speed; 
+  struct pos pos; 
   bool initialized;
   uint16_t ID;
   float simtime_seconds_store;
-  
-public:
-  struct EnuCoor_f anchor_0;
-  struct EnuCoor_f anchor_1;
-  struct EnuCoor_f speed;
-  struct EnuCoor_f pos;
-  struct EKFRange ekf;
+  ekf *filterekf = new ekf;
+ 
   ekf_state_estimator();
   ~ekf_state_estimator() {};
   void init_ekf_filter();
