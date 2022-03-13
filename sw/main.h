@@ -11,6 +11,8 @@
 #include "settings.h"
 extern bool moving_1;
 extern bool moving_2;
+extern bool moving_3;
+extern bool moving_4;
 extern std::vector<std::vector<std::vector<float>>> beacon_measurement;
 extern uint nagents; // Number of agents in the swarm
 extern std::vector<Beacon_gen *> b; // Set up a vector of beacons

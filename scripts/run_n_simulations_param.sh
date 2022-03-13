@@ -7,18 +7,18 @@
 cd ..
 
 
-
-for (( k = 1; k <= 15; k++ )); do
+for (( k = 1; k <= 10; k++ )); do
 	p=$(($k*10))
 	xmlstarlet ed -P -L\
 	-u 'parameters/dynamic_beacons' -v 1 \
-	-u 'parameters/beacon_dynamic_freq' -v $p \
+	-u 'parameters/UWB_frequency' -v $p \
     conf/parameters.xml 
 
-	min=$(date +%Y-%m-%d-%T);
-	d=logs/batchtest_$min
-	mkdir $d
+	f=logs/cooltest
+	mkdir $f
 
+	d=logs/cooltest/batchtest_1$k
+	mkdir $d
 	for (( i = 1; i <= $1; i++ )); do
 		
 		# Bash text
@@ -49,16 +49,15 @@ done
 
 
 
-
-for (( k = 1; k <= 15; k++ )); do
+for (( k = 1; k <= 10; k++ )); do
 	p=$(($k*10))
 	xmlstarlet ed -P -L\
 	-u 'parameters/dynamic_beacons' -v 0 \
-	-u 'parameters/beacon_dynamic_freq' -v $p \
+	-u 'parameters/UWB_frequency' -v $p \
     conf/parameters.xml 
 
-	min=$(date +%Y-%m-%d-%T);
-	d=logs/batchtest_$min
+
+	d=logs/cooltest/batchtest_0$k
 	mkdir $d
 
 	for (( i = 1; i <= $1; i++ )); do
@@ -72,7 +71,8 @@ for (( k = 1; k <= 15; k++ )); do
 
 		./swarmulator $2  
 		
-		sleep 1 # Give it some time to close
+		sleep 1
+		 # Give it some time to close
 
 		# Move latest log to directory
 		fn=$(ls -t logs| head -n1)
@@ -87,7 +87,6 @@ for (( k = 1; k <= 15; k++ )); do
 	done
 
 done
-
 
 
 

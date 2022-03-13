@@ -12,7 +12,7 @@
 class quadrotor: public Agent
 {
 public:
-  
+ 
   float next_IMU_measurement_time = 0;
   float maxacc = 0;
   float maxvel = 0;

@@ -14,7 +14,7 @@
 #define PN_AY 1.0f
 
 #define S_TDOA 0.1f
-#define S_TWR 0.1f
+#define S_TWR 0.3f
 #define S_AX 0.1f
 #define S_AY 0.1f
 

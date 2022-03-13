@@ -78,20 +78,29 @@ void ekf_state_estimator::run_ekf_filter()
   // update step in case the beacon algorithm is TDOA
   if(beacon_alg== "beacon_tdoa"){
  
-  //get the ranging and anchor data from our UWB dataset
- // float dist = UWB[ID].back()[0];
- // anchor_0 ={UWB[ID].back()[1], UWB[ID].back()[2], 0.f };
- // anchor_1 ={UWB[ID].back()[3], UWB[ID].back()[4], 0.f };
   float dist = s[ID]->UWBm[0];
- // anchor_0 ={s[ID]->UWBm[1], s[ID]->UWBm[2], 0.f };
-  //anchor_1 ={s[ID]->UWBm[3], s[ID]->UWBm[4], 0.f };
-
   filterekf->ekf_update_tdoa(dist, s[ID]->UWBm[1], s[ID]->UWBm[2], s[ID]->UWBm[3], s[ID]->UWBm[4]);
   
-  //input UWB measurements and update the estimate with anchors (for now only anchor)
-//  / ekf_range_update_dist_tdoa(&ekf,dist,anchor_0, anchor_1);
   }
-  s[ID]->UWBm.at(5) = 0;
+  // update step in case the beacon algorithm is TWR
+  if(beacon_alg == "beacon_hybrid"){
+ 
+  //if we perform twr with a dynamic  beacon
+  if(s[ID]->UWBm[6] == 0){
+  float dist = abs(s[ID]->UWBm[0]);
+  filterekf->ekf_update_twr(dist, s[ID]->UWBm[1], s[ID]->UWBm[2]);
+ // std::cout<<"hybrid twr"<<std::endl;
+  }
+
+  // if we perform tdoa with 2 static beacons
+  if(s[ID]->UWBm[6] == 1){
+  float dist = s[ID]->UWBm[0];
+  filterekf->ekf_update_tdoa(dist, s[ID]->UWBm[1], s[ID]->UWBm[2], s[ID]->UWBm[3], s[ID]->UWBm[4]);
+ // std::cout<<"hybrid tdoa"<<std::endl;
+  }
+  }
+
+  s[ID]->UWBm[5] = 0;
   //UWB measuremend has been 'used', push back 0 to measurement vector
  // beacon_measurement[ID].push_back({0});
   

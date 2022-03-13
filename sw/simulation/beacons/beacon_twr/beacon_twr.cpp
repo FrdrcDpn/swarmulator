@@ -61,28 +61,7 @@ void beacon_twr::measurement(const uint16_t ID){
 
     // Now we loop over the shuffeled beacon state vector and we select 1 enabled and broadcasting beacon
     for (uint16_t ID_b = 0; ID_b < b_0.size(); ID_b++) {
-        // first select beacon 1 
-        if(ID==0){
-        if(b_0[ID_b]->state_b[4] == 1.0 && beacon_1_selected == false && ID+8!=b_0[ID_b]->state_b[6] && int(b_0[ID_b]->state_b[5]) == 0.0){
-            //if we have a static beacon
-           if(b_0[ID_b]->state_b[5]==0.0){
-            x_0 = b_0[ID_b]->state_b[0]; // x-location of static beacon from its state vector
-            y_0 = b_0[ID_b]->state_b[1]; // y-location of static beacon from its state vector
-            x_a_0 = x_0; // for the static beacons we use the static x location as anchor x coordinate
-            y_a_0 = y_0; // for the static beacons we use the static y location as anchor y coordinate
-           }else{
-            x_0 = b_0[ID_b]->state_b[7]; // x-location of dynamic beacon from desired trajectory
-            y_0 = b_0[ID_b]->state_b[8]; // y-location of dynamic beacon from desired trajectory
-            x_a_0 = b_0[ID_b]->state_b[0]; // for the dynamic beacons we use the dymamic x state estimate as anchor x coordinate
-            y_a_0 = b_0[ID_b]->state_b[1]; // for the dynamic beacons we use the dymamic y state estimate as anchor y coordinate
-           }
-           beacon_1_selected = true; // we have selected the beacon
-           static_beacon_1 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
-           float sel_beacon_1 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
-           if(param->terminaloutput()==1.0){
-           std::cout<<"agent "<<ID<<" ranges with beacon "<<sel_beacon_1<<std::endl; // output the selected beacons to terminal (can be commented)
-           }
-        }}else{
+     
             if(b_0[ID_b]->state_b[4] == 1.0 && beacon_1_selected == false && ID+8!=b_0[ID_b]->state_b[6]){
             //if we have a static beacon
            if(b_0[ID_b]->state_b[5]==0.0){
@@ -103,7 +82,7 @@ void beacon_twr::measurement(const uint16_t ID){
            std::cout<<"agent "<<ID<<" ranges with beacon "<<sel_beacon_1<<std::endl; // output the selected beacons to terminal (can be commented)
            }
         }
-   }}
+   }
    
     // if we have selected 1 available beacon during this measurement cycle, continue
     if(beacon_1_selected == true&& simtime_seconds>=next_UWB_measurement_time){
@@ -162,12 +141,6 @@ void beacon_twr::measurement(const uint16_t ID){
 
    s[ID]->UWBm[5] = 1 ;
     
-   }else{
-
-    // if during this cycle no measurement is available, let the EKF know by pusing a 0 
-    //beacon_measurement.push_back(std::vector<std::vector<float>>());
-   // beacon_measurement[ID].push_back(std::vector<float>());
-   // beacon_measurement[ID].push_back({0});
    }
 }
 

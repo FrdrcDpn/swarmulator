@@ -1,4 +1,4 @@
-#include "beacon_tdoa.h"
+#include "beacon_hybrid.h"
 #include "agent.h"
 #include "main.h"
 #include <stdio.h>
@@ -6,8 +6,8 @@
 using namespace std;
 #define EPSILON 0.001
 
-beacon_tdoa::beacon_tdoa() {
-beacon_alg = "beacon_tdoa";
+beacon_hybrid::beacon_hybrid() {
+beacon_alg = "beacon_hybrid";
 
 }
 
@@ -43,9 +43,9 @@ float beacon_tdoa::returnUWBdata(const uint16_t ID, float beacon){
 */
 // measurement function, called by controller at simulation frequency
 // constructs UWB measurement from available UWB beacons
-void beacon_tdoa::measurement(const uint16_t ID){
+void beacon_hybrid::measurement(const uint16_t ID){
     
-    float x_0,y_0,x_1,y_1,dx0,dy0,dx1,dy1,d0,d1,dd,x_a_0,y_a_0,x_a_1,y_a_1;
+    float x_0,y_0,x_1,y_1,dx0,dy0,dx1,dy1,d0,d1,dd, d,x_a_0,y_a_0,x_a_1,y_a_1;
 
     // initial values
     bool static_beacon_1 = false;
@@ -54,7 +54,10 @@ void beacon_tdoa::measurement(const uint16_t ID){
     bool dynamic_beacon_2 = false;
     bool beacon_1_selected = false; 
     bool beacon_2_selected = false; 
-  
+    
+    bool static_tdoa = false; 
+    bool dynamic_twr = false; 
+
     mtx_e.lock();
     // we make a copy of beacon state vector at moment of measurement (freeze in time)
     std::vector<Beacon_gen *> b_0 = b; 
@@ -65,72 +68,68 @@ void beacon_tdoa::measurement(const uint16_t ID){
     // Now we loop over the shuffeled beacon state vector and we select 2 enabled and broadcasting beacons
     for (uint16_t ID_b = 0; ID_b < b_0.size(); ID_b++) {
         // first select beacon 1 
-        
         if(b_0[ID_b]->state_b[4] == 1.0 && beacon_1_selected == false && ID+8!=b_0[ID_b]->state_b[6]){
            //if we have a static beacon
            if(b_0[ID_b]->state_b[5]==0.0){
+            static_tdoa = true; 
             x_0 = b_0[ID_b]->state_b[0]; // x-location of static beacon from its state vector
             y_0 = b_0[ID_b]->state_b[1]; // y-location of static beacon from its state vector
             x_a_0 = x_0; // for the static beacons we use the static x location as anchor x coordinate
             y_a_0 = y_0; // for the static beacons we use the static y location as anchor y coordinate
            }else{
+            dynamic_twr = true; 
             x_0 = b_0[ID_b]->state_b[7]; // x-location of dynamic beacon from desired trajectory
             y_0 = b_0[ID_b]->state_b[8]; // y-location of dynamic beacon from desired trajectory
             x_a_0 = b_0[ID_b]->state_b[0]; // for the dynamic beacons we use the dymamic x state estimate as anchor x coordinate
             y_a_0 = b_0[ID_b]->state_b[1]; // for the dynamic beacons we use the dymamic y state estimate as anchor y coordinate
            }
-           beacon_1_selected = true; // we have selected the beacon
-           static_beacon_1 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
-           dynamic_beacon_1 = bool(b_0[ID_b]->state_b[5]);
-           sel_beacon_1 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
+           // generate tdoa measurements
+           dx0 = s[ID]->state[0] - x_0;
+           dy0 = s[ID]->state[1] - y_0;
+           d0 = sqrt(dx0*dx0 + dy0*dy0);
+
+           if(d0<=param->max_UWB_range()){
+                beacon_1_selected = true; // we have selected the beacon
+                static_beacon_1 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
+                dynamic_beacon_1 = bool(b_0[ID_b]->state_b[5]);
+                sel_beacon_1 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
+           }
         }
-        // now select beacon 2
-        if(b_0[ID_b]->state_b[4] == 1.0 && beacon_1_selected == true && beacon_2_selected == false && sel_beacon_1 != int(b_0[ID_b]->state_b[6])&& ID+8!=b_0[ID_b]->state_b[6]){
-           //if we have a static beacon
-           if(b_0[ID_b]->state_b[5]==0.0){
+        // now select beacon 2 if we do not perform twr with a dynamic beacon
+         
+        // if static beacon, broadcasting, if beacon 1 is selected, if beacon 2 is not selected, if static tdoa is true, if the second beacon is not the same as the first
+        if(dynamic_twr!= true && b_0[ID_b]->state_b[5]==0.0 && b_0[ID_b]->state_b[4] == 1.0 && beacon_1_selected == true && beacon_2_selected == false && static_tdoa == true && sel_beacon_1 != int(b_0[ID_b]->state_b[6])){
             x_1 = b_0[ID_b]->state_b[0]; // x-location of static beacon from its state vector
             y_1 = b_0[ID_b]->state_b[1]; // y-location of static beacon from its state vector
             x_a_1 = x_1; // for the static beacons we use the static x location as anchor x coordinate
             y_a_1 = y_1; // for the static beacons we use the static y location as anchor y coordinate
-           }else{
-            x_1 = b_0[ID_b]->state_b[7]; // x-location of dynamic beacon from desired trajectory
-            y_1 = b_0[ID_b]->state_b[8]; // y-location of dynamic beacon from desired trajectory
-            x_a_1 = b_0[ID_b]->state_b[0]; // for the dynamic beacons we use the dymamic x state estimate as anchor x coordinate
-            y_a_1 = b_0[ID_b]->state_b[1]; // for the dynamic beacons we use the dymamic y state estimate as anchor y coordinate
-           }
-           beacon_2_selected = true; // we have selected the beacon
-           static_beacon_2 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
-           dynamic_beacon_2 = bool(b_0[ID_b]->state_b[5]); 
-           float sel_beacon_2 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
-           if(param->terminaloutput()==1.0){
-           std::cout<<"agent "<<ID<<" ranges with beacon "<<sel_beacon_1<<std::endl; // output the selected beacons to terminal (can be commented)
-           std::cout<<"agent "<<ID<<" ranges with beacon "<<sel_beacon_2<<std::endl; // output the selected beacons to terminal (can be commented)
-           }
-        }}
-   
+            // generate tdoa measurements
+            dx1 = s[ID]->state[0] - x_1;
+            dy1 = s[ID]->state[1] - y_1;
+            d1 = sqrt(dx1*dx1 + dy1*dy1);
+
+            if(d1<=param->max_UWB_range()){
+                beacon_2_selected = true; // we have selected the beacon
+                static_beacon_2 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
+                dynamic_beacon_2 = bool(b_0[ID_b]->state_b[5]); 
+                float sel_beacon_2 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
+                if(param->terminaloutput()==1.0){
+                std::cout<<"agent "<<ID<<" ranges with beacon "<<sel_beacon_1<<std::endl; // output the selected beacons to terminal (can be commented)
+                std::cout<<"agent "<<ID<<" ranges with beacon "<<sel_beacon_2<<std::endl; // output the selected beacons to terminal (can be commented)
+                }
+            }
+           
+        }
+        }
    
     
-    // if we have selected 2 available beacons during this measurement cycle, continue
-    if(beacon_1_selected == true && beacon_2_selected == true && simtime_seconds>=next_UWB_measurement_time){
+    // if we have selected 2 available beacons during this measurement cycle, continue with tdoa 
+    if(static_tdoa == true && dynamic_twr == false && beacon_1_selected == true && beacon_2_selected == true && simtime_seconds>=next_UWB_measurement_time){
         next_UWB_measurement_time = next_UWB_measurement_time + 1.0/param->UWB_frequency();
+
     // generate tdoa measurements
-    dx0 = s[ID]->state[0] - x_0;
-    dy0 = s[ID]->state[1] - y_0;
-
-    dx1 = s[ID]->state[0] - x_1;
-    dy1 = s[ID]->state[1] - y_1;
-
-    d0 = sqrt(dx0*dx0 + dy0*dy0);
-    d1 = sqrt(dx1*dx1 + dy1*dy1);
     dd = d1-d0;
 
-    //initialise uwb dataset to be used by EKF
-   // mtx_bcn.lock();
-   
-    //UWB.push_back(std::vector<std::vector<float>>());
-   // UWB[ID].push_back(std::vector<float>());
-    
-  //  mtx_bcn.unlock();
     //add preferred noise on top of tdoa measurements, defined in parameters file
     if (param->noise_type() == 0){
         // tdoa measurement, x beacon1, y beacon1, x beacon2, y beacon2, simulation time
@@ -191,15 +190,70 @@ void beacon_tdoa::measurement(const uint16_t ID){
    // mtx_e.lock();
     //beacon_measurement.push_back(std::vector<std::vector<float>>());
     //beacon_measurement[ID].push_back(std::vector<float>());
-    s[ID]->UWBm.at(5) = 1 ;
+    s[ID]->UWBm[5] = 1 ;
+    s[ID]->UWBm[6] = 1 ; // we have pushed a tdoa measurement let ekf know
    // beacon_measurement[ID].push_back({1});
    // mtx_e.unlock();
     
    }
+
+   // if we have selected 1 available dynamic beacon during this measurement cycle, continue twr
+    if(dynamic_twr == true && static_tdoa == false && beacon_1_selected == true && simtime_seconds>=next_UWB_measurement_time){
+    next_UWB_measurement_time = next_UWB_measurement_time + 1.0/param->UWB_frequency();
+    //initialise uwb dataset to be used by EKF
+   // mtx_bcn.lock();
+   // UWB.push_back(std::vector<std::vector<float>>());
+   // UWB[ID].push_back(std::vector<float>());
+
+    //add preferred noise on top of tdoa measurements, defined in parameters file
+    if (param->noise_type() == 0){
+        // twr measurement, x beacon, y beacon, simulation time
+        s[ID]->UWBm[0] = d0;
+        s[ID]->UWBm[1] = x_a_0;
+        s[ID]->UWBm[2] = y_a_0;
+       // UWB[ID].push_back({d,x_a_0, y_a_0, simtime_seconds});
+       // mtx_bcn.unlock();
+    }
+    else if (param->noise_type() == 1){
+        s[ID]->UWBm[0] = add_gaussian_noise(d0);
+        s[ID]->UWBm[1] = x_a_0;
+        s[ID]->UWBm[2] = y_a_0;
+        // twr measurement, x beacon, y beacon, simulation time
+       // UWB[ID].push_back({add_gaussian_noise(d),x_a_0, y_a_0, simtime_seconds});
+       // mtx_bcn.unlock();
+    }
+    else if (param->noise_type() == 2){
+        s[ID]->UWBm[0] = add_ht_cauchy_noise(d0);
+        s[ID]->UWBm[1] = x_a_0;
+        s[ID]->UWBm[2] = y_a_0;
+        // twr measurement, x beacon, y beacon, simulation time
+       // UWB[ID].push_back({add_ht_cauchy_noise(d),x_a_0, y_a_0, simtime_seconds});
+      //  mtx_bcn.unlock();
+    }
+    else if (param->noise_type() == 3){
+        s[ID]->UWBm[0] = add_ht_gamma_noise(d0);
+        s[ID]->UWBm[1] = x_a_0;
+        s[ID]->UWBm[2] = y_a_0;
+        // twr measurement, x beacon, y beacon, simulation time
+       // UWB[ID].push_back({add_ht_gamma_noise(d),x_a_0, y_a_0, simtime_seconds});
+       // mtx_bcn.unlock();
+    }
+    if(param->terminaloutput()==1.0){
+    // output to terminal whether the selected beacons are dynamic or static (can be commented)
+    std::cout<<"dynamic beacon_1 "<<dynamic_beacon_1<<" static beacon_1 "<<static_beacon_1<<std::endl;
+    }
+    // if during this cycle a measurement is available, let the EKF know by pusing a 1 
+  //  beacon_measurement.push_back(std::vector<std::vector<float>>());
+   // beacon_measurement[ID].push_back(std::vector<float>());
+   // beacon_measurement[ID].push_back({1});
+
+   s[ID]->UWBm[5] = 1 ;
+   s[ID]->UWBm[6] = 0 ; // we have pushed a twr measurement let ekf know
+   }
 }
    
 // function to add gaussian noise to UWB measurements
-float beacon_tdoa::add_gaussian_noise(float value) {
+float beacon_hybrid::add_gaussian_noise(float value) {
     float noisy_value;
     float mean = 0;
   
@@ -216,7 +270,7 @@ float beacon_tdoa::add_gaussian_noise(float value) {
 }
 
 //our cauchy cdf function to be used with our Newton Raphson solving method, to solve for noise
-double beacon_tdoa::cdf_ht_cauchy(double x)
+double beacon_hybrid::cdf_ht_cauchy(double x)
 {
    // generate our random variable
     float tmp = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
@@ -229,7 +283,7 @@ double beacon_tdoa::cdf_ht_cauchy(double x)
 }
 
 // the derivative of our cauchy cdf function to be used with our Newton Raphson solving method, to solve for noise
-double beacon_tdoa::deriv_cdf_ht_cauchy(double x)
+double beacon_hybrid::deriv_cdf_ht_cauchy(double x)
 {
     float gauss = (1-param->htc_ratio())*(1/((sqrt(2*M_PI))*param->gauss_sigma()))*exp((-(x*x)/(2*param->gauss_sigma()*param->gauss_sigma())));
     //cauchy cdf
@@ -239,7 +293,7 @@ double beacon_tdoa::deriv_cdf_ht_cauchy(double x)
 }
 
 //our ht_cauchy noise function, that solves for heavy tailed noise using Newton Rapson's method
-float beacon_tdoa::add_ht_cauchy_noise(float value){
+float beacon_hybrid::add_ht_cauchy_noise(float value){
 
     //our starting estimate to solve the cdf using Newton Raphson's method
     double x = 0; 
@@ -255,7 +309,7 @@ float beacon_tdoa::add_ht_cauchy_noise(float value){
 }
 
 //our gamma cdf function to be used with our Newton Raphson solving method, to solve for noise
-double beacon_tdoa::cdf_ht_gamma(double x)
+double beacon_hybrid::cdf_ht_gamma(double x)
 {
     // generate our random variable
     float tmp = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
@@ -270,7 +324,7 @@ double beacon_tdoa::cdf_ht_gamma(double x)
 }
 
 //the derivative of our gamma cdf function to be used with our Newton Raphson solving method, to solve for noise
-double beacon_tdoa::deriv_cdf_ht_gamma(double x)
+double beacon_hybrid::deriv_cdf_ht_gamma(double x)
 {
     //our gamma cdf
     float gamma = (((1/(sqrt(2*M_PI)*param->gauss_sigma()))*exp((-(x-param->htg_mu())*(x-param->htg_mu()))
@@ -283,7 +337,7 @@ double beacon_tdoa::deriv_cdf_ht_gamma(double x)
 }
 
 //our ht_gamma noise function, that solves for heavy tailed noise using Newton Rapson's method
-float beacon_tdoa::add_ht_gamma_noise(float value){
+float beacon_hybrid::add_ht_gamma_noise(float value){
 
     //our starting estimate to solve the cdf using Newton Raphson's method
     double x = 0; 

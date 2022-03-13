@@ -24,6 +24,7 @@
       <xs:element name="trajectory_frequency" type="xs:float"/>
       <xs:element name="UWB_frequency" type="xs:float"/>
       <xs:element name="UWB_signal_length" type="xs:float"/>
+      <xs:element name="max_UWB_range" type="xs:float"/>
       <xs:element name="beacon_1_en" type="xs:float"/>
       <xs:element name="beacon_2_en" type="xs:float"/>
       <xs:element name="beacon_3_en" type="xs:float"/>

@@ -30,6 +30,16 @@ UWBSIM_controller::UWBSIM_controller(): Controller()
         cout << "Unable to open file";
         exit(1); // terminate with error
     }
+    inFile4.open("sw/simulation/controllers/UWBSIM_controller/xyTrajectory4.txt");
+    if (!inFile4) {
+        cout << "Unable to open file";
+        exit(1); // terminate with error
+    }
+    inFile5.open("sw/simulation/controllers/UWBSIM_controller/xyTrajectory5.txt");
+    if (!inFile5) {
+        cout << "Unable to open file";
+        exit(1); // terminate with error
+    }
    
 }
 
@@ -71,68 +81,98 @@ filter.run(ID);
 
 }
 
-if(ID == 0 && moving_1 == false && moving_2 == false){
+if(s.size() == 4){
+moving_1 = true;
+moving_2 = true;
+moving_3 = true;
+moving_4 = true; 
+}
+if(s.size() == 3){
+moving_1 = true;
+moving_2 = true;
+moving_3 = true;
+moving_4 = true; 
+}
+if(s.size() == 2){
+moving_1 = true;
+moving_2 = true;
+moving_3 = true;
+moving_4 = true; 
+}
+if(s.size() == 1){
+moving_1 = true;
+moving_2 = true;
+moving_3 = true;
+moving_4 = true; 
+}
+
+if(ID == 4){
   if(simtime_seconds>=next_trajectory_time){
   next_trajectory_time = simtime_seconds + 1.0/param->trajectory_frequency() ;
   // while trajectory file is not end of file yet
-  if(!inFile2.eof())  // EOF is false here
+  if(!inFile5.eof())  // EOF is false here
   {
-      inFile2 >> v_x >> v_y; 
+      inFile5 >> v_x >> v_y; 
       
   }else{
     moving_1 = true;
-    v_x = -1.5;
-    v_y = -1.5;
+    v_x = 0;
+    v_y = -3;
     
   }
 }}
 
-if(ID == 1 &&  moving_1 == true && moving_2 == false){
+if(ID == 3 && moving_1 == true){
+  if(simtime_seconds>=next_trajectory_time){
+  next_trajectory_time = simtime_seconds + 1.0/param->trajectory_frequency() ;
+  // while trajectory file is not end of file yet
+  if(!inFile4.eof())  // EOF is false here
+  {
+      inFile4 >> v_x >> v_y; 
+      
+  }else{
+    moving_2 = true;
+    v_x = 0;
+    v_y = 3;
+    
+  }
+}}
+
+if(ID == 2 && moving_1 == true && moving_2 == true){
   if(simtime_seconds>=next_trajectory_time){
   next_trajectory_time = simtime_seconds + 1.0/param->trajectory_frequency() ;
   // while trajectory file is not end of file yet
   if(!inFile3.eof())  // EOF is false here
   {
-      inFile3 >> v_x >> v_y;   
+      inFile3 >> v_x >> v_y; 
+      
+  }else{
+    moving_3 = true;
+    v_x = 3;
+    v_y = 0;
+    
+  }
+}}
+
+if(ID == 1 && moving_1 == true && moving_2 == true && moving_3 == true ){
+  if(simtime_seconds>=next_trajectory_time){
+  next_trajectory_time = simtime_seconds + 1.0/param->trajectory_frequency() ;
+  // while trajectory file is not end of file yet
+  if(!inFile2.eof())  // EOF is false here
+  {
+      inFile2 >> v_x >> v_y;   
        
       
   }else{
-    moving_2 = true;
-    v_x = 0;
-    v_y = 4;
+    moving_4 = true;
+    v_x = -3;
+    v_y = 0;
     
   }
 
 }}
 
-
-if(ID == 0 && (moving_1 == true)){
-  
-    v_x = -4;
-    v_y = -0;
-  }
-
-if(ID == 1 && (moving_2 == true)){
-  
-    v_x = 0;
-    v_y = 4;
-  }
-
-if(ID == 1 && (moving_1 == false && moving_2 == false)){
-  
-    v_x = 0;
-    v_y = 0;
-    
-  }
-if(ID == 2 && (moving_1 == false || moving_2 == false)){
-  
-    v_x = 0;
-    v_y = 0;
-    
-  }
-
-
-if(ID == 2 && moving_1 == true && moving_2 == true ){
+if(ID == 0 && moving_1 == true && moving_2 == true && moving_3 == true && moving_4 == true){
 
 if( simtime_seconds>=next_trajectory_time){
   next_trajectory_time = simtime_seconds + 1.0/param->trajectory_frequency() ; 
@@ -142,12 +182,13 @@ if( simtime_seconds>=next_trajectory_time){
       inFile1 >> v_x >> v_y;    
       
   }else{
-    v_x = -4;
-    v_y = -0;
+    v_x = -1.5;
+    v_y = 1.5;
     
     program_running = false;
   }
-}}
+}
+}
 
 
   if(param->terminaloutput()==1.0){

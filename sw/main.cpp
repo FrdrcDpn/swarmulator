@@ -35,6 +35,8 @@ std::unique_ptr<parameters_t> param(parameters("conf/parameters.xml", xml_schema
  */
 bool moving_1 = false;
 bool moving_2 = false;
+bool moving_3 = false;
+bool moving_4 = false;
 uint nagents; // Number of agents in the simulation
 std::vector<Agent *> s; // Set up the agents
 std::vector<Beacon_gen *> b; // Set up the becons

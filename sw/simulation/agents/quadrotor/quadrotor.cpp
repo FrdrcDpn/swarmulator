@@ -23,7 +23,8 @@ quadrotor::quadrotor(int i, std::vector<float> s, float tstep)
   state_desired_traj = s;
   UWBm = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
   controller_states = {0.0, 0.0, 0.0,0.0, 0.0, 0.0,0.0, 0.0, 0.0};
- 
+  x = state[0];
+  y = state[1];
  
 }
 std::vector<float> quadrotor::state_update(std::vector<float> state)

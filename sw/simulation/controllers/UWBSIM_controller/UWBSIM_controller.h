@@ -15,6 +15,8 @@ class UWBSIM_controller: public Controller
 	std::ifstream inFile1;
 	std::ifstream inFile2;
 	std::ifstream inFile3;
+	std::ifstream inFile4;
+	std::ifstream inFile5;
 	
 	
 public:
