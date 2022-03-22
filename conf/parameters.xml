@@ -16,21 +16,21 @@
   <Kpz>2</Kpz>
   <Kiz>0.01</Kiz>
   <Kdz>1</Kdz>
-  <enable_UWB>1</enable_UWB>
-  <dynamic_beacons>1</dynamic_beacons>
-  <EKF_frequency>250</EKF_frequency> 
+  <enable_UWB>0</enable_UWB>
+  <dynamic_beacons>0</dynamic_beacons>
+  <EKF_frequency>1000</EKF_frequency> 
   <IMU_frequency>1000</IMU_frequency> 
   <trajectory_frequency>100</trajectory_frequency> 
   <UWB_frequency>80</UWB_frequency> 
   <UWB_signal_length>0.01</UWB_signal_length>
-  <max_UWB_range>5.5</max_UWB_range>
+  <max_UWB_range>4</max_UWB_range>
   <beacon_1_en>1</beacon_1_en>
-  <beacon_2_en>1</beacon_2_en>
+  <beacon_2_en>0</beacon_2_en>
   <beacon_3_en>1</beacon_3_en>
-  <beacon_4_en>1</beacon_4_en>
-  <beacon_5_en>0</beacon_5_en>
+  <beacon_4_en>0</beacon_4_en>
+  <beacon_5_en>1</beacon_5_en>
   <beacon_6_en>1</beacon_6_en>
-  <beacon_7_en>0</beacon_7_en>
+  <beacon_7_en>1</beacon_7_en>
   <beacon_8_en>1</beacon_8_en>
   <beacon_1_freq>100</beacon_1_freq>
   <beacon_2_freq>100</beacon_2_freq>
@@ -40,7 +40,8 @@
   <beacon_6_freq>100</beacon_6_freq>
   <beacon_7_freq>100</beacon_7_freq>
   <beacon_8_freq>100</beacon_8_freq>
-  <beacon_dynamic_freq>150</beacon_dynamic_freq>
+  <beacon_dynamic_freq>100</beacon_dynamic_freq>
+  <dynamic_cov_approach>1</dynamic_cov_approach>
   <x_beacon_1>5</x_beacon_1>
   <y_beacon_1>5</y_beacon_1>
   <x_beacon_2>5</x_beacon_2>

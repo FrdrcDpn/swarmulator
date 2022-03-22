@@ -9,7 +9,8 @@ class ekf_state_estimator
   
 public:
   struct speed speed; 
-  struct pos pos; 
+  struct pos pos;
+  struct cov cov; 
   bool initialized;
   uint16_t ID;
   float simtime_seconds_store;

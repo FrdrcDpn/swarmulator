@@ -45,7 +45,7 @@ float beacon_tdoa::returnUWBdata(const uint16_t ID, float beacon){
 // constructs UWB measurement from available UWB beacons
 void beacon_hybrid::measurement(const uint16_t ID){
     
-    float x_0,y_0,x_1,y_1,dx0,dy0,dx1,dy1,d0,d1,dd, d,x_a_0,y_a_0,x_a_1,y_a_1;
+    float x_0,y_0,x_1,y_1,dx0,dy0,dx1,dy1,d0,d1,dd, d,x_a_0,y_a_0,x_a_1,y_a_1,cov1, cov2;
 
     // initial values
     bool static_beacon_1 = false;
@@ -78,6 +78,8 @@ void beacon_hybrid::measurement(const uint16_t ID){
             y_a_0 = y_0; // for the static beacons we use the static y location as anchor y coordinate
            }else{
             dynamic_twr = true; 
+            cov1 = b_0[ID_b]->state_b[9]; // get the x covariance value of the dynamic beacon
+            cov2 = b_0[ID_b]->state_b[10]; // get the y covariance value of the dynamic beacon
             x_0 = b_0[ID_b]->state_b[7]; // x-location of dynamic beacon from desired trajectory
             y_0 = b_0[ID_b]->state_b[8]; // y-location of dynamic beacon from desired trajectory
             x_a_0 = b_0[ID_b]->state_b[0]; // for the dynamic beacons we use the dymamic x state estimate as anchor x coordinate
@@ -211,6 +213,7 @@ void beacon_hybrid::measurement(const uint16_t ID){
         s[ID]->UWBm[0] = d0;
         s[ID]->UWBm[1] = x_a_0;
         s[ID]->UWBm[2] = y_a_0;
+       
        // UWB[ID].push_back({d,x_a_0, y_a_0, simtime_seconds});
        // mtx_bcn.unlock();
     }
@@ -247,6 +250,11 @@ void beacon_hybrid::measurement(const uint16_t ID){
    // beacon_measurement[ID].push_back(std::vector<float>());
    // beacon_measurement[ID].push_back({1});
 
+
+    //also pass the covariance matrix x and y values of the dynamic beacon
+    s[ID]->UWBm[7] = cov1;
+    s[ID]->UWBm[8] = cov2;
+
    s[ID]->UWBm[5] = 1 ;
    s[ID]->UWBm[6] = 0 ; // we have pushed a twr measurement let ekf know
    }
@@ -255,7 +263,7 @@ void beacon_hybrid::measurement(const uint16_t ID){
 // function to add gaussian noise to UWB measurements
 float beacon_hybrid::add_gaussian_noise(float value) {
     float noisy_value;
-    float mean = 0;
+    float mean = 0.3;
   
     // Random seed
     random_device rd;

@@ -20,8 +20,9 @@ quadrotor::quadrotor(int i, std::vector<float> s, float tstep)
   state_estimate = s;
   imu_state_estimate = s;
   ekf_estimate = s;
+  Cov = s; 
   state_desired_traj = s;
-  UWBm = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  UWBm = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0,0.0};
   controller_states = {0.0, 0.0, 0.0,0.0, 0.0, 0.0,0.0, 0.0, 0.0};
   x = state[0];
   y = state[1];
@@ -30,15 +31,16 @@ quadrotor::quadrotor(int i, std::vector<float> s, float tstep)
 std::vector<float> quadrotor::state_update(std::vector<float> state)
 {
   
-  
-
   std::random_device rd;     // only used once to initialise (seed) engine
   std::mt19937 gen(rd());    // random-number engine used (Mersenne-Twister in this case)
   std::normal_distribution<float> dis(0, param->noise_motor_sigma());
   std::normal_distribution<float> dist(0, param->acc_noise_sigma());
   
+  
 
 if(simtime_seconds>=next_IMU_measurement_time){
+
+
 float timestep = 1.0/param->IMU_frequency();
 next_IMU_measurement_time = next_IMU_measurement_time + 1.0/param->IMU_frequency() ;
 //update our state using IMU data (add noise on acceleration term)

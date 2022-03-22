@@ -42,7 +42,8 @@ std::vector<float> Beacon_gen::beacon_dynamic_state_update(std::vector<float> st
       state_b[1] = s[ID_b-8]->state_estimate[1];
       state_b[7] = s[ID_b-8]->state[0]; 
       state_b[8] = s[ID_b-8]->state[1];
-      
+      state_b[9] = s[ID_b-8]->Cov[0];
+      state_b[10] = s[ID_b-8]->Cov[3];
     }
   return state_b;
 }

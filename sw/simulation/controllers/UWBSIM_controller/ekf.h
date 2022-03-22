@@ -16,11 +16,23 @@ struct speed
    float vy;
    float vz;
 };
+
+struct cov
+{
+   float c1;
+   float c2;
+   float c3;
+   float c4;
+   float c5;
+   float c6;
+};
+
 class ekf
 {
   // let's first define our matrices
 private:
   Eigen::MatrixXf X{6,1};
+  Eigen::MatrixXf I{6,6};
   Eigen::MatrixXf Z{4,1};
   Eigen::MatrixXf Zm{4,1};
   Eigen::MatrixXf dfdx{6,6};
@@ -49,6 +61,7 @@ public:
   struct pos ekf_get_pos(); 
 
   struct speed ekf_get_speed();
+  struct cov ekf_get_cov();
 
   void ekf_predict(const uint16_t ID, float dt);
 

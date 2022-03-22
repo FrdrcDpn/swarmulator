@@ -32,6 +32,7 @@ public:
   float dt;
   std::vector<float> state; // State vector
   std::vector<float> UWBm; // State vector
+  std::vector<float> Cov; // Covariance vector
   std::vector<float> state_estimate; // State vector
   std::vector<float> imu_state_estimate; // State vector
   std::vector<float> prev_imu_state_estimate; // State vector

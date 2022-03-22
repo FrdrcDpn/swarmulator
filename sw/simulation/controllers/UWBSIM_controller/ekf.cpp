@@ -6,17 +6,17 @@
 #include "trigonometry.h"
 #include <random>
 
-#define PN_X 1.0f 
+#define PN_X 1.0f
 #define PN_Y 1.0f
 #define PN_VX 1.0f
 #define PN_VY 1.0f
 #define PN_AX 1.0f
 #define PN_AY 1.0f
 
-#define S_TDOA 0.1f
-#define S_TWR 0.3f
-#define S_AX 0.1f
-#define S_AY 0.1f
+#define S_TDOA 0.025f
+#define S_TWR 0.05f
+#define S_AX 0.01f
+#define S_AY 0.01f
 
 
 ekf::ekf()
@@ -43,6 +43,16 @@ struct speed ekf::ekf_get_speed(){
   return result; 
 }
 
+struct cov ekf::ekf_get_cov(){
+  struct cov result;
+  result.c1 = P(0,0);
+  result.c2 = P(1,1);
+  result.c3 = P(2,2);
+  result.c4 = P(3,3);
+  result.c5 = P(4,4);
+  result.c6 = P(5,5);
+  return result; 
+}
 
 void ekf::init_ekf(float dt, float posx, float posy, float velx, float vely, float accx, float accy){
 
@@ -97,6 +107,12 @@ dfdu << 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 1;
 
+I <<    1, 0, 0, 0, 0, 0,
+        0, 1, 0, 0, 0, 0,
+        0, 0, 1, 0, 0, 0,
+        0, 0, 0, 1, 0, 0,
+        0, 0, 0, 0, 1, 0,
+        0, 0, 0, 0, 0, 1;
 
 dhdn << 1, 0, 0, 0,
         0, 1, 0, 0,
@@ -111,6 +127,8 @@ dhdx << 0, 0, 0, 0, 0, 0,
 
 void ekf::ekf_predict(const uint16_t ID, float dt){
 
+//std::cout<<P<<std::endl;
+//std::cout<<"-----------------"<<std::endl;
 dfdx << 1, dt, dt*dt/2, 0, 0, 0,
         0, 1, dt, 0, 0, 0,
         0, 0, 1, 0, 0, 0,
@@ -133,10 +151,7 @@ P = dfdx * P * dfdx.transpose() + dfdu * Q * dfdu.transpose();
 void ekf::ekf_update_acc(float ax, float ay){
 
 // build Jacobian of observation model for anchor i
-dhdn << 0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 0;
+
 
 dhdx << 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0,
@@ -159,10 +174,14 @@ K = P*(dhdx.transpose())*((dhdx*P*(dhdx.transpose()) + dhdn*R*(dhdn.transpose())
 
 // update the state
 X = X + K*(Z-Zm);
+
+//update state covariance
+P = (I-K*dhdx)*P;
+
 }
 
 void ekf::ekf_update_twr(float dist, float anchor_x, float anchor_y){
-
+//std::cout<<"TWR"<<std::endl;
 float dx = X(0,0) - anchor_x;
 float dy = X(3,0) - anchor_y;
 
@@ -191,11 +210,14 @@ K = P*(dhdx.transpose())*((dhdx*P*(dhdx.transpose()) + dhdn*R*(dhdn.transpose())
 
 // update the state
 X = X + K*(Z-Zm);
+
+//update state covariance
+P = (I-K*dhdx)*P;
 }
 
 
 void ekf::ekf_update_tdoa(float dist, float anchor_0x, float anchor_0y, float anchor_1x, float anchor_1y){
-
+//std::cout<<"TDOA"<<std::endl;
 float dx0 = X(0,0) - anchor_0x;
 float dy0 = X(3,0) - anchor_0y;
 
@@ -212,6 +234,8 @@ dhdx << (dx1 / d1 - dx0 / d0), 0, 0, (dy1 / d1 - dy0 / d0), 0, 0,
         0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0;
+
+
 
 // our tdoa measurement
 Z << dist,
@@ -230,4 +254,7 @@ K = P*(dhdx.transpose())*(  (dhdx*P*(dhdx.transpose()) + dhdn*R*(dhdn.transpose(
 
 // update the state
 X = X + K*(Z-Zm);
+
+//update state covariance
+P = (I-K*dhdx)*P;
 }
