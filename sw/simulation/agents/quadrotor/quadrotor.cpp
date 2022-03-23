@@ -9,6 +9,7 @@
 #include <vector>
 #include <random>
 
+ 
 quadrotor::quadrotor(int i, std::vector<float> s, float tstep)
 {
   state = s;
@@ -24,25 +25,24 @@ quadrotor::quadrotor(int i, std::vector<float> s, float tstep)
   state_desired_traj = s;
   UWBm = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0,0.0};
   controller_states = {0.0, 0.0, 0.0,0.0, 0.0, 0.0,0.0, 0.0, 0.0};
-  x = state[0];
-  y = state[1];
+  next_IMU_measurement_time = simtime_seconds;
+  //x = state[0];
+  //y = state[1];
  
 }
 std::vector<float> quadrotor::state_update(std::vector<float> state)
 {
-  
+  std::default_random_engine generator;
+  std::normal_distribution<float> distribution(0,param->acc_noise_sigma());
+  noise_x = distribution(generator);
+  noise_y = distribution(generator);
+
   std::random_device rd;     // only used once to initialise (seed) engine
   std::mt19937 gen(rd());    // random-number engine used (Mersenne-Twister in this case)
   std::normal_distribution<float> dis(0, param->noise_motor_sigma());
-  std::normal_distribution<float> dist(0, param->acc_noise_sigma());
   
-  
-
 if(simtime_seconds>=next_IMU_measurement_time){
-
-
-float timestep = 1.0/param->IMU_frequency();
-next_IMU_measurement_time = next_IMU_measurement_time + 1.0/param->IMU_frequency() ;
+next_IMU_measurement_time = next_IMU_measurement_time + param->IMU_timestep() ;
 //update our state using IMU data (add noise on acceleration term)
   // Initialise our state without noise (1x)
   if(param->terminaloutput()==1.0){
@@ -52,12 +52,15 @@ next_IMU_measurement_time = next_IMU_measurement_time + 1.0/param->IMU_frequency
   //std::mt19937 gen(rd());    // random-number engine used (Mersenne-Twister in this case)
   //std::normal_distribution<float> dist(0, param->acc_noise_sigma());
   
+
     // Acceleration
-  imu_state_estimate[4] = state[4] + dist(gen); // Acceleration x
-  imu_state_estimate[5] = state[5] + dist(gen); // Acceleration y
-  
-  
+  imu_state_estimate[4] = state[4]+ noise_x; // Acceleration x
+  imu_state_estimate[5] = state[5]+ noise_y; // Acceleration y
+
+  //std::cout<<ID<<" "<<imu_state_estimate[4]<<" "<<state[4]<<" "<<imu_state_estimate[4]-state[4]<<" "<<noise<<std::endl;
   }
+
+  
   // y+ towards East
   //beacon->dynamic_beacon_update(ID);
   beacon->measurement(ID);
@@ -98,11 +101,11 @@ next_IMU_measurement_time = next_IMU_measurement_time + 1.0/param->IMU_frequency
   float Kdx = param->Kdx(); 
   float Kix = param->Kix(); 
 
-  if(dDesiredX > 1){
-    dDesiredX = 1; 
+  if(dDesiredX > 1.0){
+    dDesiredX = 1.0; 
   }
-   if(dDesiredX < -1){
-    dDesiredX = -1; 
+   if(dDesiredX < -1.0){
+    dDesiredX = -1.0; 
   }
 
   float Ux = Kpx*( DesiredX - state_estimate[0] ) + Kdx*( dDesiredX - state_estimate[2] ) + Kix*errorSumX ;
@@ -120,11 +123,11 @@ next_IMU_measurement_time = next_IMU_measurement_time + 1.0/param->IMU_frequency
   float Kiy = param->Kiy();
 
 
-  if(dDesiredY > 1){
-    dDesiredY = 1; 
+  if(dDesiredY > 1.0){
+    dDesiredY = 1.0; 
   }
-   if(dDesiredY < -1){
-    dDesiredY = -1; 
+   if(dDesiredY < -1.0){
+    dDesiredY = -1.0; 
   }
 
   float Uy = Kpy*(DesiredY - state_estimate[1]) + Kdy*( dDesiredY - state_estimate[3]) + Kiy*errorSumY ;

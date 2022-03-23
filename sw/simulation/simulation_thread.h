@@ -139,7 +139,7 @@ void main_simulation_thread(int argc, char *argv[], std::string id)
 
       if(ID == 1){
       x0[ID] = 0.0;
-      y0[ID] =  0.0;
+      y0[ID] = 0.0;
       }
 
       if(ID == 2){

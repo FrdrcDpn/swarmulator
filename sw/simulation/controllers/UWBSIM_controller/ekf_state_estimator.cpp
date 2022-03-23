@@ -13,7 +13,7 @@
 // Initialiser
 ekf_state_estimator::ekf_state_estimator()
 {
-  
+  //simtime_seconds_store = simtime_seconds;
   initialized = false;
 };
 
@@ -23,8 +23,8 @@ void ekf_state_estimator::init_ekf_filter()
   //initialise the ekf with 0 values
 //  ekf_range_init(&ekf, EKF_P0_POS, EKF_P0_SPEED,
     //  EKF_Q, EKF_R_DIST, EKF_R_SPEED, 0.1f);
-
-  filterekf->init_ekf(0.1f, s[ID]->state[0], s[ID]->state[1], s[ID]->state[2], s[ID]->state[3], s[ID]->state[4], s[ID]->state[5]);
+  float dt = simtime_seconds ;
+  filterekf->init_ekf(param->EKF_timestep(), s[ID]->state[0], s[ID]->state[1], s[ID]->state[2], s[ID]->state[3], s[ID]->state[4], s[ID]->state[5]);
   // Initialise the EKF struct by setting the state to our estimate
   //pos={s[ID]->state[0], s[ID]->state[1], 0.f };
   //speed={s[ID]->state[2], s[ID]->state[3], 0.f };
@@ -45,8 +45,9 @@ void ekf_state_estimator::run_ekf_filter()
   //speed={s[ID]->imu_state_estimate[2], s[ID]->imu_state_estimate[3], 0.f };
   //ekf_range_set_state(&ekf,pos,speed);
   // prediction step
-   std::cout<<"PREDICT"<<std::endl;
-  filterekf->ekf_predict( ID, dt);
+  
+  filterekf->ekf_predict(ID, param->EKF_timestep());
+    
   // IMU update step
   //ekf_range_update_scalar(&ekf,s.at(ID)->imu_state_estimate[0], s.at(ID)->imu_state_estimate[1],0.0);
 

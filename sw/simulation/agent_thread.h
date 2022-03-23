@@ -30,11 +30,12 @@ void run_agent_simulation_step(const int &ID)
 
     bool ready = (s.size() == nagents || simtime_seconds > 0.);
     if (ready) {
+    
       mtx.lock_shared();
       std::vector<float> s_0 = s.at(ID)->state;
       std::vector<float> s_n = s.at(ID)->state_update(s_0); // State update
       mtx.unlock_shared();
-
+      
       /****** Wall physics engine ********/
       // The dynamics are updated unless the robot crashes into a wall, at which point the velocity and acceleration are set to 0.
       // The crash into a wall is detected by checking whether the robot is near a wall and the velocity vector intersects with the wall.

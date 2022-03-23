@@ -19,8 +19,8 @@
       <xs:element name="Kdz" type="xs:float"/>
       <xs:element name="enable_UWB" type="xs:float"/>
       <xs:element name="dynamic_beacons" type="xs:float"/>
-      <xs:element name="EKF_frequency" type="xs:float"/>
-      <xs:element name="IMU_frequency" type="xs:float"/>
+      <xs:element name="EKF_timestep" type="xs:float"/>
+      <xs:element name="IMU_timestep" type="xs:float"/>
       <xs:element name="trajectory_frequency" type="xs:float"/>
       <xs:element name="UWB_frequency" type="xs:float"/>
       <xs:element name="UWB_signal_length" type="xs:float"/>

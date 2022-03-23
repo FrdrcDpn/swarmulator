@@ -125,10 +125,9 @@ dhdx << 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0;
 }
 
-void ekf::ekf_predict(const uint16_t ID, float dt){
+void ekf::ekf_predict(uint16_t ID, float dt){
 
-//std::cout<<P<<std::endl;
-//std::cout<<"-----------------"<<std::endl;
+
 dfdx << 1, dt, dt*dt/2, 0, 0, 0,
         0, 1, dt, 0, 0, 0,
         0, 0, 1, 0, 0, 0,
@@ -151,7 +150,6 @@ P = dfdx * P * dfdx.transpose() + dfdu * Q * dfdu.transpose();
 void ekf::ekf_update_acc(float ax, float ay){
 
 // build Jacobian of observation model for anchor i
-
 
 dhdx << 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0,

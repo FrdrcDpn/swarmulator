@@ -20,9 +20,10 @@ class UWBSIM_controller: public Controller
 	
 	
 public:
-    ekf_state_estimator filter;
+    //ekf_state_estimator filter;
+	ekf_state_estimator *filter = new ekf_state_estimator;
+
 	float next_trajectory_time ;
-	float next_measurement_time ;
 	float next_EKF_measurement_time ;
 	
 	UWBSIM_controller();

@@ -11,8 +11,7 @@ using namespace std;
 UWBSIM_controller::UWBSIM_controller(): Controller()
 {
    next_trajectory_time = 0;
-	 next_measurement_time = 0;
-	 next_EKF_measurement_time = 0;
+	 next_EKF_measurement_time = simtime_seconds;
   set_max_sensor_range(SENSOR_MAX_RANGE);
   
     inFile1.open("sw/simulation/controllers/UWBSIM_controller/xyTrajectory1.txt");
@@ -76,8 +75,8 @@ void UWBSIM_controller::get_velocity_command(const uint16_t ID, float &v_x, floa
   
   
 if(simtime_seconds>=next_EKF_measurement_time){
-  next_EKF_measurement_time = next_EKF_measurement_time + 1.0/param->EKF_frequency() ;
-filter.run(ID);
+  next_EKF_measurement_time = next_EKF_measurement_time + param->EKF_timestep() ;
+  filter->run(ID);
 
 }
 
@@ -198,11 +197,7 @@ if( simtime_seconds>=next_trajectory_time){
   if(param->terminaloutput()==1.0){
 std::cout<<"VELOCITY CYCLE"<<std::endl;
   }
-
-
-
 }
-
 
 // animation of the controller and sensors
 void UWBSIM_controller::animation(const uint16_t ID)

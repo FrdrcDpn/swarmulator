@@ -31,7 +31,12 @@ class ekf
 {
   // let's first define our matrices
 private:
-  Eigen::MatrixXf X{6,1};
+ 
+
+
+public:
+
+ Eigen::MatrixXf X{6,1};
   Eigen::MatrixXf I{6,6};
   Eigen::MatrixXf Z{4,1};
   Eigen::MatrixXf Zm{4,1};
@@ -43,11 +48,6 @@ private:
   Eigen::MatrixXf dhdn{4,4};
   Eigen::MatrixXf dhdx{4,6};
   Eigen::MatrixXf K{6,4};
-
-
-public:
-
-
   
   ekf();
   
@@ -63,7 +63,7 @@ public:
   struct speed ekf_get_speed();
   struct cov ekf_get_cov();
 
-  void ekf_predict(const uint16_t ID, float dt);
+  void ekf_predict(uint16_t ID, float dt);
 
   void ekf_update_acc(float ax, float ay);
 

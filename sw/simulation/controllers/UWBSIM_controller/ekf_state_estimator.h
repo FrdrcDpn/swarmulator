@@ -13,9 +13,8 @@ public:
   struct cov cov; 
   bool initialized;
   uint16_t ID;
-  float simtime_seconds_store;
+  float simtime_seconds_store = 0;
   ekf *filterekf = new ekf;
- 
   ekf_state_estimator();
   ~ekf_state_estimator() {};
   void init_ekf_filter();

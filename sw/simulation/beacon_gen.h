@@ -28,6 +28,7 @@ public:
     uint16_t ID_b; // ID of beacon
     float next_measurement_time = 0;
     float end_measurement_time = 0;
+    
     /**
      * Destructor
      */
