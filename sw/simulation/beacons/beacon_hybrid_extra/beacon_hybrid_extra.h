@@ -1,19 +1,19 @@
-#ifndef BEACON_HYBRID_H
-#define BEACON_HYBRID_H
+#ifndef BEACON_HYBRID_EXTRA_H
+#define BEACON_HYBRID_EXTRA_H
 
 #include <vector>
 #include <stdio.h>
 #include <iostream>
 #include "beacon.h"
 
-class beacon_hybrid: public Beacon
+class beacon_hybrid_extra: public Beacon
 {
 
 public:
     /**
-     * Construction. beacon_hybrid is a child class of Beacon.
+     * Construction. beacon_hybrid_extra is a child class of Beacon.
      */
-    beacon_hybrid();
+    beacon_hybrid_extra();
     float next_UWB_measurement_time = 0;
     float next_UWB_D_measurement_time = 0;
     float sel_beacon_1 ; 
@@ -48,4 +48,4 @@ public:
 };
 
 
-#endif //BEACON_HYBRID_H
+#endif //BEACON_HYBRID_EXTRA_H

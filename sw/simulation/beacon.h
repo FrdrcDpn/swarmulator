@@ -36,7 +36,7 @@ public:
    * @param mean mean of the gaussian noise
    * @param stddev standard deviation of the gaussian noise
    */
-    virtual float add_gaussian_noise(float value)=0;
+    virtual float add_gaussian_noise(float value, float sigma)=0;
 
     /**
     * @brief Return noisy value following cauchy distribution

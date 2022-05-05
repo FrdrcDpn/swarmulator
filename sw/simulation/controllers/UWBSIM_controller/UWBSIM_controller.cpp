@@ -13,7 +13,7 @@ UWBSIM_controller::UWBSIM_controller(): Controller()
    next_trajectory_time = 0;
 	 next_EKF_measurement_time = simtime_seconds;
   set_max_sensor_range(SENSOR_MAX_RANGE);
-  
+  /*
     inFile1.open("sw/simulation/controllers/UWBSIM_controller/xyTrajectory1.txt");
     if (!inFile1) {
         cout << "Unable to open file";
@@ -39,6 +39,10 @@ UWBSIM_controller::UWBSIM_controller(): Controller()
         cout << "Unable to open file";
         exit(1); // terminate with error
     }
+*/
+  //::ifstream inFile1;
+  init = false; 
+  
    
 }
 
@@ -46,7 +50,15 @@ UWBSIM_controller::UWBSIM_controller(): Controller()
 void UWBSIM_controller::get_velocity_command(const uint16_t ID, float &v_x, float &v_y)
 {
   
-
+if(init == false){
+  std::string trajectoryname = "sw/simulation/controllers/UWBSIM_controller/xyTrajectory" + std::to_string(ID+1) + ".txt";  
+  inFile1.open(trajectoryname);
+  if (!inFile1) {
+        std::cout << "No trajectory file for agent " <<ID<<std::endl;
+        exit(1); // terminate with error
+      }
+  init = true; 
+}
 
  
 //if(simtime_seconds>=next_measurement_time){
@@ -76,10 +88,11 @@ void UWBSIM_controller::get_velocity_command(const uint16_t ID, float &v_x, floa
   
 if(simtime_seconds>=next_EKF_measurement_time){
   next_EKF_measurement_time = next_EKF_measurement_time + param->EKF_timestep() ;
-  filter->run(ID);
+  filter.run(ID);
 
 }
 
+/*
 if(s.size() == 4){
 moving_1 = true;
 moving_2 = true;
@@ -188,8 +201,19 @@ if( simtime_seconds>=next_trajectory_time){
   }
 }
 }
+*/
+if( simtime_seconds>=next_trajectory_time){
+  next_trajectory_time = simtime_seconds + 1.0/param->trajectory_frequency() ; 
+  // while trajectory file is not end of file yet
+if(!inFile1.eof())  // EOF is false here
+  {
+      inFile1 >> v_x >> v_y;    
+      
+  }else{  
+    inFile1.close();
+    program_running = false;
 
-
+  }}
   if(param->terminaloutput()==1.0){
   std::cout<<v_x <<" desired X "<<v_y<<" Desired Y "<<std::endl;
   }

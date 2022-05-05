@@ -39,6 +39,7 @@ public:
   std::vector<float> ekf_estimate; // State vector
   std::vector<float> state_desired_traj; // State vector
   std::vector<float> controller_states; // State vector
+  std::vector<float> noisetest; // State vector
   float orientation; // Orientation
   bool moving;
   float manualx, manualy;

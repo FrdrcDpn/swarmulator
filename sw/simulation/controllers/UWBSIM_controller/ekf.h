@@ -64,12 +64,16 @@ public:
   struct cov ekf_get_cov();
 
   void ekf_predict(uint16_t ID, float dt);
+  
 
   void ekf_update_acc(float ax, float ay);
 
   void ekf_update_twr(float dist, float anchor_x, float anchor_y);
 
   void ekf_update_tdoa(float dist, float anchor_0x, float anchor_0y, float anchor_1x, float anchor_1y); 
+  void ekf_set_twr_noise(float s_twr);
+   void ekf_set_tdoa_noise(float s_twr);
+   void ekf_set_noise();
 };
 
 #endif /*EKF*/

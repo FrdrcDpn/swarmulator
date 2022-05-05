@@ -28,7 +28,7 @@ public:
     void measurement(const uint16_t ID);
 
     // function to add gaussian noise to measurements
-    float add_gaussian_noise(float value);
+    float add_gaussian_noise(float value, float sigma);
 
     // function to ht cauchy noise to measurements
     float add_ht_cauchy_noise(float value);

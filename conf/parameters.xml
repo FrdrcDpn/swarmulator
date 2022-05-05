@@ -7,10 +7,10 @@
   <Kptheta>1</Kptheta>
   <Kitheta>0.1</Kitheta>
   <Kdtheta>0.3</Kdtheta>
-  <Kpx>5</Kpx>
+  <Kpx>1</Kpx>
   <Kix>0</Kix>
   <Kdx>3</Kdx>
-  <Kpy>5</Kpy>
+  <Kpy>1</Kpy>
   <Kiy>0</Kiy>
   <Kdy>3</Kdy>
   <Kpz>2</Kpz>
@@ -21,50 +21,56 @@
   <EKF_timestep>0.004</EKF_timestep> 
   <IMU_timestep>0.001</IMU_timestep> 
   <trajectory_frequency>100</trajectory_frequency> 
-  <UWB_frequency>80</UWB_frequency> 
-  <UWB_signal_length>0.005</UWB_signal_length>
-  <max_UWB_range>5.5</max_UWB_range>
+  <UWB_frequency>100</UWB_frequency> 
+  <UWB_D_frequency>100</UWB_D_frequency> 
+  <UWB_signal_length>0.01</UWB_signal_length>
+  <max_UWB_range>75</max_UWB_range>
+  <s_tdoa>0.35</s_tdoa>
+  <s_twr>0.16</s_twr>
+  <Q>0.01</Q>
   <beacon_1_en>1</beacon_1_en>
   <beacon_2_en>1</beacon_2_en>
   <beacon_3_en>1</beacon_3_en>
   <beacon_4_en>1</beacon_4_en>
-  <beacon_5_en>0</beacon_5_en>
+  <beacon_5_en>1</beacon_5_en>
   <beacon_6_en>1</beacon_6_en>
-  <beacon_7_en>0</beacon_7_en>
+  <beacon_7_en>1</beacon_7_en>
   <beacon_8_en>1</beacon_8_en>
-  <beacon_1_freq>100</beacon_1_freq>
-  <beacon_2_freq>100</beacon_2_freq>
-  <beacon_3_freq>100</beacon_3_freq>
-  <beacon_4_freq>100</beacon_4_freq>
-  <beacon_5_freq>100</beacon_5_freq>
-  <beacon_6_freq>100</beacon_6_freq>
-  <beacon_7_freq>100</beacon_7_freq>
-  <beacon_8_freq>100</beacon_8_freq>
-  <beacon_dynamic_freq>100</beacon_dynamic_freq>
-  <dynamic_cov_approach>0</dynamic_cov_approach>
-  <x_beacon_1>6</x_beacon_1>
-  <y_beacon_1>3</y_beacon_1>
-  <x_beacon_2>6</x_beacon_2>
-  <y_beacon_2>-3</y_beacon_2>
-  <x_beacon_3>-6</x_beacon_3>
-  <y_beacon_3>-3</y_beacon_3>
-  <x_beacon_4>-6</x_beacon_4>
-  <y_beacon_4>3</y_beacon_4>
-  <x_beacon_5>0</x_beacon_5>
-  <y_beacon_5>6</y_beacon_5>
-  <x_beacon_6>6</x_beacon_6>
-  <y_beacon_6>0</y_beacon_6>
-  <x_beacon_7>0</x_beacon_7>
-  <y_beacon_7>-6</y_beacon_7>
-  <x_beacon_8>-6</x_beacon_8>
-  <y_beacon_8>0</y_beacon_8>
+  <beacon_1_freq>500</beacon_1_freq>
+  <beacon_2_freq>500</beacon_2_freq>
+  <beacon_3_freq>500</beacon_3_freq>
+  <beacon_4_freq>500</beacon_4_freq>
+  <beacon_5_freq>500</beacon_5_freq>
+  <beacon_6_freq>500</beacon_6_freq>
+  <beacon_7_freq>500</beacon_7_freq>
+  <beacon_8_freq>500</beacon_8_freq>
+  <beacon_dynamic_freq>500</beacon_dynamic_freq>
+  <dynamic_cov_approach>4</dynamic_cov_approach>
+  <x_beacon_1>3</x_beacon_1>
+  <y_beacon_1>12</y_beacon_1>
+  <x_beacon_2>-3</x_beacon_2>
+  <y_beacon_2>12</y_beacon_2>
+  <x_beacon_3>-3</x_beacon_3>
+  <y_beacon_3>-12</y_beacon_3>
+  <x_beacon_4>3</x_beacon_4>
+  <y_beacon_4>-12</y_beacon_4>
+  <x_beacon_5>-1.5</x_beacon_5>
+  <y_beacon_5>12</y_beacon_5>
+  <x_beacon_6>1.5</x_beacon_6>
+  <y_beacon_6>12</y_beacon_6>
+  <x_beacon_7>1.5</x_beacon_7>
+  <y_beacon_7>-12</y_beacon_7>
+  <x_beacon_8>-1.5</x_beacon_8>
+  <y_beacon_8>-12</y_beacon_8>
   <acc_noise_sigma>0.01</acc_noise_sigma>
-  <noise_motor_sigma>0.001</noise_motor_sigma>
-  <noise_type>3</noise_type>
-  <gauss_sigma>0.025</gauss_sigma>
+  <noise_motor_sigma>0.005</noise_motor_sigma>
+  <noise_type>1</noise_type>
+  <gauss_sigma>0.16</gauss_sigma>
+  <gauss_sigma_twr>0.16</gauss_sigma_twr>
+  <gauss_sigma_tdoa>0.35</gauss_sigma_tdoa>
   <htc_gamma>0.1</htc_gamma>
   <htc_ratio>1.0</htc_ratio>
-  <htg_mu>0.3</htg_mu>
+  <htg_mu>0.0</htg_mu>
   <htg_k>2.0</htg_k>
   <htg_lambda>3.5</htg_lambda>
   <htg_scale>1.0</htg_scale>

@@ -22,7 +22,7 @@
 #include "environment.h"
 #include "fitness_functions.h"
 #include "fifo.h"
-
+#include <string>
 /**
  * Extract the number of agents from the argument list.
  * Else, return an error.
@@ -56,36 +56,36 @@ void main_simulation_thread(int argc, char *argv[], std::string id)
 
   for (uint16_t ID_b = 0; ID_b < 8; ID_b++) {
     if(ID_b == 0){
-      // state= x location, y location, enabled, frequency, broadcasting, static/dynamic, ID, cov1, cov2
-    std::vector<float> state_b = {param->x_beacon_1(), param->y_beacon_1(), param->beacon_1_en(), param->beacon_1_freq(), 0.0, 0.0, float(ID_b),0.0,0.0,0.0,0.0};
+      // state= x location, y location, enabled, frequency, broadcasting, static/dynamic, ID, cov1, cov2, cov3, cov4
+    std::vector<float> state_b = {param->x_beacon_1(), param->y_beacon_1(), param->beacon_1_en(), param->beacon_1_freq(), 0.0, 0.0, float(ID_b),0.0,0.0,0.0,0.0,0.0,0.0};
     create_new_beacon(ID_b, state_b); // Create a new beacon
     }
     if(ID_b == 1){
-    std::vector<float> state_b = {param->x_beacon_2(), param->y_beacon_2(), param->beacon_2_en(), param->beacon_2_freq(), 0.0, 0.0, float(ID_b),0.0,0.0,0.0,0.0};
+    std::vector<float> state_b = {param->x_beacon_2(), param->y_beacon_2(), param->beacon_2_en(), param->beacon_2_freq(), 0.0, 0.0, float(ID_b),0.0,0.0,0.0,0.0,0.0,0.0};
     create_new_beacon(ID_b, state_b); // Create a new beacon
     }
     if(ID_b == 2){
-    std::vector<float> state_b = {param->x_beacon_3(), param->y_beacon_3(), param->beacon_3_en(), param->beacon_3_freq(), 0.0, 0.0, float(ID_b),0.0,0.0,0.0,0.0};
+    std::vector<float> state_b = {param->x_beacon_3(), param->y_beacon_3(), param->beacon_3_en(), param->beacon_3_freq(), 0.0, 0.0, float(ID_b),0.0,0.0,0.0,0.0,0.0,0.0};
     create_new_beacon(ID_b, state_b); // Create a new beacon
     }
     if(ID_b == 3){
-    std::vector<float> state_b = {param->x_beacon_4(), param->y_beacon_4(), param->beacon_4_en(), param->beacon_4_freq(), 0.0, 0.0, float(ID_b),0.0,0.0,0.0,0.0};
+    std::vector<float> state_b = {param->x_beacon_4(), param->y_beacon_4(), param->beacon_4_en(), param->beacon_4_freq(), 0.0, 0.0, float(ID_b),0.0,0.0,0.0,0.0,0.0,0.0};
     create_new_beacon(ID_b, state_b); // Create a new beacon
     }
     if(ID_b == 4){
-    std::vector<float> state_b = {param->x_beacon_5(), param->y_beacon_5(), param->beacon_5_en(), param->beacon_5_freq(), 0.0, 0.0, float(ID_b),0.0,0.0,0.0,0.0};
+    std::vector<float> state_b = {param->x_beacon_5(), param->y_beacon_5(), param->beacon_5_en(), param->beacon_5_freq(), 0.0, 0.0, float(ID_b),0.0,0.0,0.0,0.0,0.0,0.0};
     create_new_beacon(ID_b, state_b); // Create a new beacon
     }
     if(ID_b == 5){
-    std::vector<float> state_b = {param->x_beacon_6(), param->y_beacon_6(), param->beacon_6_en(), param->beacon_6_freq(), 0.0, 0.0, float(ID_b),0.0,0.0,0.0,0.0};
+    std::vector<float> state_b = {param->x_beacon_6(), param->y_beacon_6(), param->beacon_6_en(), param->beacon_6_freq(), 0.0, 0.0, float(ID_b),0.0,0.0,0.0,0.0,0.0,0.0};
     create_new_beacon(ID_b, state_b); // Create a new beacon
     }
     if(ID_b == 6){
-    std::vector<float> state_b = {param->x_beacon_7(), param->y_beacon_7(), param->beacon_7_en(), param->beacon_7_freq(), 0.0, 0.0, float(ID_b),0.0,0.0,0.0,0.0};
+    std::vector<float> state_b = {param->x_beacon_7(), param->y_beacon_7(), param->beacon_7_en(), param->beacon_7_freq(), 0.0, 0.0, float(ID_b),0.0,0.0,0.0,0.0,0.0,0.0};
     create_new_beacon(ID_b, state_b); // Create a new beacon
     }
     if(ID_b == 7){
-    std::vector<float> state_b = {param->x_beacon_8(), param->y_beacon_8(), param->beacon_8_en(), param->beacon_8_freq(), 0.0, 0.0, float(ID_b),0.0,0.0,0.0,0.0};
+    std::vector<float> state_b = {param->x_beacon_8(), param->y_beacon_8(), param->beacon_8_en(), param->beacon_8_freq(), 0.0, 0.0, float(ID_b),0.0,0.0,0.0,0.0,0.0,0.0};
     create_new_beacon(ID_b, state_b); // Create a new beacon
     }
     
@@ -132,44 +132,32 @@ void main_simulation_thread(int argc, char *argv[], std::string id)
       t0[ID]= 0.0;
       
 
-      if(ID == 0){
-      x0[ID] = 0.0; 
-      y0[ID] = 0.0;
-      }
-
-      if(ID == 1){
-      x0[ID] = 0.0;
-      y0[ID] = 0.0;
-      }
-
-      if(ID == 2){
-      x0[ID] = 0.0;
-      y0[ID] = 0.0;
-      }
-
-      if(ID == 3){
-      x0[ID] = 0.0; 
-      y0[ID] = 0.0;
-      }
-
-      if(ID == 4){
-      x0[ID] = 0.0;
-      y0[ID] = 0.0;
-      }
-
      
+      std::ifstream inFile1;
+      std::string trajectoryname = "sw/simulation/controllers/UWBSIM_controller/xyTrajectory" + std::to_string(ID+1) + ".txt";  
+      inFile1.open(trajectoryname);
+      if (!inFile1) {
+        std::cout << "No trajectory file for agent " <<ID<<std::endl;
+        exit(1); // terminate with error
+      }else{
+        inFile1 >> x0[ID] >> y0[ID]; 
+        inFile1.close();
+      }
+      
+      
       
       // Initial state vector
       // [position_x, position y, vel_x=0, vel_y=0, acc_x=0, acc_y=0, psi, psi_rate]
       //std::vector<float> state = {x0[ID], y0[ID], 0.0, 0.0, 0.0, 0.0, t0[ID], 0.0};
+      
       std::vector<float> state = {x0[ID], y0[ID], 0.0, 0.0, 0.0, 0.0, t0[ID], 0.0};
       create_new_agent(ID, state); // Create a new agent
 
       // for every agent, another beacon thread is opened as well!! 
       // If dynamic beacons are enabled we will use the agent's estimate as beacon location!!
 
-      // state= x location, y location, enabled, frequency, broadcasting, static/dynamic, ID, cov1, cov2
-      std::vector<float> state_b = {x0[ID], y0[ID], param->dynamic_beacons(), param->beacon_dynamic_freq(), 0.0, 1.0, float(ID+8),0.0,0.0,0.0,0.0};
+      // state= x location, y location, enabled, frequency, broadcasting, static/dynamic, ID, state estimate x, state estimate y , cov1, cov2, cov3, cov4
+      std::vector<float> state_b = {x0[ID], y0[ID], param->dynamic_beacons(), param->beacon_dynamic_freq(), 0.0, 1.0, float(ID+8),0.0,0.0,0.0,0.0,0.0,0.0};
       create_new_beacon(ID+8, state_b); // Create a new beacon
     }
   }

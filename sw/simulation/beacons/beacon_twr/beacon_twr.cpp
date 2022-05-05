@@ -107,7 +107,7 @@ void beacon_twr::measurement(const uint16_t ID){
        // mtx_bcn.unlock();
     }
     else if (param->noise_type() == 1){
-        s[ID]->UWBm[0] = add_gaussian_noise(d);
+        s[ID]->UWBm[0] = add_gaussian_noise(d, param->gauss_sigma_twr());
         s[ID]->UWBm[1] = x_a_0;
         s[ID]->UWBm[2] = y_a_0;
         // twr measurement, x beacon, y beacon, simulation time
@@ -145,7 +145,7 @@ void beacon_twr::measurement(const uint16_t ID){
 }
 
 // function to add gaussian noise to UWB measurements
-float beacon_twr::add_gaussian_noise(float value) {
+float beacon_twr::add_gaussian_noise(float value, float sigma) {
     float noisy_value;
     float mean = 0;
 
@@ -154,7 +154,7 @@ float beacon_twr::add_gaussian_noise(float value) {
 
     // Initialize Mersenne Twister pseudo-random number generator
     mt19937 gen(rd());
-    std::normal_distribution<double> dis(mean, param->gauss_sigma());
+    std::normal_distribution<double> dis(mean, sigma);
     // Add Gaussian noise
     noisy_value = value + dis(gen);
    

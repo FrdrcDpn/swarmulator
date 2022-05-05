@@ -41,6 +41,9 @@ void txtwrite::txtwrite_state(ofstream &logfile)
      for (uint16_t j = 0; j < 5; j++) { // position state 0 and 1
       logfile << state_buff[i]->Cov.at(j) << " "; // log states
     }
+    for (uint16_t j = 0; j < 5; j++) { // position state 0 and 1
+      logfile << state_buff[i]->noisetest.at(j) << " "; // log states
+    }
     logfile << f; // fitness
     
     logfile << endl; // new line

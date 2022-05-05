@@ -14,12 +14,14 @@ public:
   bool initialized;
   uint16_t ID;
   float simtime_seconds_store = 0;
-  ekf *filterekf = new ekf;
+  ekf filterekf;
   ekf_state_estimator();
   ~ekf_state_estimator() {};
   void init_ekf_filter();
   void run_ekf_filter();
   void run(uint16_t ID_in);
+  float tdoa_t; 
+  float tdoa_t_stored;
 };
 
 #endif /*EKF_STATE_ESTIMATOR_H*/

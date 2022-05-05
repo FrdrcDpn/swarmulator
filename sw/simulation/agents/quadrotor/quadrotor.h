@@ -70,8 +70,7 @@ public:
   float Jy = 0.0000091914;//0.019688; // inertia seen at the rotation axis. (Kg.m^2)
   float Jz = 0.000022800;//0.039380; // inertia seen at the rotation axis. (Kg.m^2)
   float g  = 9.81;      // acceleration due to gravity m/s^2
-  float noise_x;
-  float noise_y;
+ 
  
   /**
    * Constructor

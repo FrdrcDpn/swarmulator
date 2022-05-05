@@ -23,19 +23,26 @@ quadrotor::quadrotor(int i, std::vector<float> s, float tstep)
   ekf_estimate = s;
   Cov = s; 
   state_desired_traj = s;
-  UWBm = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0,0.0};
+  UWBm = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0,0.0,0.0, 0.0,0.0,0.0};
   controller_states = {0.0, 0.0, 0.0,0.0, 0.0, 0.0,0.0, 0.0, 0.0};
+  noisetest = {0.0, 0.0, 0.0,0.0, 0.0, 0.0,0.0, 0.0, 0.0};
   next_IMU_measurement_time = simtime_seconds;
+  DesiredX = state[0];
+  DesiredY = state[1];
+  x = state[0];
+  y = state[1];
   //x = state[0];
   //y = state[1];
  
 }
 std::vector<float> quadrotor::state_update(std::vector<float> state)
 {
+
+  
   std::default_random_engine generator;
   std::normal_distribution<float> distribution(0,param->acc_noise_sigma());
-  noise_x = distribution(generator);
-  noise_y = distribution(generator);
+  float noise_x = distribution(generator);
+  float noise_y = distribution(generator);
 
   std::random_device rd;     // only used once to initialise (seed) engine
   std::mt19937 gen(rd());    // random-number engine used (Mersenne-Twister in this case)
@@ -61,9 +68,7 @@ next_IMU_measurement_time = next_IMU_measurement_time + param->IMU_timestep() ;
   }
 
   
-  // y+ towards East
-  //beacon->dynamic_beacon_update(ID);
-  beacon->measurement(ID);
+ 
   
   //controller->saturate(v_x);
   //controller->saturate(v_y);
@@ -72,7 +77,9 @@ next_IMU_measurement_time = next_IMU_measurement_time + param->IMU_timestep() ;
   float desy ; 
   
   controller->get_velocity_command(ID, desx, desy);
-  
+   // y+ towards East
+  //beacon->dynamic_beacon_update(ID);
+  beacon->measurement(ID);
   //float vxr, vyr;
   //rotate_xy(v_x, v_y, orientation, vxr, vyr);
 

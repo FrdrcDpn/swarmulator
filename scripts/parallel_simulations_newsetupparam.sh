@@ -9,7 +9,7 @@ mkdir $f
 e=logs/3dplot/dynamic
 mkdir $e
 
-for (( t = 1; t <= 4; t++ )); do
+for (( t = 4; t <= 4; t++ )); do
 g=logs/3dplot/dynamic/''$t''quad
 mkdir $g
 
@@ -23,13 +23,13 @@ mkdir $g
     -u 'parameters/beacon_8_en' -v 1 \
    conf/parameters.xml 
 
-for (( j = 1; j <= 8; j++ )); do
-  p=$(($j*25))
+for (( j = 0; j <= 11; j++ )); do
+  p=$(($j*4))
   d=logs/3dplot/dynamic/''$t''quad/dynfreq$p
   mkdir $d
 
    xmlstarlet ed -P -L\
-  	-u 'parameters/beacon_dynamic_freq' -v $p \
+  	-u 'parameters/UWB_D_frequency' -v $p \
    conf/parameters.xml 
 
    cd scripts 

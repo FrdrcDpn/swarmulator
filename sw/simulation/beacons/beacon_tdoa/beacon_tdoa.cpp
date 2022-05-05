@@ -147,7 +147,7 @@ void beacon_tdoa::measurement(const uint16_t ID){
     else if (param->noise_type() == 1){
         // tdoa measurement, x beacon1, y beacon1, x beacon2, y beacon2, simulation time
        // mtx_e.lock();
-        s[ID]->UWBm.at(0) = add_gaussian_noise(dd);
+        s[ID]->UWBm.at(0) = add_gaussian_noise(dd, param->gauss_sigma_tdoa());
         s[ID]->UWBm.at(1) = x_a_0;
         s[ID]->UWBm.at(2) = y_a_0;
         s[ID]->UWBm.at(3) = x_a_1;
@@ -199,7 +199,7 @@ void beacon_tdoa::measurement(const uint16_t ID){
 }
    
 // function to add gaussian noise to UWB measurements
-float beacon_tdoa::add_gaussian_noise(float value) {
+float beacon_tdoa::add_gaussian_noise(float value, float sigma) {
     float noisy_value;
     float mean = 0;
   
@@ -208,7 +208,7 @@ float beacon_tdoa::add_gaussian_noise(float value) {
 
     // Initialize Mersenne Twister pseudo-random number generator
     mt19937 gen(rd());
-    std::normal_distribution<double> dis(mean, param->gauss_sigma());
+    std::normal_distribution<double> dis(mean, sigma);
     // Add Gaussian noise
     noisy_value = value + dis(gen);
 

@@ -15,16 +15,14 @@ ekf_state_estimator::ekf_state_estimator()
 {
   //simtime_seconds_store = simtime_seconds;
   initialized = false;
+  
 };
 
 void ekf_state_estimator::init_ekf_filter()
 {
-  //we leave the z variables 0; only 2D simulation for now
-  //initialise the ekf with 0 values
-//  ekf_range_init(&ekf, EKF_P0_POS, EKF_P0_SPEED,
-    //  EKF_Q, EKF_R_DIST, EKF_R_SPEED, 0.1f);
+
   float dt = simtime_seconds ;
-  filterekf->init_ekf(param->EKF_timestep(), s[ID]->state[0], s[ID]->state[1], s[ID]->state[2], s[ID]->state[3], s[ID]->state[4], s[ID]->state[5]);
+  filterekf.init_ekf(param->EKF_timestep(), s[ID]->state[0], s[ID]->state[1], s[ID]->state[2], s[ID]->state[3], s[ID]->state[4], s[ID]->state[5]);
   // Initialise the EKF struct by setting the state to our estimate
   //pos={s[ID]->state[0], s[ID]->state[1], 0.f };
   //speed={s[ID]->state[2], s[ID]->state[3], 0.f };
@@ -32,6 +30,10 @@ void ekf_state_estimator::init_ekf_filter()
 
   initialized = true;
   simtime_seconds_store = simtime_seconds;
+
+
+    tdoa_t = simtime_seconds; 
+   tdoa_t_stored = simtime_seconds; 
 }
 
 void ekf_state_estimator::run_ekf_filter()
@@ -46,8 +48,8 @@ void ekf_state_estimator::run_ekf_filter()
   //ekf_range_set_state(&ekf,pos,speed);
   // prediction step
   
-  filterekf->ekf_predict(ID, param->EKF_timestep());
-    
+  filterekf.ekf_predict(ID, dt);
+    filterekf.ekf_set_noise();
   // IMU update step
   //ekf_range_update_scalar(&ekf,s.at(ID)->imu_state_estimate[0], s.at(ID)->imu_state_estimate[1],0.0);
 
@@ -60,55 +62,196 @@ void ekf_state_estimator::run_ekf_filter()
   //lets make a copy of our UWB measurement vector, as this vector is continuously altered by the beacon threads
   std::vector<float> UWBm_0 = s[ID]->UWBm; 
 
-  //if(param->enable_UWB() == 1 && beacon_measurement[ID].back()[0] == 1){
-  if(param->enable_UWB() == 1 && UWBm_0[5] == 1){
+  //if uwb is enabled and we have or a tdoa measurement or a twr available
+  if(param->enable_UWB() == 1 && (UWBm_0[5] == 1 || UWBm_0[9]==1)){
   // prediction step
   
   // update step in case the beacon algorithm is TWR
   if(beacon_alg == "beacon_twr"){
  
   //get the ranging and anchor data from our UWB dataset
-  
   float dist = abs(UWBm_0[0]);
- // anchor_0 ={s[ID]->UWBm[1], s[ID]->UWBm[2], 0.f };
- 
-  filterekf->ekf_update_twr(dist, UWBm_0[1], UWBm_0[2]);
-
-  //input UWB measurements and update the estimate with new anchor (for now only anchor)
-  //ekf_range_update_dist_twr(&ekf,dist,anchor_0);
-  
+  filterekf.ekf_update_twr(dist, UWBm_0[1], UWBm_0[2]);
+  s[ID]->UWBm[5] = 0;
   }
    
   // update step in case the beacon algorithm is TDOA
   if(beacon_alg== "beacon_tdoa"){
  
   float dist = UWBm_0[0];
-  filterekf->ekf_update_tdoa(dist, UWBm_0[1], UWBm_0[2], UWBm_0[3], UWBm_0[4]);
+  filterekf.ekf_update_tdoa(dist, UWBm_0[1], UWBm_0[2], UWBm_0[3], UWBm_0[4]);
+  s[ID]->UWBm[5] = 0;
   
   }
-  // update step in case the beacon algorithm is TWR
-  if(beacon_alg == "beacon_hybrid"){
+
+ // update step in case the beacon algorithm is TDOA
+  if(beacon_alg== "beacon_hybrid_extra"){
  
-  //if we perform twr with a dynamic  beacon
-  if(UWBm_0[6] == 0){
+
+ if(UWBm_0[5] == 1){
+float dist = UWBm_0[0];
+  filterekf.ekf_update_tdoa(dist, UWBm_0[1], UWBm_0[2], UWBm_0[3], UWBm_0[4]);
+  s[ID]->UWBm[5] = 0;
+ // std::cout<<"TDOA"<<std::endl;
+ }
+
+ if(UWBm_0[9] == 1){
+
+  
     //If we use the standard ranging no information exchange approach, the approach is 0 in the parameters file
     if(param->dynamic_cov_approach()==0){
-    float dist = abs(UWBm_0[0]);
-    filterekf->ekf_update_twr(dist, UWBm_0[1], UWBm_0[2]);
+       tdoa_t = simtime_seconds - tdoa_t_stored; 
+
+     if ((param->max_UWB_range()<30)|| param->max_UWB_range()>40){
+    float dist = abs(UWBm_0[6]);
+    filterekf.ekf_update_twr(dist, UWBm_0[7], UWBm_0[8]);
+ 
+ }}
+
+   // ****** fourth INTER AGENT RANGING APPROACH ****** 3 noise updating
+    if(param->dynamic_cov_approach()==4){
+  tdoa_t = simtime_seconds - tdoa_t_stored; 
+
+     if ((param->max_UWB_range()<30)|| param->max_UWB_range()>40){
+    // get the current covariance matrix
+    //cov = filterekf.ekf_get_cov(); 
+    
+    // update the twr measurement noise with the covariance values of the quadrotor 
+    
+    float theta = atan(UWBm_0[9]-pos.y/UWBm_0[7]-pos.x);
+
+    if(theta < 0){
+      theta = theta + M_PI/2;
     }
 
-    //If we use the dynamic covariance discarding, the approach is 1 in the parameters file
-    if(param->dynamic_cov_approach()==1){
+    float variance = cos(theta)*cos(theta)*UWBm_0[10] + sin(theta)*sin(theta)*UWBm_0[12] +2*UWBm_0[11]*sin(theta)*cos(theta); 
+    float variance_total_add =  abs(variance);
+
+    
+    //std::cout<<variance<<std::endl;
+    // just a failsafe in case a covariance matrix is not yet inialised in the beginning of the simulation
+    if(isnan(sqrt(variance_total_add))){
+      variance_total_add = 0;
+    }
+    
+    //std::cout<<sqrtf(0.025*0.025 + variance_total_add)<<std::endl;
+    filterekf.ekf_set_twr_noise(twr_noise*twr_noise+ variance_total_add);
+
+    //std::cout<<variance_total_add<<std::endl;
+    float dist = abs(UWBm_0[6]);
+    filterekf.ekf_update_twr(dist, UWBm_0[7], UWBm_0[8]);
+    
+     }
+    }
+    
+ s[ID]->UWBm[9] = 0;
+ // std::cout<<"TWR"<<std::endl;
+  }
+  
+  
+  }
+
+  // update step in case the beacon algorithm is TWR
+  if(beacon_alg == "beacon_hybrid"){
+
+    //if we perform twr with a dynamic  beacon
+    if(UWBm_0[6] == 0){
+
+    // ****** ZERO'th INTER AGENT RANGING APPROACH ****** 0 STUPID INTER AGENT RANGING
+  
+    //If we use the standard ranging no information exchange approach, the approach is 0 in the parameters file
+    if(param->dynamic_cov_approach()==0){
+       tdoa_t = simtime_seconds - tdoa_t_stored; 
+
+     if ((tdoa_t > 0.1 && param->max_UWB_range()<30)|| param->max_UWB_range()>40){
+    float dist = UWBm_0[0];
+    filterekf.ekf_update_twr(dist, UWBm_0[1], UWBm_0[2]);
+    std::cout<<"TWR"<<std::endl;
+    }}
+
+     // ****** fourth INTER AGENT RANGING APPROACH ****** 3 noise updating
+    if(param->dynamic_cov_approach()==4){
+  tdoa_t = simtime_seconds - tdoa_t_stored; 
+
+     if ((tdoa_t > 0.1 && param->max_UWB_range()<30)|| param->max_UWB_range()>40){
+    // get the current covariance matrix
+    //cov = filterekf.ekf_get_cov(); 
+    
+    // update the twr measurement noise with the covariance values of the quadrotor 
+    
+    float theta = atan(UWBm_0[2]-pos.y/UWBm_0[1]-pos.x);
+
+    if(theta < 0){
+      theta = theta + M_PI/2;
+    }
+
+    float variance = cos(theta)*cos(theta)*UWBm_0[7] + sin(theta)*sin(theta)*UWBm_0[9] +2*UWBm_0[8]*sin(theta)*cos(theta); 
+    float variance_total_add =  variance;
+
+    
+    //std::cout<<variance<<std::endl;
+    // just a failsafe in case a covariance matrix is not yet inialised in the beginning of the simulation
+    if(isnan(sqrt(variance_total_add))){
+      variance_total_add = 0;
+    }
+    
+    //std::cout<<sqrtf(0.025*0.025 + variance_total_add)<<std::endl;
+    filterekf.ekf_set_twr_noise(twr_noise*twr_noise+ variance_total_add);
+
+    //std::cout<<variance_total_add<<std::endl;
+    float dist = abs(UWBm_0[0]);
+    filterekf.ekf_update_twr(dist, UWBm_0[1], UWBm_0[2]);
+    std::cout<<"TWR"<<std::endl;
+
+     }
+    }
+    
+    if(param->dynamic_cov_approach()==5){
+  tdoa_t = simtime_seconds - tdoa_t_stored; 
+
+    if ((tdoa_t > 0.1 && param->max_UWB_range()<30)|| param->max_UWB_range()>40){
+  
 
     // get the current covariance matrix
-    cov = filterekf->ekf_get_cov(); 
+    //cov = filterekf.ekf_get_cov(); 
     
-    //if the covariance of the quadrotor is higher than the dynamic beacon we update with the range, else discard measurement
-    if(sqrt((cov.c1*cov.c1) + (cov.c4*cov.c4)) > sqrt((UWBm_0[7]*UWBm_0[7]) + (UWBm_0[8]*UWBm_0[8]))){
-    float dist = abs(UWBm_0[0]);
-    filterekf->ekf_update_twr(dist, UWBm_0[1], UWBm_0[2]);
+    // update the twr measurement noise with the covariance values of the quadrotor 
+    pos = filterekf.ekf_get_pos();
+
+    float theta = atan(UWBm_0[2]-pos.y/UWBm_0[1]-pos.x);
+
+    if(theta < 0){
+      theta = theta + M_PI/2;
     }
+
+    float variance_x = abs(UWBm_0[7]);
+    float variance_y = abs(UWBm_0[9]);
+     
+    //std::cout<<variance<<std::endl;
+    // just a failsafe in case a covariance matrix is not yet inialised in the beginning of the simulation
+    if(isnan(sqrt(variance_x))){
+      variance_x = 0;
     }
+      if(isnan(sqrt(variance_y))){
+      variance_y = 0;
+    }
+    // update in x
+
+    filterekf.ekf_set_twr_noise(twr_noise*twr_noise+ variance_x);
+    float dist = abs(UWBm_0[0]*cos(theta));
+    filterekf.ekf_update_twr(dist, UWBm_0[1], pos.y);
+    
+     // update in y
+    filterekf.ekf_set_twr_noise(twr_noise*twr_noise+ variance_y);
+    dist = abs(UWBm_0[0]*sin(theta));
+    filterekf.ekf_update_twr(dist, pos.x,UWBm_0[2]);
+    std::cout<<"TWR"<<std::endl;
+      }
+    }
+    
+    
+    }
+    
 
     
   // std::cout<<"hybrid twr"<<std::endl;
@@ -116,13 +259,21 @@ void ekf_state_estimator::run_ekf_filter()
 
   // if we perform tdoa with 2 static beacons
   if(UWBm_0[6] == 1){
+
+
+  
+  
   float dist = UWBm_0[0];
-  filterekf->ekf_update_tdoa(dist, UWBm_0[1], UWBm_0[2], UWBm_0[3], UWBm_0[4]);
+  filterekf.ekf_update_tdoa(dist, UWBm_0[1], UWBm_0[2], UWBm_0[3], UWBm_0[4]);
+  //std::cout<<"TDOA"<<std::endl;
  // std::cout<<"hybrid tdoa"<<std::endl;
+ std::cout<<"TDOA"<<std::endl;
+ tdoa_t_stored = simtime_seconds; 
   }
+  s[ID]->UWBm[5] = 0;
   }
 
-  s[ID]->UWBm[5] = 0;
+  
   //UWB measuremend has been 'used', push back 0 to measurement vector
  // beacon_measurement[ID].push_back({0});
   
@@ -131,12 +282,12 @@ if(param->terminaloutput()==1.0){
   std::cout<<"BEACON UPDATE"<<std::endl;
 }
  
-  }
+  
 
   // Write our measurements to the EKF estimate variable
 
- pos = filterekf->ekf_get_pos();
- speed = filterekf->ekf_get_speed();
+ pos = filterekf.ekf_get_pos();
+ speed = filterekf.ekf_get_speed();
 
   s.at(ID)->ekf_estimate[2] = speed.vx; // Velocity x
   s.at(ID)->ekf_estimate[3] = speed.vy; // Velocity y
@@ -158,7 +309,7 @@ if(param->terminaloutput()==1.0){
   s.at(ID)->imu_state_estimate[1] = pos.y; // Position y
 
   //update our covariance vector for later analysis 
-   cov = filterekf->ekf_get_cov(); 
+   cov = filterekf.ekf_get_cov(); 
    s.at(ID)->Cov[0] = cov.c1; 
    s.at(ID)->Cov[1] = cov.c2; 
    s.at(ID)->Cov[2] = cov.c3; 
