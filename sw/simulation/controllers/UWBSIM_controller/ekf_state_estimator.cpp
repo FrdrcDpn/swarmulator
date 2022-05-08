@@ -95,7 +95,7 @@ float dist = UWBm_0[0];
  // std::cout<<"TDOA"<<std::endl;
  }
 
- if(UWBm_0[9] == 1){
+ if(UWBm_0[9] == 1 && param->dynamic_beacons() == 1){
 
   
     //If we use the standard ranging no information exchange approach, the approach is 0 in the parameters file
@@ -118,13 +118,16 @@ float dist = UWBm_0[0];
     
     // update the twr measurement noise with the covariance values of the quadrotor 
     
-    float theta = atan(UWBm_0[9]-pos.y/UWBm_0[7]-pos.x);
+    float theta = -(atan2f(s[ID]->state_estimate[1]-UWBm_0[8],s[ID]->state_estimate[0]-UWBm_0[7]));
 
-    if(theta < 0){
-      theta = theta + M_PI/2;
-    }
-
-    float variance = cos(theta)*cos(theta)*UWBm_0[10] + sin(theta)*sin(theta)*UWBm_0[12] +2*UWBm_0[11]*sin(theta)*cos(theta); 
+    //if(theta < 0){
+    //  theta = theta + M_PI/2;
+    //}
+   // if(ID == 0){
+   //   std::cout<<UWBm_0[12]<<" "<<UWBm_0[10]<<std::endl;
+    //  std::cout<<theta*180 / M_PI<<" "<<simtime_seconds<<std::endl;
+    //}
+    float variance = cos(theta)*cos(theta)*UWBm_0[12] + sin(theta)*sin(theta)*UWBm_0[10] -2*UWBm_0[11]*sin(theta)*cos(theta); 
     float variance_total_add =  abs(variance);
 
     

@@ -194,7 +194,11 @@ float dy = X(3,0) - anchor_y;
 float norm = sqrtf(dx * dx + dy * dy);
 
 // build Jacobian of observation model for anchor i
-
+//outlier rejection based on Mahalonobis distance
+float error = dist-norm;
+float mah_distance = abs(error/sqrtf(R(1,1)));  
+      
+if(mah_distance < 5){
 dhdx << 0, 0, 0, 0, 0, 0,
         dx/ norm, 0, 0, dy/ norm, 0, 0,
         0, 0, 0, 0, 0, 0,
@@ -211,11 +215,7 @@ Zm << 0,
      0,
      0;
 
-//outlier rejection based on Mahalonobis distance
-float error = dist-norm;
-float mah_distance = abs(error/sqrtf(R(1,1)));  
-      
-if(mah_distance < 3){
+
 
 // calculate Kalman Gain
 K = P*(dhdx.transpose())*((dhdx*P*(dhdx.transpose()) + dhdn*R*(dhdn.transpose())).inverse());
@@ -245,7 +245,20 @@ if(d0 != 0.0f && d1 != 0.0f){
 
 float norm = abs(d1)-abs(d0);
 
+//outlier rejection based on Mahalonobis distance
+float error = abs(dist-norm);
+float mah_distance = error/sqrtf(R(0,0));  
 
+float anchordistancesq = sqrt(pow((anchor_0x-anchor_1x),2)+ pow((anchor_0y-anchor_1y),2)); 
+float distancediffsq = sqrt(error); 
+
+
+float errorBaseDistance = sqrtf(powf(dhdx(0,0), 2) + powf(dhdx(0,3), 2));
+float errorDistance = fabsf(error / errorBaseDistance);
+
+//if (errorDistance < 0.4) {
+if(anchordistancesq > distancediffsq){
+if(mah_distance < 10){
 // build Jacobian of observation model for anchor i
 
 dhdx << (dx1 / d1 - dx0 / d0), 0, 0, (dy1 / d1 - dy0 / d0), 0, 0,
@@ -266,20 +279,7 @@ Zm << norm,
      0,
      0;
 
-//outlier rejection based on Mahalonobis distance
-float error = abs(dist-norm);
-float mah_distance = error/sqrtf(R(0,0));  
 
-float anchordistancesq = sqrt(pow((anchor_0x-anchor_1x),2)+ pow((anchor_0y-anchor_1y),2)); 
-float distancediffsq = sqrt(error); 
-
-
-float errorBaseDistance = sqrtf(powf(dhdx(0,0), 2) + powf(dhdx(0,3), 2));
-float errorDistance = fabsf(error / errorBaseDistance);
-
-//if (errorDistance < 0.4) {
-if(anchordistancesq > distancediffsq){
-if(mah_distance < 3){
      //std::cout<<mah_distance<<std::endl;   
 // calculate Kalman Gain
 // calculate Kalman Gain
