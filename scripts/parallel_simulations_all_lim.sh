@@ -32,7 +32,7 @@ for (( t = 8; t >= 2; --t )); do
     conf/parameters.xml 
 
   for (( j = 1; j <= 10; j++ )); do
-    p=$(($j*$s/10))
+    p=$(($j))
     d=logs/3dplot/dynamic/''$t''quad/''$s''statfreq/dynfreq$p
     mkdir $d
 
@@ -77,7 +77,7 @@ for (( t = 1; t <= 1; t++ )); do
     conf/parameters.xml 
 
   for (( j = 1; j <= 1; j++ )); do
-    p=$(($j*$s/10))
+    p=$(($j))
     d=logs/3dplot/dynamic/''$t''quad/''$s''statfreq/dynfreq$p
     mkdir $d
 
