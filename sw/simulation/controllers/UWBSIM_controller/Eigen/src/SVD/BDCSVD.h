@@ -75,7 +75,7 @@ struct allocate_small_svd<MatrixType, 0> {
  *
  * \tparam MatrixType_ the type of the matrix of which we are computing the SVD decomposition
  *
- * \tparam Options this optional parameter allows one to specify options for computing unitaries \a U and \a V.
+ * \tparam Options_ this optional parameter allows one to specify options for computing unitaries \a U and \a V.
  *                  Possible values are #ComputeThinU, #ComputeThinV, #ComputeFullU, #ComputeFullV.
  *                  It is not possible to request both the thin and full version of \a U or \a V.
  *                  By default, unitaries are not computed.
@@ -93,8 +93,8 @@ struct allocate_small_svd<MatrixType, 0> {
  *
  * \sa class JacobiSVD
  */
-template <typename MatrixType_, int Options>
-class BDCSVD : public SVDBase<BDCSVD<MatrixType_, Options> > {
+template <typename MatrixType_, int Options_>
+class BDCSVD : public SVDBase<BDCSVD<MatrixType_, Options_> > {
   typedef SVDBase<BDCSVD> Base;
 
 public:
@@ -104,17 +104,19 @@ public:
   using Base::computeV;
 
   typedef MatrixType_ MatrixType;
-  typedef typename MatrixType::Scalar Scalar;
-  typedef typename NumTraits<typename MatrixType::Scalar>::Real RealScalar;
+  typedef typename Base::Scalar Scalar;
+  typedef typename Base::RealScalar RealScalar;
   typedef typename NumTraits<RealScalar>::Literal Literal;
+  typedef typename Base::Index Index;
   enum {
-    RowsAtCompileTime = MatrixType::RowsAtCompileTime,
-    ColsAtCompileTime = MatrixType::ColsAtCompileTime,
-    DiagSizeAtCompileTime = internal::min_size_prefer_dynamic(RowsAtCompileTime, ColsAtCompileTime),
-    MaxRowsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
-    MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime,
-    MaxDiagSizeAtCompileTime = internal::min_size_prefer_fixed(MaxRowsAtCompileTime, MaxColsAtCompileTime),
-    MatrixOptions = MatrixType::Options
+    Options = Options_,
+    RowsAtCompileTime = Base::RowsAtCompileTime,
+    ColsAtCompileTime = Base::ColsAtCompileTime,
+    DiagSizeAtCompileTime = Base::DiagSizeAtCompileTime,
+    MaxRowsAtCompileTime = Base::MaxRowsAtCompileTime,
+    MaxColsAtCompileTime = Base::MaxColsAtCompileTime,
+    MaxDiagSizeAtCompileTime = Base::MaxDiagSizeAtCompileTime,
+    MatrixOptions = Base::MatrixOptions
   };
 
   typedef typename Base::MatrixUType MatrixUType;
@@ -152,15 +154,18 @@ public:
    * Like the default constructor but with preallocation of the internal data
    * according to the specified problem size and the \a computationOptions.
    *
-   * <b>Note: This constructor is deprecated.</b>
    * One \b cannot request unitiaries using both the \a Options template parameter
    * and the constructor. If possible, prefer using the \a Options template parameter.
    *
    * \param computationOptions specifification for computing Thin/Full unitaries U/V
    * \sa BDCSVD()
+   *
+   * \deprecated Will be removed in the next major Eigen version. Options should
+   * be specified in the \a Options template parameter.
    */
+  EIGEN_DEPRECATED
   BDCSVD(Index rows, Index cols, unsigned int computationOptions) : m_algoswap(16), m_numIters(0) {
-    internal::check_svd_constructor_assertions<MatrixType, Options>(computationOptions);
+    internal::check_svd_options_assertions<MatrixType, Options>(computationOptions, rows, cols);
     allocate(rows, cols, computationOptions);
   }
 
@@ -176,15 +181,18 @@ public:
   /** \brief Constructor performing the decomposition of given matrix using specified options
    *         for computing unitaries.
    *
-   *  <b>Note: This constructor is deprecated.</b>
    *  One \b cannot request unitiaries using both the \a Options template parameter
    *  and the constructor. If possible, prefer using the \a Options template parameter.
    *
    * \param matrix the matrix to decompose
    * \param computationOptions specifification for computing Thin/Full unitaries U/V
+   *
+   * \deprecated Will be removed in the next major Eigen version. Options should
+   * be specified in the \a Options template parameter.
    */
+  EIGEN_DEPRECATED
   BDCSVD(const MatrixType& matrix, unsigned int computationOptions) : m_algoswap(16), m_numIters(0) {
-    internal::check_svd_constructor_assertions<MatrixType, Options>(computationOptions);
+    internal::check_svd_options_assertions<MatrixType, Options>(computationOptions, matrix.rows(), matrix.cols());
     compute_impl(matrix, computationOptions);
   }
 
@@ -196,6 +204,21 @@ public:
    * \param matrix the matrix to decompose
    */
   BDCSVD& compute(const MatrixType& matrix) { return compute_impl(matrix, m_computationOptions); }
+  
+  /** \brief Method performing the decomposition of given matrix, as specified by
+   *         the `computationOptions` parameter.
+   *
+   * \param matrix the matrix to decompose
+   * \param computationOptions specify whether to compute Thin/Full unitaries U/V
+   * 
+   * \deprecated Will be removed in the next major Eigen version. Options should
+   * be specified in the \a Options template parameter.
+   */
+  EIGEN_DEPRECATED
+  BDCSVD& compute(const MatrixType& matrix, unsigned int computationOptions) {
+    internal::check_svd_options_assertions<MatrixType, Options>(computationOptions, matrix.rows(), matrix.cols());
+    return compute_impl(matrix, computationOptions);
+  }
 
   void setSwitchSize(int s)
   {
@@ -248,7 +271,7 @@ private:
 
 // Method to allocate and initialize matrix and attributes
 template <typename MatrixType, int Options>
-void BDCSVD<MatrixType, Options>::allocate(Eigen::Index rows, Eigen::Index cols, unsigned int computationOptions) {
+void BDCSVD<MatrixType, Options>::allocate(Index rows, Index cols, unsigned int computationOptions) {
   if (Base::allocate(rows, cols, computationOptions))
     return;
 
@@ -454,8 +477,8 @@ void BDCSVD<MatrixType, Options>::computeBaseCase(SVDType& svd, Index n, Index f
 //@param shift : Each time one takes the left submatrix, one must add 1 to the shift. Why? Because! We actually want the last column of the U submatrix
 // to become the first column (*coeff) and to shift all the other columns to the right. There are more details on the reference paper.
 template <typename MatrixType, int Options>
-void BDCSVD<MatrixType, Options>::divide(Eigen::Index firstCol, Eigen::Index lastCol, Eigen::Index firstRowW,
-                                         Eigen::Index firstColW, Eigen::Index shift) {
+void BDCSVD<MatrixType, Options>::divide(Index firstCol, Index lastCol, Index firstRowW,
+                                         Index firstColW, Index shift) {
   // requires rows = cols + 1;
   using std::pow;
   using std::sqrt;
@@ -632,7 +655,7 @@ void BDCSVD<MatrixType, Options>::divide(Eigen::Index firstCol, Eigen::Index las
 // handling of round-off errors, be consistent in ordering
 // For instance, to solve the secular equation using FMM, see http://www.stat.uchicago.edu/~lekheng/courses/302/classics/greengard-rokhlin.pdf
 template <typename MatrixType, int Options>
-void BDCSVD<MatrixType, Options>::computeSVDofM(Eigen::Index firstCol, Eigen::Index n, MatrixXr& U,
+void BDCSVD<MatrixType, Options>::computeSVDofM(Index firstCol, Index n, MatrixXr& U,
                                                 VectorType& singVals, MatrixXr& V) {
   const RealScalar considerZero = (std::numeric_limits<RealScalar>::min)();
   using std::abs;
@@ -1151,8 +1174,8 @@ void BDCSVD<MatrixType, Options>::computeSingVecs(const ArrayRef& zhat, const Ar
 // i >= 1, di almost null and zi non null.
 // We use a rotation to zero out zi applied to the left of M
 template <typename MatrixType, int Options>
-void BDCSVD<MatrixType, Options>::deflation43(Eigen::Index firstCol, Eigen::Index shift, Eigen::Index i,
-                                              Eigen::Index size) {
+void BDCSVD<MatrixType, Options>::deflation43(Index firstCol, Index shift, Index i,
+                                              Index size) {
   using std::abs;
   using std::sqrt;
   using std::pow;
@@ -1179,9 +1202,9 @@ void BDCSVD<MatrixType, Options>::deflation43(Eigen::Index firstCol, Eigen::Inde
 // We apply two rotations to have zj = 0;
 // TODO deflation44 is still broken and not properly tested
 template <typename MatrixType, int Options>
-void BDCSVD<MatrixType, Options>::deflation44(Eigen::Index firstColu, Eigen::Index firstColm, Eigen::Index firstRowW,
-                                              Eigen::Index firstColW, Eigen::Index i, Eigen::Index j,
-                                              Eigen::Index size) {
+void BDCSVD<MatrixType, Options>::deflation44(Index firstColu, Index firstColm, Index firstRowW,
+                                              Index firstColW, Index i, Index j,
+                                              Index size) {
   using std::abs;
   using std::sqrt;
   using std::conj;
@@ -1219,8 +1242,8 @@ void BDCSVD<MatrixType, Options>::deflation44(Eigen::Index firstColu, Eigen::Ind
 
 // acts on block from (firstCol+shift, firstCol+shift) to (lastCol+shift, lastCol+shift) [inclusive]
 template <typename MatrixType, int Options>
-void BDCSVD<MatrixType, Options>::deflation(Eigen::Index firstCol, Eigen::Index lastCol, Eigen::Index k,
-                                            Eigen::Index firstRowW, Eigen::Index firstColW, Eigen::Index shift) {
+void BDCSVD<MatrixType, Options>::deflation(Index firstCol, Index lastCol, Index k,
+                                            Index firstRowW, Index firstColW, Index shift) {
   using std::sqrt;
   using std::abs;
   const Index length = lastCol + 1 - firstCol;

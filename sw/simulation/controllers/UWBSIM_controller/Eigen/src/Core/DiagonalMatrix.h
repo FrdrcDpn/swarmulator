@@ -52,9 +52,9 @@ class DiagonalBase : public EigenBase<Derived>
     EIGEN_DEVICE_FUNC
     inline DiagonalVectorType& diagonal() { return derived().diagonal(); }
 
-    EIGEN_DEVICE_FUNC
+    EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR 
     inline Index rows() const { return diagonal().size(); }
-    EIGEN_DEVICE_FUNC
+    EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR 
     inline Index cols() const { return diagonal().size(); }
 
     template<typename MatrixDerived>
@@ -199,6 +199,10 @@ class DiagonalMatrix
     EIGEN_DEVICE_FUNC
     explicit EIGEN_STRONG_INLINE DiagonalMatrix(const std::initializer_list<std::initializer_list<Scalar>>& list)
       : m_diagonal(list) {}
+
+    /** \brief Constructs a DiagonalMatrix from an r-value diagonal vector type */
+    EIGEN_DEVICE_FUNC
+    explicit inline DiagonalMatrix(DiagonalVectorType&& diag) : m_diagonal(std::move(diag)) {}
 
     /** Copy constructor. */
     template<typename OtherDerived>
