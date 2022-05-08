@@ -14,8 +14,8 @@ for (( t = 8; t >= 2; --t )); do
   echo "starting batch with $t agents"
   g=logs/3dplot/dynamic/''$t''quad
   mkdir $g
-  for (( e = 1; e <= 5; e++ )); do
-  s=$(($e*20))
+  for (( e = 1; e <= 1; e++ )); do
+  s=$(($e*60))
 
   g=logs/3dplot/dynamic/''$t''quad/''$s''statfreq
   mkdir $g
@@ -31,8 +31,8 @@ for (( t = 8; t >= 2; --t )); do
       -u 'parameters/beacon_8_en' -v 1 \
     conf/parameters.xml 
 
-  for (( j = 1; j <= 10; j++ )); do
-    p=$(($j*$s/10))
+  for (( j = 1; j <= 20; j++ )); do
+    p=$(($j*$s/20))
     d=logs/3dplot/dynamic/''$t''quad/''$s''statfreq/dynfreq$p
     mkdir $d
 
@@ -59,8 +59,8 @@ for (( t = 1; t <= 1; t++ )); do
   g=logs/3dplot/dynamic/''$t''quad
   mkdir $g
 
-  for (( e = 1; e <= 5; e++ )); do
-  s=$(($e*20))
+  for (( e = 1; e <= 1; e++ )); do
+  s=$(($e*60))
 
   g=logs/3dplot/dynamic/''$t''quad/''$s''statfreq
   mkdir $g
@@ -76,8 +76,8 @@ for (( t = 1; t <= 1; t++ )); do
       -u 'parameters/beacon_8_en' -v 1 \
     conf/parameters.xml 
 
-  for (( j = 1; j <= 1; j++ )); do
-    p=$(($j*$s/10))
+  for (( j = 1; j <= 20; j++ )); do
+    p=$(($j*$s/20))
     d=logs/3dplot/dynamic/''$t''quad/''$s''statfreq/dynfreq$p
     mkdir $d
 
