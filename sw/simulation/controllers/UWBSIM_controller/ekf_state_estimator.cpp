@@ -21,7 +21,7 @@ ekf_state_estimator::ekf_state_estimator()
 void ekf_state_estimator::init_ekf_filter()
 {
 
-  float dt = simtime_seconds ;
+  float dt = 0.001 ;
   filterekf.init_ekf(param->EKF_timestep(), s[ID]->state[0], s[ID]->state[1], s[ID]->state[2], s[ID]->state[3], s[ID]->state[4], s[ID]->state[5]);
   // Initialise the EKF struct by setting the state to our estimate
   //pos={s[ID]->state[0], s[ID]->state[1], 0.f };
@@ -49,7 +49,7 @@ void ekf_state_estimator::run_ekf_filter()
   // prediction step
   
   filterekf.ekf_predict(ID, dt);
-    filterekf.ekf_set_noise();
+  filterekf.ekf_set_noise();
   // IMU update step
   //ekf_range_update_scalar(&ekf,s.at(ID)->imu_state_estimate[0], s.at(ID)->imu_state_estimate[1],0.0);
 
@@ -90,6 +90,7 @@ void ekf_state_estimator::run_ekf_filter()
 
  if(UWBm_0[5] == 1){
 float dist = UWBm_0[0];
+  filterekf.ekf_set_tdoa_noise(sqrtf(0.22*0.22));
   filterekf.ekf_update_tdoa(dist, UWBm_0[1], UWBm_0[2], UWBm_0[3], UWBm_0[4]);
   s[ID]->UWBm[5] = 0;
  // std::cout<<"TDOA"<<std::endl;
@@ -103,7 +104,8 @@ float dist = UWBm_0[0];
        tdoa_t = simtime_seconds - tdoa_t_stored; 
 
      if ((param->max_UWB_range()<30)|| param->max_UWB_range()>40){
-    float dist = abs(UWBm_0[6]);
+    float dist = UWBm_0[6];
+    filterekf.ekf_set_twr_noise(twr_noise);
     filterekf.ekf_update_twr(dist, UWBm_0[7], UWBm_0[8]);
  
  }}
@@ -118,30 +120,30 @@ float dist = UWBm_0[0];
     
     // update the twr measurement noise with the covariance values of the quadrotor 
     
-    float theta = -(atan2f(s[ID]->state_estimate[1]-UWBm_0[8],s[ID]->state_estimate[0]-UWBm_0[7]));
+  //  float theta = (atan2f((s[ID]->state_estimate[1]-UWBm_0[8]),s[ID]->state_estimate[0]-UWBm_0[7]));
+    float theta = (atan((s[ID]->state_estimate[1]-UWBm_0[8])/(s[ID]->state_estimate[0]-UWBm_0[7])));
 
     //if(theta < 0){
     //  theta = theta + M_PI/2;
     //}
-   // if(ID == 0){
-   //   std::cout<<UWBm_0[12]<<" "<<UWBm_0[10]<<std::endl;
-    //  std::cout<<theta*180 / M_PI<<" "<<simtime_seconds<<std::endl;
+    
+    //float theta = atan(UWBm_0[2]-pos.y/UWBm_0[1]-pos.x);
+
+   // if(theta < 0){
+     // theta = theta + M_PI/2;
     //}
-    float variance = cos(theta)*cos(theta)*UWBm_0[12] + sin(theta)*sin(theta)*UWBm_0[10] -2*UWBm_0[11]*sin(theta)*cos(theta); 
+    
+    
+    float variance = cos(theta)*cos(theta)*((UWBm_0[10])) + sin(theta)*sin(theta)*((UWBm_0[12])) +2*((UWBm_0[11]))*sin(theta)*cos(theta); 
     float variance_total_add =  abs(variance);
-
+   
     
-    //std::cout<<variance<<std::endl;
-    // just a failsafe in case a covariance matrix is not yet inialised in the beginning of the simulation
-    if(isnan(sqrt(variance_total_add))){
-      variance_total_add = 0;
-    }
-    
-    //std::cout<<sqrtf(0.025*0.025 + variance_total_add)<<std::endl;
-    filterekf.ekf_set_twr_noise(twr_noise*twr_noise+ variance_total_add);
+    //std::cout<<sqrtf( (0.16*0.16)+variance_total_add)<<std::endl;
 
+    filterekf.ekf_set_twr_noise(sqrtf((twr_noise*twr_noise)+ param->kR()*variance_total_add));//2*sqrtf(0.16)*(variance_total_add));
+    
     //std::cout<<variance_total_add<<std::endl;
-    float dist = abs(UWBm_0[6]);
+    float dist = UWBm_0[6];
     filterekf.ekf_update_twr(dist, UWBm_0[7], UWBm_0[8]);
     
      }
@@ -188,10 +190,12 @@ float dist = UWBm_0[0];
       theta = theta + M_PI/2;
     }
 
+
+ 
     float variance = cos(theta)*cos(theta)*UWBm_0[7] + sin(theta)*sin(theta)*UWBm_0[9] +2*UWBm_0[8]*sin(theta)*cos(theta); 
     float variance_total_add =  variance;
 
-    
+   
     //std::cout<<variance<<std::endl;
     // just a failsafe in case a covariance matrix is not yet inialised in the beginning of the simulation
     if(isnan(sqrt(variance_total_add))){
@@ -199,7 +203,7 @@ float dist = UWBm_0[0];
     }
     
     //std::cout<<sqrtf(0.025*0.025 + variance_total_add)<<std::endl;
-    filterekf.ekf_set_twr_noise(twr_noise*twr_noise+ variance_total_add);
+    filterekf.ekf_set_twr_noise(twr_noise*twr_noise + variance_total_add);
 
     //std::cout<<variance_total_add<<std::endl;
     float dist = abs(UWBm_0[0]);

@@ -22,12 +22,13 @@
   <IMU_timestep>0.001</IMU_timestep> 
   <trajectory_frequency>100</trajectory_frequency> 
   <UWB_frequency>60</UWB_frequency> 
-  <UWB_D_frequency>15</UWB_D_frequency> 
+  <UWB_D_frequency>30</UWB_D_frequency> 
   <UWB_signal_length>0.01</UWB_signal_length>
   <max_UWB_range>7.5</max_UWB_range>
   <s_tdoa>0.22</s_tdoa>
   <s_twr>0.16</s_twr>
   <Q>0.01</Q>
+  <kR>1.0</kR>
   <beacon_1_en>1</beacon_1_en>
   <beacon_2_en>1</beacon_2_en>
   <beacon_3_en>1</beacon_3_en>
@@ -36,15 +37,15 @@
   <beacon_6_en>1</beacon_6_en>
   <beacon_7_en>1</beacon_7_en>
   <beacon_8_en>1</beacon_8_en>
-  <beacon_1_freq>100</beacon_1_freq>
-  <beacon_2_freq>100</beacon_2_freq>
-  <beacon_3_freq>100</beacon_3_freq>
-  <beacon_4_freq>100</beacon_4_freq>
-  <beacon_5_freq>100</beacon_5_freq>
-  <beacon_6_freq>100</beacon_6_freq>
-  <beacon_7_freq>100</beacon_7_freq>
-  <beacon_8_freq>100</beacon_8_freq>
-  <beacon_dynamic_freq>100</beacon_dynamic_freq>
+  <beacon_1_freq>400</beacon_1_freq>
+  <beacon_2_freq>400</beacon_2_freq>
+  <beacon_3_freq>400</beacon_3_freq>
+  <beacon_4_freq>400</beacon_4_freq>
+  <beacon_5_freq>400</beacon_5_freq>
+  <beacon_6_freq>400</beacon_6_freq>
+  <beacon_7_freq>400</beacon_7_freq>
+  <beacon_8_freq>400</beacon_8_freq>
+  <beacon_dynamic_freq>400</beacon_dynamic_freq>
   <dynamic_cov_approach>4</dynamic_cov_approach>
   <x_beacon_1>3</x_beacon_1>
   <y_beacon_1>12</y_beacon_1>
@@ -63,7 +64,7 @@
   <x_beacon_8>-1.5</x_beacon_8>
   <y_beacon_8>-12</y_beacon_8>
   <acc_noise_sigma>0.01</acc_noise_sigma>
-  <noise_motor_sigma>0.005</noise_motor_sigma>
+  <noise_motor_sigma>0.001</noise_motor_sigma>
   <noise_type>1</noise_type>
   <gauss_sigma>0.16</gauss_sigma>
   <gauss_sigma_twr>0.16</gauss_sigma_twr>
@@ -90,7 +91,7 @@
   <mouse_zoom_speed>0.4</mouse_zoom_speed>
   <zoom>-15</zoom>
   <!-- Start up zoom, bounded -90 and 9 -->
-  <animation_updatefreq>200</animation_updatefreq>
+  <animation_updatefreq>500</animation_updatefreq>
   <!-- Logger -->
   <logger_updatefreq>2</logger_updatefreq>
   <!-- Additional parameters -->

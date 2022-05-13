@@ -37,8 +37,8 @@ public:
     float add_ht_cauchy_noise(float value);
     float cdf_ht_cauchy(float x);
     float deriv_cdf_ht_cauchy(float x);
-    std::vector<float> v{0, 0, 0, 0, 0,0, 0, 0, 0, 0};
-    std::vector<float> v1{0, 0, 0, 0, 0,0, 0, 0, 0, 0};
+    std::vector<float> v{0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0};
+    std::vector<float> v1{0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0};
     int i = 0;
     int i1 = 0;
     // function to add gamma noise to measurements

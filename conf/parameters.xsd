@@ -29,6 +29,7 @@
       <xs:element name="s_tdoa" type="xs:float"/>
       <xs:element name="s_twr" type="xs:float"/>
       <xs:element name="Q" type="xs:float"/>
+      <xs:element name="kR" type="xs:float"/>
       <xs:element name="beacon_1_en" type="xs:float"/>
       <xs:element name="beacon_2_en" type="xs:float"/>
       <xs:element name="beacon_3_en" type="xs:float"/>

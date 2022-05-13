@@ -23,7 +23,7 @@
 void run_beacon_simulation_step(const int &ID_b)
 {
   while (program_running) {
-    bool ready = (b.size() == 8+nagents || simtime_seconds > 0.);
+    bool ready = (b.size() == 8+nagents && s.size() == nagents );
     if (ready) {
       mtx_bcn.lock_shared();
       // put here the beacon update functions

@@ -11,7 +11,7 @@ beacon_alg = "beacon_hybrid_extra";
 next_UWB_measurement_time = simtime_seconds;
 next_UWB_D_measurement_time = simtime_seconds;
 est = param->htg_mu();
-tdoa_noise = param->gauss_sigma_twr(); 
+tdoa_noise = param->gauss_sigma_tdoa(); 
 twr_noise = param->gauss_sigma_twr(); 
 
 }
@@ -89,13 +89,13 @@ void beacon_hybrid_extra::measurement(const uint16_t ID){
            // generate range measurements
            dx0_s = s[ID]->state[0] - x_0_s;
            dy0_s = s[ID]->state[1] - y_0_s;
-           d0_s = sqrt(dx0_s*dx0_s + dy0_s*dy0_s);
+           d0_s = sqrtf(dx0_s*dx0_s + dy0_s*dy0_s);
 
            // generate range measurements
            dx0_d = s[ID]->state[0] - x_0_d;
            dy0_d = s[ID]->state[1] - y_0_d;
 
-           d0_d = sqrt(dx0_d*dx0_d + dy0_d*dy0_d);
+           d0_d = sqrtf(dx0_d*dx0_d + dy0_d*dy0_d);
            // only continue with selected beacons if in range
 
            
@@ -124,7 +124,7 @@ void beacon_hybrid_extra::measurement(const uint16_t ID){
             // generate tdoa measurements
             dx1_s = s[ID]->state[0] - x_1_s;
             dy1_s = s[ID]->state[1] - y_1_s;
-            d1_s = sqrt(dx1_s*dx1_s + dy1_s*dy1_s);
+            d1_s = sqrtf(dx1_s*dx1_s + dy1_s*dy1_s);
 
             //only continue if the beacon is in range
             if(d1_s<=param->max_UWB_range()){
@@ -150,7 +150,7 @@ if(param->terminaloutput()==1.0){
                 std::cout<<"agent "<<ID<<" ranges with beacon "<<sel_beacon_2<<std::endl; // output the selected beacons to terminal (can be commented)
                 }
     // generate tdoa measurements
-    dd = abs(d1_s)-abs(d0_s);
+    dd = d1_s-d0_s;
 
     //add preferred noise on top of tdoa measurements, defined in parameters file
     if (param->noise_type() == 0){
@@ -172,19 +172,22 @@ if(param->terminaloutput()==1.0){
         s[ID]->UWBm.at(0) = noisy_meas; 
 
         v[i] = noisy_meas-dd; 
+
         i = i +1; 
-        if (i > 9){
-            i = 0;
-        }
-        
         double sum = std::accumulate(v.begin(), v.end(), 0.0);
         double mean = sum / v.size();
 
         double sq_sum = std::inner_product(v.begin(), v.end(), v.begin(), 0.0);
         double stdev = std::sqrt(sq_sum / v.size() - mean * mean);
         
+        if (i > 39){
+            i = 0;
+             tdoa_noise = float(stdev); 
+        }
+        
+        
         if(simtime_seconds > 0.5){
-        tdoa_noise = float(stdev); 
+       
         }
         s[ID]->UWBm.at(1) = x_a_0_s;
         s[ID]->UWBm.at(2) = y_a_0_s;
@@ -264,18 +267,20 @@ if(param->terminaloutput()==1.0){
 
         v1[i] = noisy_meas-d0_d;; 
         i1 = i1 +1; 
-        if (i1 > 9){
-            i1 = 0;
-        }
-        
         double sum = std::accumulate(v1.begin(), v1.end(), 0.0);
         double mean = sum / v1.size();
 
         double sq_sum = std::inner_product(v1.begin(), v1.end(), v1.begin(), 0.0);
         double stdev = std::sqrt(sq_sum / v1.size() - mean * mean);
+        if (i1 > 39){
+            i1 = 0;
+            twr_noise = float(stdev); 
+        }
+        
+        
 
         if(simtime_seconds > 0.5){
-        twr_noise = float(stdev); 
+        
         }
         
         // twr measurement, x beacon, y beacon, simulation time
@@ -320,7 +325,7 @@ if(param->terminaloutput()==1.0){
 // function to add gaussian noise to UWB measurements
 float beacon_hybrid_extra::add_gaussian_noise(float value, float sigma) {
     float noisy_value;
-    float mean = param->htg_mu();
+    float mean = 0;
   
     // Random seed
     random_device rd;

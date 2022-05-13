@@ -35,7 +35,7 @@ private:
 
 
 public:
-
+float kR = 1;
  Eigen::MatrixXf X{6,1};
   Eigen::MatrixXf I{6,6};
   Eigen::MatrixXf Z{4,1};
@@ -45,10 +45,14 @@ public:
   Eigen::MatrixXf P{6,6};
   Eigen::MatrixXf Q{6,6};
   Eigen::MatrixXf R{4,4};
+  Eigen::MatrixXf dhdntwr{1,4};
+  Eigen::MatrixXf dhdntdoa{1,4};
   Eigen::MatrixXf dhdn{4,4};
   Eigen::MatrixXf dhdx{4,6};
+  Eigen::MatrixXf dhdxtdoa{1,6};
+  Eigen::MatrixXf dhdxtwr{1,6};
   Eigen::MatrixXf K{6,4};
-  
+
   ekf();
   
   ~ekf() {};

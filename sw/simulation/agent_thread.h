@@ -28,7 +28,7 @@ void run_agent_simulation_step(const int &ID)
 {
   while (program_running) {
 
-    bool ready = (s.size() == nagents || simtime_seconds > 0.);
+    bool ready = (s.size() == nagents && b.size() == 8+nagents);
     if (ready) {
     
       mtx.lock_shared();
