@@ -40,7 +40,7 @@ std::vector<float> quadrotor::state_update(std::vector<float> state)
 
   
   std::default_random_engine generator;
-  std::normal_distribution<float> distribution(0,param->acc_noise_sigma());
+  std::normal_distribution<float> distribution(0,0.01);
   float noise_x = distribution(generator);
   float noise_y = distribution(generator);
 
@@ -59,17 +59,21 @@ next_IMU_measurement_time = next_IMU_measurement_time + param->IMU_timestep() ;
   //std::mt19937 gen(rd());    // random-number engine used (Mersenne-Twister in this case)
   //std::normal_distribution<float> dist(0, param->acc_noise_sigma());
   
+   
+  
+     // Acceleration
+  imu_state_estimate[4] = state[4] + noise_x; // Acceleration x
+  imu_state_estimate[5] = state[5] + noise_y;// Acceleration y
 
-    // Acceleration
-  imu_state_estimate[4] = state[4]+ noise_x; // Acceleration x
-  imu_state_estimate[5] = state[5]+ noise_y; // Acceleration y
+  imu_state_estimate[2] += imu_state_estimate[4]*dt; // Acceleration x
+  imu_state_estimate[3] += imu_state_estimate[5]*dt;// Acceleration y
+
+  imu_state_estimate[0] += imu_state_estimate[2]*dt; // Acceleration x
+  imu_state_estimate[1] += imu_state_estimate[3]*dt;// Acceleration 0
+
 
   //std::cout<<ID<<" "<<imu_state_estimate[4]<<" "<<state[4]<<" "<<imu_state_estimate[4]-state[4]<<" "<<noise<<std::endl;
   }
-
-  
- 
-  
   //controller->saturate(v_x);
   //controller->saturate(v_y);
   //moving = controller->moving;
@@ -307,6 +311,10 @@ DesiredTheta = Ux/g;
   state.at(0) = x; // Position x
   state.at(1) = y; // Position y
   
+  
+ 
+  
+
 
   return state;
 }

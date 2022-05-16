@@ -36,6 +36,9 @@ private:
 
 public:
 float kR = 1;
+Eigen::MatrixXf NP{2,2};
+ Eigen::MatrixXf U{6,1};
+ Eigen::MatrixXf B{6,1};
  Eigen::MatrixXf X{6,1};
   Eigen::MatrixXf I{6,6};
   Eigen::MatrixXf Z{4,1};

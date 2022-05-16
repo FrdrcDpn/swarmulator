@@ -70,8 +70,15 @@ public:
   float Jy = 0.0000091914;//0.019688; // inertia seen at the rotation axis. (Kg.m^2)
   float Jz = 0.000022800;//0.039380; // inertia seen at the rotation axis. (Kg.m^2)
   float g  = 9.81;      // acceleration due to gravity m/s^2
- 
- 
+ float prevx = 0;
+ float prevy = 0; 
+ float prevvx = 0;
+ float prevvy = 0;
+  float cprevx = 0;
+ float cprevy = 0; 
+ float cprevvx = 0;
+ float cprevvy = 0;
+   float maxacco = 0; 
   /**
    * Constructor
    */

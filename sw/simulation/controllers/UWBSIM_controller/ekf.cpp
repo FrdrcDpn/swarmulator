@@ -6,12 +6,12 @@
 #include "trigonometry.h"
 #include <random>
 
-#define PN_X 0.00001f
-#define PN_Y 0.00001f
-#define PN_VX 0.0001f
-#define PN_VY 0.0001f
-#define PN_AX 0.0001f
-#define PN_AY 0.0001f
+#define PN_X 1.0f
+#define PN_Y 1.0f
+#define PN_VX 1.1f
+#define PN_VY 1.1f
+#define PN_AX 1.01f
+#define PN_AY 1.01f
 
 #define S_AX 1000.01f
 #define S_AY 1000.01f
@@ -66,6 +66,20 @@ X << posx,
      posy, 
      vely,
      accy;
+
+U << 0,
+     0,
+     0,
+     0,
+     0,
+     0;
+
+B << 0,
+     0,
+     1,
+     0,
+     0,
+     1;
 
 Z << 0,
      0,
@@ -127,46 +141,68 @@ dhdx << 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0;
+NP << 0, 0, 
+       0, 0;
 }
 
 void ekf::ekf_predict(uint16_t ID, float dt){
+
+std::cout<<"--------"<<std::endl;
+std::cout<<"ID "<<ID<<" ranging std "<<sqrtf(R(1,1))<<std::endl;
+
+
+
+
      float q = param->Q(); 
-   
 
 
 
-Q <<   q,  (pow(dt,2)/2)*q,  (pow(dt,3)/6)*q, 0, 0, 0,
-      (pow(dt,2)/2)*q, (pow(dt,3)/6)*q,  (pow(dt,4)/8)*q, 0, 0, 0,
-      (pow(dt,3)/6)*q,  (pow(dt,4)/8)*q,(pow(dt,5)/20)*q , 0, 0, 0,
-     0, 0, 0, q,  (pow(dt,2)/2)*q,  (pow(dt,3)/6)*q,
-     0, 0, 0,  (pow(dt,2)/2)*q, (pow(dt,3)/6)*q ,  (pow(dt,4)/8)*q,
-     0, 0, 0,  (pow(dt,3)/6)*q,  (pow(dt,4)/8)*q, (pow(dt,5)/20)*q;
- 
+Q <<   (pow(dt,5)/20)*q,  (pow(dt,4)/8)*q,  (pow(dt,3)/6)*q, 0, 0, 0,
+      (pow(dt,4)/8)*q, (pow(dt,1)/1)*q,  (pow(dt,2)/2)*q, 0, 0, 0,
+      (pow(dt,3)/6)*q,  (pow(dt,2)/2)*q,q , 0, 0, 0,
+     0, 0, 0, (pow(dt,5)/20)*q,  (pow(dt,4)/8)*q,  (pow(dt,3)/6)*q,
+     0, 0, 0,  (pow(dt,4)/8)*q, (pow(dt,3)/3)*q ,  (pow(dt,2)/2)*q,
+     0, 0, 0,  (pow(dt,3)/6)*q,  (pow(dt,2)/2)*q, q;
+  /* 
 
+
+
+ //dt = param->EKF_timestep();
+Q <<   (pow(dt,4)/4)*q,  (pow(dt,3)/2)*q,  (pow(dt,2)/2)*q, 0, 0, 0,
+      (pow(dt,3)/2)*q, (pow(dt,2))*q,  dt*q, 0, 0, 0,
+      (pow(dt,2)/2)*q,  dt*q,q , 0, 0, 0,
+     0, 0, 0, (pow(dt,4)/4)*q,  (pow(dt,3)/2)*q,  (pow(dt,2)/2)*q,
+     0, 0, 0,  (pow(dt,3)/2)*q, (pow(dt,2))*q ,  dt*q,
+     0, 0, 0,  (pow(dt,2)/2)*q,  dt*q, q;
+
+*/
 //std::cout<<P(0,0)<<std::endl;
 //std::cout<<P(0,3)<<std::endl;
 //std::cout<<P(3,3)<<std::endl;
 //std::cout<<P(3,0)<<std::endl;
-dfdx << 1, dt, dt*dt/2, 0, 0, 0,
+dfdx << 1, dt, dt*dt*0.5, 0, 0, 0,
         0, 1, dt, 0, 0, 0,
         0, 0, 1, 0, 0, 0,
-        0, 0, 0, 1, dt, dt*dt/2,
+        0, 0, 0, 1, dt, dt*dt*0.5,
         0, 0, 0, 0, 1, dt,
         0, 0, 0, 0, 0, 1;
-
+ 
 // predict next state
-X(2,0) = s[ID]->imu_state_estimate[4];
-X(1,0) = X(1,0) + X(2,0)*dt; 
-X(0,0) = X(0,0) + X(1,0)*dt + X(2,0)*dt*dt/2 ; 
-X(5,0) = s[ID]->imu_state_estimate[5];
-X(4,0) = X(4,0) +X(5,0)*dt;
-X(3,0) = X(3,0) + X(4,0)*dt + X(5,0)*dt*dt/2;
-//predict state covariance
+// = ;//+ distributiond(generatord);
+//
+float accx = s[ID]->imu_state_estimate[4];
+float accy = s[ID]->imu_state_estimate[5];
+
+X(0,0) = X(0,0) + X(1,0)*dt + accx*dt*dt/2; 
+X(1,0) = X(1,0) + accx*dt; 
+X(2,0) = accx;
+X(3,0) = X(3,0) + X(4,0)*dt + accy*dt*dt/2;
+X(4,0) = X(4,0) +accy*dt;
+X(5,0) = accy ;
+
+P = dfdx * P * dfdx.transpose() +Q;
 
 
-P = dfdx * P * dfdx.transpose() + dfdu * Q * dfdu.transpose();
-//std::cout<<P<<std::endl;
-//std::cout<<"--------"<<std::endl;
 }
 
 void ekf::ekf_update_acc(float ax, float ay){
@@ -213,7 +249,7 @@ float norm = sqrtf(dx * dx + dy * dy);
 float error = dist-norm;
 float mah_distance = abs(error/sqrtf(R(1,1)));  
       
-if(mah_distance < 3){
+if(mah_distance < 50){
 dhdx << 0, 0, 0, 0, 0, 0,
         dx/ norm, 0, 0, dy/ norm, 0, 0,
         0, 0, 0, 0, 0, 0,
@@ -238,18 +274,12 @@ Zm << 0,
 
 
 // calculate Kalman Gain
-float gainx = (P(0,0)*(dx/norm))/((P(0,0)*pow(dx/norm,2) + P(3,3)*pow(dy/norm,2) + R(1,1)));
-float gainy = (P(3,3)*(dy/norm))/((P(0,0)*pow(dx/norm,2) + P(3,3)*pow(dy/norm,2) + R(1,1)));
+///float gainx = (P(0,0)*(dx/norm))/((P(0,0)*pow(dx/norm,2) + P(3,3)*pow(dy/norm,2) + R(1,1)));
+//float gainy = (P(3,3)*(dy/norm))/((P(0,0)*pow(dx/norm,2) + P(3,3)*pow(dy/norm,2) + R(1,1)));
 // calculate Kalman Gain
-K = P*(dhdx.transpose())*((dhdx*P*(dhdx.transpose()) + dhdn*R*(dhdn.transpose())).inverse());
+K = P*(dhdx.transpose())/((P(0,0)*pow(dx/norm,2) + P(3,3)*pow(dy/norm,2) + R(1,1)));
 //K(0,1) = gainx;
 //K(3,1) = gainy;
-// update the state
-X = X + K*(Z-Zm);
-
-//update state covariance
-P = (I-K*dhdx)*P;
-
 
 
 
@@ -259,15 +289,18 @@ P = (I-K*dhdx)*P;
 
 //update state covariance
 
-//P(0,0) = (1-(gainx*dx/norm))*P(0,0);
-//P(3,3) = (1-(gainy*dy/norm))*P(3,3);
 
 //P(0,3) = (-(gainx*dy/norm))*P(0,3);
-//P(3,0) = (-(gainy*dx/norm))*P(3,0);
+////P(3,0) = (-(gainy*dx/norm))*P(3,0);
 
+// update the state
+X = X + K*(Z-Zm);
 
 //update state covariance
 //P = (I-K*dhdx)*P;
+P =(I-K*dhdx)*P*(I-K*dhdx).transpose() + K*R*K.transpose();
+//P(0,0) = (1-(gainx*dx/norm))*P(0,0);
+//P(3,3) = (1-(gainy*dy/norm))*P(3,3);
 }}
 
 
@@ -301,7 +334,7 @@ float errorDistance = fabsf(error / errorBaseDistance);
 
 //if (errorDistance < 0.4) {
 if(anchordistancesq > distancediffsq){
-if(mah_distance < 3){
+if(mah_distance < 50){
 // build Jacobian of observation model for anchor i
 
 dhdx << ((dx1 / d1) - (dx0 / d0)), 0, 0, ((dy1 / d1) - (dy0 / d0)), 0, 0,
@@ -329,23 +362,21 @@ Zm << norm,
 
 
 //
-K = P*(dhdx.transpose())*((dhdx*P*(dhdx.transpose()) + dhdn*R*(dhdn.transpose())).inverse());
+K = P*(dhdx.transpose())/((P(0,0)*pow( ((dx1 / d1) - (dx0 / d0)),2) + P(3,3)*pow(((dy1 / d1) - (dy0 / d0)),2) + R(0,0)));
 // calculate Kalman Gain
-float gainx = (P(0,0)*( ((dx1 / d1) - (dx0 / d0))))/((P(0,0)*pow( ((dx1 / d1) - (dx0 / d0)),2) + P(3,3)*pow(((dy1 / d1) - (dy0 / d0)),2) + R(0,0)));
-float gainy = (P(3,3)*(((dy1 / d1) - (dy0 / d0))))/((P(0,0)*pow( ((dx1 / d1) - (dx0 / d0)),2) + P(3,3)*pow(((dy1 / d1) - (dy0 / d0)),2) + R(0,0)));
+//float gainx = (P(0,0)*( ((dx1 / d1) - (dx0 / d0))))/((P(0,0)*pow( ((dx1 / d1) - (dx0 / d0)),2) + P(3,3)*pow(((dy1 / d1) - (dy0 / d0)),2) + R(0,0)));
+//float gainy = (P(3,3)*(((dy1 / d1) - (dy0 / d0))))/((P(0,0)*pow( ((dx1 / d1) - (dx0 / d0)),2) + P(3,3)*pow(((dy1 / d1) - (dy0 / d0)),2) + R(0,0)));
 
-//K(0,1) = gainx;
-//K(3,1) = gainy;
+//K(0,0) = gainx;
+//K(3,0) = gainy;
 // update the state
 //X(0,0) = X(0,0) + gainx*(dist-norm);
 //X(3,0) = X(3,0) + gainy*(dist-norm);
 
 
-//P(0,0) = (1-(gainx*((dx1 / d1) - (dx0 / d0))))*P(0,0);
-//P(3,3) = (1-(gainy*((dy1 / d1) - (dy0 / d0))))*P(3,3);
 
 //P(0,3) = (-(gainx*((dy1 / d1) - (dy0 / d0))))*P(0,3);
-////P(3,0) = (-(gainy*((dx1 / d1) - (dx0 / d0))))*P(3,0);
+//P(3,0) = (-(gainy*((dx1 / d1) - (dx0 / d0))))*P(3,0);
 //update state covariance
 //P = (I-K*dhdx)*P;
 
@@ -353,7 +384,10 @@ float gainy = (P(3,3)*(((dy1 / d1) - (dy0 / d0))))/((P(0,0)*pow( ((dx1 / d1) - (
 X = X + K*(Z-Zm);
 
 //update state covariance
-P = (I-K*dhdx)*P;
+//P = (I-K*dhdx)*P;
+P =(I-K*dhdx)*P*(I-K*dhdx).transpose() + K*R*K.transpose();
+//P(0,0) = (1-(gainx*((dx1 / d1) - (dx0 / d0))))*P(0,0);
+//P(3,3) = (1-(gainy*((dy1 / d1) - (dy0 / d0))))*P(3,3);
 
 }
 }}}

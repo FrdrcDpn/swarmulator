@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <parameters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="parameters.xsd">
-  <!-- Simulation -->
+  <!-- Simulation 1 0 3-->
   <Kpphi>1</Kpphi>
   <Kiphi>0.1</Kiphi>
   <Kdphi>0.3</Kdphi>
   <Kptheta>1</Kptheta>
   <Kitheta>0.1</Kitheta>
   <Kdtheta>0.3</Kdtheta>
-  <Kpx>1</Kpx>
+  <Kpx>5</Kpx>
   <Kix>0</Kix>
-  <Kdx>3</Kdx>
-  <Kpy>1</Kpy>
+  <Kdx>1</Kdx>
+  <Kpy>5</Kpy>
   <Kiy>0</Kiy>
-  <Kdy>3</Kdy>
+  <Kdy>1</Kdy>
   <Kpz>2</Kpz>
   <Kiz>0.01</Kiz>
   <Kdz>1</Kdz>
@@ -22,12 +22,12 @@
   <IMU_timestep>0.001</IMU_timestep> 
   <trajectory_frequency>100</trajectory_frequency> 
   <UWB_frequency>60</UWB_frequency> 
-  <UWB_D_frequency>30</UWB_D_frequency> 
+  <UWB_D_frequency>60</UWB_D_frequency> 
   <UWB_signal_length>0.01</UWB_signal_length>
-  <max_UWB_range>7.5</max_UWB_range>
+  <max_UWB_range>7</max_UWB_range>
   <s_tdoa>0.22</s_tdoa>
   <s_twr>0.16</s_twr>
-  <Q>0.01</Q>
+  <Q>0.0001</Q>
   <kR>1.0</kR>
   <beacon_1_en>1</beacon_1_en>
   <beacon_2_en>1</beacon_2_en>

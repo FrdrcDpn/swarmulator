@@ -49,7 +49,7 @@ void ekf_state_estimator::run_ekf_filter()
   // prediction step
   
   filterekf.ekf_predict(ID, dt);
-  filterekf.ekf_set_noise();
+  //filterekf.ekf_set_noise();
   // IMU update step
   //ekf_range_update_scalar(&ekf,s.at(ID)->imu_state_estimate[0], s.at(ID)->imu_state_estimate[1],0.0);
 
@@ -90,7 +90,7 @@ void ekf_state_estimator::run_ekf_filter()
 
  if(UWBm_0[5] == 1){
 float dist = UWBm_0[0];
-  filterekf.ekf_set_tdoa_noise(sqrtf(0.22*0.22));
+  filterekf.ekf_set_tdoa_noise(0.22);
   filterekf.ekf_update_tdoa(dist, UWBm_0[1], UWBm_0[2], UWBm_0[3], UWBm_0[4]);
   s[ID]->UWBm[5] = 0;
  // std::cout<<"TDOA"<<std::endl;
@@ -103,25 +103,25 @@ float dist = UWBm_0[0];
     if(param->dynamic_cov_approach()==0){
        tdoa_t = simtime_seconds - tdoa_t_stored; 
 
-     if ((param->max_UWB_range()<30)|| param->max_UWB_range()>40){
+    
     float dist = UWBm_0[6];
-    filterekf.ekf_set_twr_noise(twr_noise);
+    filterekf.ekf_set_twr_noise(0.16);
     filterekf.ekf_update_twr(dist, UWBm_0[7], UWBm_0[8]);
  
- }}
+ }
 
    // ****** fourth INTER AGENT RANGING APPROACH ****** 3 noise updating
     if(param->dynamic_cov_approach()==4){
   tdoa_t = simtime_seconds - tdoa_t_stored; 
 
-     if ((param->max_UWB_range()<30)|| param->max_UWB_range()>40){
+    
     // get the current covariance matrix
     //cov = filterekf.ekf_get_cov(); 
     
     // update the twr measurement noise with the covariance values of the quadrotor 
     
-  //  float theta = (atan2f((s[ID]->state_estimate[1]-UWBm_0[8]),s[ID]->state_estimate[0]-UWBm_0[7]));
-    float theta = (atan((s[ID]->state_estimate[1]-UWBm_0[8])/(s[ID]->state_estimate[0]-UWBm_0[7])));
+   //float theta = (atan2f((s[ID]->state_estimate[1]-UWBm_0[8]),s[ID]->state_estimate[0]-UWBm_0[7]));
+    float theta = (atan(s[ID]->state_estimate[1]-UWBm_0[8]/(s[ID]->state_estimate[0]-UWBm_0[7])));
 
     //if(theta < 0){
     //  theta = theta + M_PI/2;
@@ -134,20 +134,20 @@ float dist = UWBm_0[0];
     //}
     
     
-    float variance = cos(theta)*cos(theta)*((UWBm_0[10])) + sin(theta)*sin(theta)*((UWBm_0[12])) +2*((UWBm_0[11]))*sin(theta)*cos(theta); 
+    float variance = cos(theta)*cos(theta)*((UWBm_0[12])) + sin(theta)*sin(theta)*((UWBm_0[10])) +2*((UWBm_0[11]))*sin(theta)*cos(theta); 
     float variance_total_add =  abs(variance);
    
     
     //std::cout<<sqrtf( (0.16*0.16)+variance_total_add)<<std::endl;
 
-    filterekf.ekf_set_twr_noise(sqrtf((twr_noise*twr_noise)+ param->kR()*variance_total_add));//2*sqrtf(0.16)*(variance_total_add));
+    filterekf.ekf_set_twr_noise(sqrtf((0.16*0.16)+ param->kR()*variance_total_add));//2*sqrtf(0.16)*(variance_total_add));
     
     //std::cout<<variance_total_add<<std::endl;
     float dist = UWBm_0[6];
     filterekf.ekf_update_twr(dist, UWBm_0[7], UWBm_0[8]);
     
      }
-    }
+    
     
  s[ID]->UWBm[9] = 0;
  // std::cout<<"TWR"<<std::endl;

@@ -68,7 +68,38 @@ void beacon_hybrid_extra::measurement(const uint16_t ID){
             x_a_0_s = x_0_s; // for the static beacons we use the static x location as anchor x coordinate
             y_a_0_s = y_0_s; // for the static beacons we use the static y location as anchor y coordinate
             sel_beacon_1 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
-            static_tdoa_1_sel = true; }
+            static_tdoa_1_sel = true; 
+        // generate range measurements
+           dx0_s = s[ID]->state[0] - x_0_s;
+           dy0_s = s[ID]->state[1] - y_0_s;
+           d0_s = sqrtf(dx0_s*dx0_s + dy0_s*dy0_s);
+           
+           
+            if( abs(s[ID]->state[1])>=param->max_UWB_range() && static_tdoa_1_sel == true){
+                static_tdoa_1_sel = true; // we have selected the beacon
+                static_beacon_1 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
+                dynamic_beacon_1 = bool(b_0[ID_b]->state_b[5]);
+                sel_beacon_1 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
+           }
+            if( abs(s[ID]->state[1])<param->max_UWB_range()&& static_tdoa_1_sel == true){
+               //else we discard our selected beacons
+               static_tdoa_1_sel = false; 
+               
+           }
+           /*
+           if(d0_s<=param->max_UWB_range() && static_tdoa_1_sel == true){
+                static_tdoa_1_sel = true; // we have selected the beacon
+                static_beacon_1 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
+                dynamic_beacon_1 = bool(b_0[ID_b]->state_b[5]);
+                sel_beacon_1 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
+           }
+            if(d0_s>param->max_UWB_range()&& static_tdoa_1_sel == true){
+               //else we discard our selected beacons
+               static_tdoa_1_sel = false; 
+               
+           }*/
+
+           }
 
            if (b_0[ID_b]->state_b[5]==1.0 && dynamic_twr_1_sel == false){
             cov1 = b_0[ID_b]->state_b[9]; // get the covariance value of the dynamic beacon
@@ -80,36 +111,23 @@ void beacon_hybrid_extra::measurement(const uint16_t ID){
             x_a_0_d = b_0[ID_b]->state_b[0]; // for the dynamic beacons we use the dymamic x state estimate as anchor x coordinate
             y_a_0_d = b_0[ID_b]->state_b[1]; // for the dynamic beacons we use the dymamic y state estimate as anchor y coordinate
             dynamic_twr_1_sel = true; 
-            
+            // generate range measurements
+           dx0_d = s[ID]->state[0] - x_0_d;
+           dy0_d = s[ID]->state[1] - y_0_d;
+
+           d0_d = sqrtf(dx0_d*dx0_d + dy0_d*dy0_d);
                // static_beacon_1 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
                // dynamic_beacon_1 = bool(b_0[ID_b]->state_b[5]);
                
            }
 
-           // generate range measurements
-           dx0_s = s[ID]->state[0] - x_0_s;
-           dy0_s = s[ID]->state[1] - y_0_s;
-           d0_s = sqrtf(dx0_s*dx0_s + dy0_s*dy0_s);
 
-           // generate range measurements
-           dx0_d = s[ID]->state[0] - x_0_d;
-           dy0_d = s[ID]->state[1] - y_0_d;
 
-           d0_d = sqrtf(dx0_d*dx0_d + dy0_d*dy0_d);
+           
            // only continue with selected beacons if in range
 
            
-           if(d0_s<=param->max_UWB_range() && static_tdoa_1_sel == true){
-                static_tdoa_1_sel = true; // we have selected the beacon
-                static_beacon_1 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
-                dynamic_beacon_1 = bool(b_0[ID_b]->state_b[5]);
-                sel_beacon_1 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
-                 
-           }else if(d0_s>param->max_UWB_range()&& static_tdoa_1_sel == true){
-               //else we discard our selected beacons
-               static_tdoa_1_sel = false; 
-               
-           }
+           
 
         }
 
@@ -125,7 +143,15 @@ void beacon_hybrid_extra::measurement(const uint16_t ID){
             dx1_s = s[ID]->state[0] - x_1_s;
             dy1_s = s[ID]->state[1] - y_1_s;
             d1_s = sqrtf(dx1_s*dx1_s + dy1_s*dy1_s);
-
+         //only continue if the beacon is in range
+            if(abs(s[ID]->state[1])>=param->max_UWB_range()){
+                beacon_2_selected = true; // we have selected the beacon
+                static_beacon_2 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
+                dynamic_beacon_2 = bool(b_0[ID_b]->state_b[5]); 
+                sel_beacon_2 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
+                
+            }
+            /*
             //only continue if the beacon is in range
             if(d1_s<=param->max_UWB_range()){
                 beacon_2_selected = true; // we have selected the beacon
@@ -133,7 +159,7 @@ void beacon_hybrid_extra::measurement(const uint16_t ID){
                 dynamic_beacon_2 = bool(b_0[ID_b]->state_b[5]); 
                 sel_beacon_2 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
                 
-            }
+            }*/
            
         }
     }
