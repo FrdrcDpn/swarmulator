@@ -147,8 +147,8 @@ NP << 0, 0,
 
 void ekf::ekf_predict(uint16_t ID, float dt){
 
-std::cout<<"--------"<<std::endl;
-std::cout<<"ID "<<ID<<" ranging std "<<sqrtf(R(1,1))<<std::endl;
+//std::cout<<"--------"<<std::endl;
+//std::cout<<"ID "<<ID<<" ranging std "<<sqrtf(R(1,1))<<std::endl;
 
 
 
