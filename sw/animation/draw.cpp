@@ -206,6 +206,38 @@ void draw::agent(const uint16_t &ID, const float &x, const float &y, const float
   glPopMatrix();
 }
 
+void draw::covellipse(float cx, float cy, float rx, float ry) 
+{  
+
+
+  glPushMatrix();
+  glLineWidth(2.5);
+  glColor3f(1.0, 1.0, 1.0);
+    float num_segments = 300;
+    float theta = 2 * 3.1415926 / float(num_segments); 
+    float c = cosf(theta);//precalculate the sine and cosine
+    float s = sinf(theta);
+    float t;
+
+    float x = 1;//we start at angle = 0 
+    float y = 0; 
+
+    glBegin(GL_LINE_LOOP); 
+
+    for(int ii = 0; ii < num_segments; ii++) 
+    { 
+        //apply radius and offset
+        glVertex2f(x * rx + cx, y * ry + cy);//output vertex 
+
+        //apply the rotation matrix
+        t = x;
+        x = c * x - s * y;
+        y = s * t + c * y;
+    } 
+    glEnd(); 
+    glPopMatrix();
+}
+
 void draw::agent_estimate(const uint16_t &ID, const float &x, const float &y, const float &orientation)
 {
   glPushMatrix();

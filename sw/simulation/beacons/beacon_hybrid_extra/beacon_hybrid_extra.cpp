@@ -75,17 +75,20 @@ void beacon_hybrid_extra::measurement(const uint16_t ID){
            d0_s = sqrtf(dx0_s*dx0_s + dy0_s*dy0_s);
            
            
-            if( abs(s[ID]->state[1])>=param->max_UWB_range() && static_tdoa_1_sel == true){
+            if((abs(s[ID]->state[1])>=param->max_UWB_range() ||abs(s[ID]->state[0])>=param->max_UWB_range()/2 )&& static_tdoa_1_sel == true){
                 static_tdoa_1_sel = true; // we have selected the beacon
                 static_beacon_1 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
                 dynamic_beacon_1 = bool(b_0[ID_b]->state_b[5]);
                 sel_beacon_1 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
            }
-            if( abs(s[ID]->state[1])<param->max_UWB_range()&& static_tdoa_1_sel == true){
+
+            if( abs(s[ID]->state[1])<param->max_UWB_range() && abs(s[ID]->state[0])<param->max_UWB_range()/2 && static_tdoa_1_sel == true){
                //else we discard our selected beacons
                static_tdoa_1_sel = false; 
                
            }
+        
+            
            /*
            if(d0_s<=param->max_UWB_range() && static_tdoa_1_sel == true){
                 static_tdoa_1_sel = true; // we have selected the beacon
@@ -144,13 +147,14 @@ void beacon_hybrid_extra::measurement(const uint16_t ID){
             dy1_s = s[ID]->state[1] - y_1_s;
             d1_s = sqrtf(dx1_s*dx1_s + dy1_s*dy1_s);
          //only continue if the beacon is in range
-            if(abs(s[ID]->state[1])>=param->max_UWB_range()){
+            if(abs(s[ID]->state[1])>=param->max_UWB_range() || abs(s[ID]->state[0])>=param->max_UWB_range()/2){
                 beacon_2_selected = true; // we have selected the beacon
                 static_beacon_2 = !bool(b_0[ID_b]->state_b[5]); // 5th entry of state vector is 0.0 if it is a static beacon, 1.0 if it is dynamic
                 dynamic_beacon_2 = bool(b_0[ID_b]->state_b[5]); 
                 sel_beacon_2 = int(b_0[ID_b]->state_b[6]); //6h entry of state vector is the beacon ID 
                 
             }
+          
             /*
             //only continue if the beacon is in range
             if(d1_s<=param->max_UWB_range()){

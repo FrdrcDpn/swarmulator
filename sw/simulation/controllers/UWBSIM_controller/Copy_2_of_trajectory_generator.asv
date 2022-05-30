@@ -100,66 +100,47 @@ for c = 1:1:numrows
   
 end
 
-
-for c = 1+(4*750):1:numrows
+for c = 1+1500:1:numrows
     fprintf(fileID2,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
   
 end
-for c = 1:1:(4*750)
+for c = 1:1:1500
     fprintf(fileID2,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
   
 end
 
-for c = 1+(2*750):1:numrows
+for c = 1+3000:1:numrows
     fprintf(fileID3,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
   
 end
-for c = 1:1:(2*750)
+for c = 1:1:3000
     fprintf(fileID3,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
   
 end
 
-for c = 1+(6*750):1:numrows
+for c = 1+4500:1:numrows
     fprintf(fileID4,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
   
 end
-for c = 1:1:(6*750)
+for c = 1:1:4500
     fprintf(fileID4,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
   
 end
 
-for c = 1+(1*750):1:numrows
-    fprintf(fileID5,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
+for c = 1+750:1:numrows
+    fprintf(fileID4,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
   
 end
-for c = 1:1:(1*750)
-    fprintf(fileID5,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
-  
-end
-
-for c = 1+(5*750):1:numrows
-    fprintf(fileID6,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
-  
-end
-for c = 1:1:(5*750)
-    fprintf(fileID6,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
+for c = 1:1:(6000-750)
+    fprintf(fileID4,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
   
 end
 
-for c = 1+(3*750):1:numrows
-    fprintf(fileID7,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
+for c = 1+750:1:numrows
+    fprintf(fileID4,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
   
 end
-for c = 1:1:(3*750)
-    fprintf(fileID7,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
-  
-end
-
-for c = 1+(7*750):1:numrows
-    fprintf(fileID8,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
-  
-end
-for c = 1:1:(7*750)
-    fprintf(fileID8,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
+for c = 1:1:(6000-750)
+    fprintf(fileID4,'%.2f %.2f \n',round(truePosition1(c,1),3), round(truePosition1(c,2),3));
   
 end

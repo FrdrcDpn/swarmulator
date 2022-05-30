@@ -6,12 +6,12 @@
 #include "trigonometry.h"
 #include <random>
 
-#define PN_X 1.0f
-#define PN_Y 1.0f
-#define PN_VX 1.1f
-#define PN_VY 1.1f
-#define PN_AX 1.01f
-#define PN_AY 1.01f
+#define PN_X 0.0f
+#define PN_Y 0.0f
+#define PN_VX 0.1f
+#define PN_VY 0.1f
+#define PN_AX 0.01f
+#define PN_AY 0.01f
 
 #define S_AX 1000.01f
 #define S_AY 1000.01f
@@ -146,36 +146,35 @@ NP << 0, 0,
 }
 
 void ekf::ekf_predict(uint16_t ID, float dt){
-
+ float q = param->Q(); 
 //std::cout<<"--------"<<std::endl;
 //std::cout<<"ID "<<ID<<" ranging std "<<sqrtf(R(1,1))<<std::endl;
 
 
 
+Q <<   (pow(dt,5)/20)*q*q,  (pow(dt,4)/8)*q*q,  (pow(dt,3)/6)*q*q, 0, 0, 0,
+      (pow(dt,4)/8)*q*q, (pow(dt,1)/1)*q*q,  (pow(dt,2)/2)*q*q, 0, 0, 0,
+      (pow(dt,3)/6)*q*q,  (pow(dt,2)/2)*q*q,q*q , 0, 0, 0,
+     0, 0, 0, (pow(dt,5)/20)*q*q,  (pow(dt,4)/8)*q*q,  (pow(dt,3)/6)*q*q,
+     0, 0, 0,  (pow(dt,4)/8)*q*q, (pow(dt,3)/3)*q*q ,  (pow(dt,2)/2)*q*q,
+     0, 0, 0,  (pow(dt,3)/6)*q*q,  (pow(dt,2)/2)*q*q, q*q;
 
-     float q = param->Q(); 
+ 
 
-
-
-Q <<   (pow(dt,5)/20)*q,  (pow(dt,4)/8)*q,  (pow(dt,3)/6)*q, 0, 0, 0,
-      (pow(dt,4)/8)*q, (pow(dt,1)/1)*q,  (pow(dt,2)/2)*q, 0, 0, 0,
-      (pow(dt,3)/6)*q,  (pow(dt,2)/2)*q,q , 0, 0, 0,
-     0, 0, 0, (pow(dt,5)/20)*q,  (pow(dt,4)/8)*q,  (pow(dt,3)/6)*q,
-     0, 0, 0,  (pow(dt,4)/8)*q, (pow(dt,3)/3)*q ,  (pow(dt,2)/2)*q,
-     0, 0, 0,  (pow(dt,3)/6)*q,  (pow(dt,2)/2)*q, q;
-  /* 
+/*
 
 
 
  //dt = param->EKF_timestep();
+ 
 Q <<   (pow(dt,4)/4)*q,  (pow(dt,3)/2)*q,  (pow(dt,2)/2)*q, 0, 0, 0,
       (pow(dt,3)/2)*q, (pow(dt,2))*q,  dt*q, 0, 0, 0,
       (pow(dt,2)/2)*q,  dt*q,q , 0, 0, 0,
      0, 0, 0, (pow(dt,4)/4)*q,  (pow(dt,3)/2)*q,  (pow(dt,2)/2)*q,
      0, 0, 0,  (pow(dt,3)/2)*q, (pow(dt,2))*q ,  dt*q,
      0, 0, 0,  (pow(dt,2)/2)*q,  dt*q, q;
-
 */
+
 //std::cout<<P(0,0)<<std::endl;
 //std::cout<<P(0,3)<<std::endl;
 //std::cout<<P(3,3)<<std::endl;
@@ -298,7 +297,7 @@ X = X + K*(Z-Zm);
 
 //update state covariance
 //P = (I-K*dhdx)*P;
-P =(I-K*dhdx)*P*(I-K*dhdx).transpose() + K*R*K.transpose();
+P =(I-K*dhdx)*P;//*(I-K*dhdx).transpose() + K*R*K.transpose();
 //P(0,0) = (1-(gainx*dx/norm))*P(0,0);
 //P(3,3) = (1-(gainy*dy/norm))*P(3,3);
 }}
@@ -385,7 +384,7 @@ X = X + K*(Z-Zm);
 
 //update state covariance
 //P = (I-K*dhdx)*P;
-P =(I-K*dhdx)*P*(I-K*dhdx).transpose() + K*R*K.transpose();
+P =(I-K*dhdx)*P;//*(I-K*dhdx).transpose() + K*R*K.transpose();
 //P(0,0) = (1-(gainx*((dx1 / d1) - (dx0 / d0))))*P(0,0);
 //P(3,3) = (1-(gainy*((dy1 / d1) - (dy0 / d0))))*P(3,3);
 

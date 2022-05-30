@@ -46,6 +46,7 @@ void main_loop_function()
       // Input: ID, p_x global, p_y global, orientation global
       drawer.agent_trajectory(ID, s[ID]->state.at(0), s[ID]->state.at(1), s[ID]->orientation);
       drawer.agent_estimate(ID, s[ID]->state_estimate.at(0), s[ID]->state_estimate.at(1), s[ID]->orientation);
+      drawer.covellipse(s[ID]->state.at(1), s[ID]->state.at(0), sqrtf(s[ID]->Cov[2]),sqrtf(s[ID]->Cov[0]));
      // drawer.agent_estimate(ID, s[ID]->ekf_estimate.at(0), s[ID]->ekf_estimate.at(1), s[ID]->orientation);
       // Input: ID, p_x global, p_y global, v_x global, v_y global
      // drawer.velocity_arrow(ID,  s[ID]->state_desired_traj.at(0), s[ID]->state_desired_traj.at(1), s[ID]->state_desired_traj.at(2), s[ID]->state_desired_traj.at(3));

@@ -121,7 +121,7 @@ float dist = UWBm_0[0];
     // update the twr measurement noise with the covariance values of the quadrotor 
     
    //float theta = (atan2f((s[ID]->state_estimate[1]-UWBm_0[8]),s[ID]->state_estimate[0]-UWBm_0[7]));
-    float theta = (atan(s[ID]->state_estimate[1]-UWBm_0[8]/(s[ID]->state_estimate[0]-UWBm_0[7])));
+   float theta = (atan2f(s[ID]->state_estimate[1]-UWBm_0[8],(s[ID]->state_estimate[0]-UWBm_0[7])));
 
     //if(theta < 0){
     //  theta = theta + M_PI/2;
@@ -134,13 +134,16 @@ float dist = UWBm_0[0];
     //}
     
     
-    float variance = cos(theta)*cos(theta)*((UWBm_0[12])) + sin(theta)*sin(theta)*((UWBm_0[10])) +2*((UWBm_0[11]))*sin(theta)*cos(theta); 
+    float variance = cosf(theta)*cosf(theta)*(abs(UWBm_0[10])) + sinf(theta)*sinf(theta)*(abs(UWBm_0[12])) +2*(abs(UWBm_0[11]))*sinf(theta)*cosf(theta); 
     float variance_total_add =  abs(variance);
    
-    
+    if(ID == 0){
+    std::cout<<"theta: "<<theta*180/M_PI<<std::endl;
+    std::cout<<"covx: "<<UWBm_0[10]<<std::endl;
+    std::cout<<"covy: "<<UWBm_0[12]<<std::endl;}
     //std::cout<<sqrtf( (0.16*0.16)+variance_total_add)<<std::endl;
 
-    filterekf.ekf_set_twr_noise(sqrtf((0.16*0.16)+ param->kR()*variance_total_add));//2*sqrtf(0.16)*(variance_total_add));
+    filterekf.ekf_set_twr_noise(sqrtf((0.16*0.16)+ variance_total_add));//2*sqrtf(0.16)*(variance_total_add));
     
     //std::cout<<variance_total_add<<std::endl;
     float dist = UWBm_0[6];
