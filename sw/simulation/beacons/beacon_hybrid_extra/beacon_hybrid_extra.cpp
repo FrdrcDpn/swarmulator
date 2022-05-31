@@ -30,7 +30,7 @@ void beacon_hybrid_extra::measurement(const uint16_t ID){
      std::default_random_engine genb;
     float x_0_s,y_0_s,x_1_s,y_1_s,dx0_s,dy0_s,dx1_s,dy1_s,d0_s,d1_s,dd,x_a_0_s,y_a_0_s,x_a_1_s,y_a_1_s;
 
-    float x_0_d,y_0_d,dx0_d,dy0_d,d0_d,x_a_0_d,y_a_0_d,cov1, cov2, cov3, cov4;
+    float x_0_d,y_0_d,dx0_d,dy0_d,d0_d,x_a_0_d,y_a_0_d,cov1, cov2, cov3, cov4,vx,vy;
     // initial values
     bool static_beacon_1 = false;
     bool dynamic_beacon_1 = false;
@@ -109,6 +109,8 @@ void beacon_hybrid_extra::measurement(const uint16_t ID){
             cov2 = b_0[ID_b]->state_b[10]; // get the covariance value of the dynamic beacon
             cov3 = b_0[ID_b]->state_b[11]; // get the covariance value of the dynamic beacon
             cov4 = b_0[ID_b]->state_b[12]; // get the covariance value of the dynamic beacon
+            vx = b_0[ID_b]->state_b[13]; // get the covariance value of the dynamic beacon
+            vy = b_0[ID_b]->state_b[14]; // get the covariance value of the dynamic beacon
             x_0_d = b_0[ID_b]->state_b[7]; // x-location of dynamic beacon from desired trajectory
             y_0_d = b_0[ID_b]->state_b[8]; // y-location of dynamic beacon from desired trajectory
             x_a_0_d = b_0[ID_b]->state_b[0]; // for the dynamic beacons we use the dymamic x state estimate as anchor x coordinate
@@ -348,6 +350,11 @@ if(param->terminaloutput()==1.0){
     s[ID]->UWBm[11] = cov2;
     s[ID]->UWBm[12] = cov3;
     s[ID]->UWBm[13] = cov4;
+    s[ID]->UWBm[14] = simtime_seconds;
+    s[ID]->UWBm[15] = vx; // dynamic agent velocity estimate
+    s[ID]->UWBm[16] = vy; // dynamic agent velocity estimate
+    s[ID]->UWBm[17] = s[ID]->state_estimate[0];
+    s[ID]->UWBm[18] = s[ID]->state_estimate[1];
     s[ID]->UWBm[9] = 1 ;// we have pushed a twr measurement let ekf know
    }
 }

@@ -23,7 +23,7 @@ quadrotor::quadrotor(int i, std::vector<float> s, float tstep)
   ekf_estimate = s;
   Cov = s; 
   state_desired_traj = s;
-  UWBm = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0,0.0,0.0, 0.0,0.0,0.0};
+  UWBm = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0,0.0,0.0, 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
   controller_states = {0.0, 0.0, 0.0,0.0, 0.0, 0.0,0.0, 0.0, 0.0};
   noisetest = {0.0, 0.0, 0.0,0.0, 0.0, 0.0,0.0, 0.0, 0.0};
   next_IMU_measurement_time = simtime_seconds;

@@ -48,6 +48,7 @@
       <xs:element name="beacon_8_freq" type="xs:float"/>
       <xs:element name="beacon_dynamic_freq" type="xs:float"/>
       <xs:element name="dynamic_cov_approach" type="xs:float"/>
+      <xs:element name="beaconvelocity" type="xs:float"/>
       <xs:element name="x_beacon_1" type="xs:float"/>
       <xs:element name="y_beacon_1" type="xs:float"/>
       <xs:element name="x_beacon_2" type="xs:float"/>

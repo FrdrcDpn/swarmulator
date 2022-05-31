@@ -38,9 +38,9 @@ std::vector<float> Beacon_gen::beacon_status_update(std::vector<float> state_b){
      
 
       //the interval in which we transmit a 1 is defined by the beacon frequency
-      next_measurement_time = next_measurement_time + b.size() /(0.5*state_b[3]) + distbgen(genbgen);
+      next_measurement_time = next_measurement_time + 1.0 /(0.5*state_b[3]) + distbgen(genbgen);
        //we end transmission after certain uwb signal lengthyyy
-      end_measurement_time = next_measurement_time + b.size() /(state_b[3]);
+      end_measurement_time = next_measurement_time + 1.0 /(state_b[3]);
       if(state_b[2]==1.0){
         state_b[4] = 1.0;
         }
@@ -72,6 +72,8 @@ std::vector<float> Beacon_gen::beacon_dynamic_state_update(std::vector<float> st
       state_b[10] = s[ID_b-8]->Cov[1];
       state_b[11] = s[ID_b-8]->Cov[2];
       state_b[12] = s[ID_b-8]->Cov[3];
+      state_b[13] = s[ID_b-8]->state_estimate[2];
+      state_b[14] = s[ID_b-8]->state_estimate[3];
     }
   return state_b;
 }

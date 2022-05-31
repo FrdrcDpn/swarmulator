@@ -18,13 +18,13 @@
   <Kdz>1</Kdz>
   <enable_UWB>1</enable_UWB>
   <dynamic_beacons>1</dynamic_beacons>
-  <EKF_timestep>0.04</EKF_timestep> 
+  <EKF_timestep>0.004</EKF_timestep> 
   <IMU_timestep>0.001</IMU_timestep> 
   <trajectory_frequency>100</trajectory_frequency> 
   <UWB_frequency>60</UWB_frequency> 
   <UWB_D_frequency>60</UWB_D_frequency> 
   <UWB_signal_length>0.01</UWB_signal_length>
-  <max_UWB_range>6</max_UWB_range>
+  <max_UWB_range>6.5</max_UWB_range>
   <s_tdoa>0.22</s_tdoa>
   <s_twr>0.16</s_twr>
   <Q>0.01</Q>
@@ -45,8 +45,9 @@
   <beacon_6_freq>50</beacon_6_freq>
   <beacon_7_freq>50</beacon_7_freq>
   <beacon_8_freq>50</beacon_8_freq>
-  <beacon_dynamic_freq>400</beacon_dynamic_freq>
+  <beacon_dynamic_freq>50</beacon_dynamic_freq>
   <dynamic_cov_approach>0</dynamic_cov_approach>
+  <beaconvelocity>0</beaconvelocity>
   <x_beacon_1>3</x_beacon_1>
   <y_beacon_1>12</y_beacon_1>
   <x_beacon_2>-3</x_beacon_2>

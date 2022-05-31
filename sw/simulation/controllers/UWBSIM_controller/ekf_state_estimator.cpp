@@ -98,6 +98,30 @@ float dist = UWBm_0[0];
 
  if(UWBm_0[9] == 1 && param->dynamic_beacons() == 1){
 
+    if(param->beaconvelocity() == 1){
+      float t = simtime_seconds-UWBm_0[14]; 
+     float x1 = s[ID]->state_estimate[0];
+     float y1 = s[ID]->state_estimate[1]; 
+    
+     
+     float x0 = UWBm_0[7];
+     float y0 = UWBm_0[8];
+
+      // update our dynamic agent position estimate
+      UWBm_0[7] = UWBm_0[7] + t*UWBm_0[15]; 
+      UWBm_0[8] = UWBm_0[8] + t*UWBm_0[16]; 
+     float x01 = UWBm_0[7];
+     float y01 = UWBm_0[8];
+     // update our ranging measurement by substracting/adding the change in distance between measurement generation and ingestion
+      float x = UWBm_0[17];
+     float y = UWBm_0[18];
+     
+     float d_0 = sqrtf((x-x0)*(x-x0)+(y-y0)*(y-y0));
+     float d_1 = sqrtf((x1-x01)*(x1-x01)+(y1-y01)*(y1-y01));
+     float diff = d_1 - d_0; 
+     UWBm_0[6] = UWBm_0[6] + diff; 
+  
+    }
   
     //If we use the standard ranging no information exchange approach, the approach is 0 in the parameters file
     if(param->dynamic_cov_approach()==0){
@@ -136,13 +160,13 @@ float dist = UWBm_0[0];
     
     float variance = cosf(theta)*cosf(theta)*(abs(UWBm_0[10])) + sinf(theta)*sinf(theta)*(abs(UWBm_0[12])) +2*(abs(UWBm_0[11]))*sinf(theta)*cosf(theta); 
     float variance_total_add =  abs(variance);
-   
+   /*
     if(ID == 0){
     std::cout<<"theta: "<<theta*180/M_PI<<std::endl;
     std::cout<<"covx: "<<UWBm_0[10]<<std::endl;
     std::cout<<"covy: "<<UWBm_0[12]<<std::endl;}
     //std::cout<<sqrtf( (0.16*0.16)+variance_total_add)<<std::endl;
-
+*/
     filterekf.ekf_set_twr_noise(sqrtf((0.16*0.16)+ variance_total_add));//2*sqrtf(0.16)*(variance_total_add));
     
     //std::cout<<variance_total_add<<std::endl;
