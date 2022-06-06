@@ -248,7 +248,7 @@ float norm = sqrtf(dx * dx + dy * dy);
 float error = dist-norm;
 float mah_distance = abs(error/sqrtf(R(1,1)));  
       
-if(mah_distance < 50){
+if(mah_distance < 10){
 dhdx << 0, 0, 0, 0, 0, 0,
         dx/ norm, 0, 0, dy/ norm, 0, 0,
         0, 0, 0, 0, 0, 0,
@@ -333,7 +333,7 @@ float errorDistance = fabsf(error / errorBaseDistance);
 
 //if (errorDistance < 0.4) {
 if(anchordistancesq > distancediffsq){
-if(mah_distance < 50){
+if(mah_distance < 10){
 // build Jacobian of observation model for anchor i
 
 dhdx << ((dx1 / d1) - (dx0 / d0)), 0, 0, ((dy1 / d1) - (dy0 / d0)), 0, 0,
