@@ -7,10 +7,10 @@
   <Kptheta>1</Kptheta>
   <Kitheta>0.1</Kitheta>
   <Kdtheta>0.3</Kdtheta>
-  <Kpx>1</Kpx>
+  <Kpx>5</Kpx>
   <Kix>0</Kix>
   <Kdx>3</Kdx>
-  <Kpy>1</Kpy>
+  <Kpy>5</Kpy>
   <Kiy>0</Kiy>
   <Kdy>3</Kdy>
   <Kpz>2</Kpz>
@@ -24,7 +24,7 @@
   <UWB_frequency>60</UWB_frequency> 
   <UWB_D_frequency>60</UWB_D_frequency> 
   <UWB_signal_length>0.01</UWB_signal_length>
-  <max_UWB_range>0</max_UWB_range>
+  <max_UWB_range>6.5</max_UWB_range>
   <s_tdoa>0.22</s_tdoa>
   <s_twr>0.16</s_twr>
   <Q>0.01</Q>

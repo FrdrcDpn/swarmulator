@@ -60,10 +60,11 @@ next_IMU_measurement_time = next_IMU_measurement_time + param->IMU_timestep() ;
   //std::normal_distribution<float> dist(0, param->acc_noise_sigma());
   
    
+  float ax = state[4] + noise_x; 
+  float ay = state[5] + noise_y;
   
-     // Acceleration
-  imu_state_estimate[4] = state[4] + noise_x; // Acceleration x
-  imu_state_estimate[5] = state[5] + noise_y;// Acceleration y
+  imu_state_estimate[4] = ax; // Acceleration x
+  imu_state_estimate[5] = ay;// Acceleration y
 
   imu_state_estimate[2] += imu_state_estimate[4]*dt; // Acceleration x
   imu_state_estimate[3] += imu_state_estimate[5]*dt;// Acceleration y
@@ -111,21 +112,27 @@ next_IMU_measurement_time = next_IMU_measurement_time + param->IMU_timestep() ;
   float Kpx = param->Kpx(); 
   float Kdx = param->Kdx(); 
   float Kix = param->Kix(); 
+ 
+  float k_px = DesiredX - state_estimate[0]; 
+  float k_dx = dDesiredX - state_estimate[2];
 
-  if(dDesiredX > 1.0){
-    dDesiredX = 1.0; 
+
+  if(k_px > 1.0){
+    k_px = 1.0; 
   }
-   if(dDesiredX < -1.0){
-    dDesiredX = -1.0; 
+   if(k_px < -1.0){
+    k_px = -1.0; 
   }
 
-  float Ux = Kpx*( DesiredX - state_estimate[0] ) + Kdx*( dDesiredX - state_estimate[2] ) + Kix*errorSumX ;
+ 
+  float Ux = Kpx*( k_px ) + Kdx*( k_dx ) + Kix*errorSumX ;
 
-  errorSumX = errorSumX + ( DesiredX - state_estimate[0] );
+  errorSumX = errorSumX + ( k_px);
 
   dDesiredX = ( DesiredX - DesiredXpre ) / dt;
   DesiredXpre = DesiredX;
   ddDesiredX = ( dDesiredX - dDesiredXpre ) / dt;
+
   dDesiredXpre = dDesiredX;
 
   // torque input for motors (Uy) y direction
@@ -134,16 +141,22 @@ next_IMU_measurement_time = next_IMU_measurement_time + param->IMU_timestep() ;
   float Kiy = param->Kiy();
 
 
-  if(dDesiredY > 1.0){
-    dDesiredY = 1.0; 
+  float k_py = DesiredY - state_estimate[1]; 
+  float k_dy = dDesiredY - state_estimate[3];
+
+
+  if(k_py > 1.0){
+    k_py = 1.0; 
   }
-   if(dDesiredY < -1.0){
-    dDesiredY = -1.0; 
+   if(k_py < -1.0){
+    k_py = -1.0; 
   }
 
-  float Uy = Kpy*(DesiredY - state_estimate[1]) + Kdy*( dDesiredY - state_estimate[3]) + Kiy*errorSumY ;
 
-  errorSumY = errorSumY + ( DesiredY - state_estimate[1]);
+
+  float Uy = Kpy*(k_py) + Kdy*( k_dy) + Kiy*errorSumY ;
+
+  errorSumY = errorSumY + ( k_py);
 
   dDesiredY = ( DesiredY - DesiredYpre ) / dt;
   DesiredYpre = DesiredY;
@@ -244,14 +257,50 @@ DesiredTheta = Ux/g;
   // x direction
   ddx = (U1/m)*(cos(Phi)*sin(Theta)*cos(Psi) + sin(Phi)*sin(Psi));//(Theta*cos(Psi) + Phi*sin(Psi) );//
 
-  dx = dx + ddx*dt;
-  x = x + dx*dt;
+  
 
   // y direction 
   ddy = (U1/m)*(sin(Theta)*sin(Psi)*cos(Phi) - sin(Phi)*cos(Psi));//(Theta*sin(Psi) - Phi*cos(Psi));//
 
-  dy = dy + ddy*dt;
-  y = y + dy*dt;
+  float threshold = 10.0;
+ float accx = ddx;
+ float accy = ddy; 
+
+  if(accx > threshold){
+    accx = threshold; 
+  }
+   if(accx < -threshold){
+    accx = -threshold; 
+  }
+  if(accy > threshold){
+    accy = threshold; 
+  }
+   if(accy < -threshold){
+    accy = -threshold; 
+  }
+dx = dx + accx*dt;
+dy = dy + accy*dt;
+
+float vthreshold = 3;
+ float vvx = dx;
+ float vvy = dy; 
+
+  if(vvx > vthreshold){
+    vvx = vthreshold; 
+  }
+   if(vvx < -vthreshold){
+    vvx = -vthreshold; 
+  }
+  if(vvy > vthreshold){
+    vvy = vthreshold; 
+  }
+   if(vvy < -vthreshold){
+    vvy = -vthreshold; 
+  }
+ 
+  
+  x = x + vvx*dt;
+  y = y + vvy*dt;
 
   // z direction 
   ddz = (cos(Theta)*cos(Phi)*(U1/m))-g;
@@ -300,20 +349,17 @@ DesiredTheta = Ux/g;
  
 
   // Acceleration
-  state.at(4) = ddx; // Acceleration x
-  state.at(5) = ddy; // Acceleration y
+  state.at(4) = accx; // Acceleration x
+  state.at(5) = accy; // Acceleration y
  
   // Velocity
-  state.at(2) = dx; // Velocity x
-  state.at(3) = dy; // Velocity y
+  state.at(2) = vvx; // Velocity x
+  state.at(3) = vvy; // Velocity y
 
   // Position
   state.at(0) = x; // Position x
   state.at(1) = y; // Position y
-  
-  
- 
-  
+
 
 
   return state;

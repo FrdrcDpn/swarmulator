@@ -16,6 +16,9 @@
 #define S_AX 1000.01f
 #define S_AY 1000.01f
 
+#define max_cov 500
+#define min_cov 0.000001
+
 
 ekf::ekf()
 {
@@ -192,6 +195,20 @@ dfdx << 1, dt, dt*dt*0.5, 0, 0, 0,
 float accx = s[ID]->imu_state_estimate[4];
 float accy = s[ID]->imu_state_estimate[5];
 
+
+float vthreshold = 3;
+ if(X(1,0) > vthreshold){
+    X(1,0) = vthreshold; 
+  }
+   if(X(1,0) < -vthreshold){
+    X(1,0) = -vthreshold; 
+  }
+  if(X(4,0) > vthreshold){
+    X(4,0) = vthreshold; 
+  }
+   if(X(4,0) < -vthreshold){
+    X(4,0) = -vthreshold; 
+  }
 X(0,0) = X(0,0) + X(1,0)*dt + accx*dt*dt/2; 
 X(1,0) = X(1,0) + accx*dt; 
 X(2,0) = accx;
@@ -202,7 +219,9 @@ X(5,0) = accy ;
 P = dfdx * P * dfdx.transpose() +Q;
 
 
+
 }
+
 
 void ekf::ekf_update_acc(float ax, float ay){
 
@@ -248,7 +267,7 @@ float norm = sqrtf(dx * dx + dy * dy);
 float error = dist-norm;
 float mah_distance = abs(error/sqrtf(R(1,1)));  
       
-if(mah_distance < 10){
+if(mah_distance < 1000){
 dhdx << 0, 0, 0, 0, 0, 0,
         dx/ norm, 0, 0, dy/ norm, 0, 0,
         0, 0, 0, 0, 0, 0,
@@ -276,16 +295,16 @@ Zm << 0,
 ///float gainx = (P(0,0)*(dx/norm))/((P(0,0)*pow(dx/norm,2) + P(3,3)*pow(dy/norm,2) + R(1,1)));
 //float gainy = (P(3,3)*(dy/norm))/((P(0,0)*pow(dx/norm,2) + P(3,3)*pow(dy/norm,2) + R(1,1)));
 // calculate Kalman Gain
-K = P*(dhdx.transpose())/((P(0,0)*pow(dx/norm,2) + P(3,3)*pow(dy/norm,2) + R(1,1)));
-//K(0,1) = gainx;
-//K(3,1) = gainy;
+//K = P*(dhdx.transpose())/((P(0,0)*pow(dx/norm,2) + P(3,3)*pow(dy/norm,2) + R(1,1)));
+K = P*(dhdx.transpose())*((dhdx*P*(dhdx.transpose()) + dhdn*R*(dhdn.transpose())).inverse());
+
+
 
 
 
 // update the state
-//X(0,0) = X(0,0) + gainx*(dist-norm);
-//X(3,0) = X(3,0) + gainy*(dist-norm);
-
+X(0,0) = X(0,0) + (K*(Z-Zm))(0,0);
+X(3,0) = X(3,0) + (K*(Z-Zm))(3,0);
 //update state covariance
 
 
@@ -293,13 +312,17 @@ K = P*(dhdx.transpose())/((P(0,0)*pow(dx/norm,2) + P(3,3)*pow(dy/norm,2) + R(1,1
 ////P(3,0) = (-(gainy*dx/norm))*P(3,0);
 
 // update the state
-X = X + K*(Z-Zm);
+
 
 //update state covariance
 //P = (I-K*dhdx)*P;
-P =(I-K*dhdx)*P;//*(I-K*dhdx).transpose() + K*R*K.transpose();
+P =(I-K*dhdx)*P*(I-K*dhdx).transpose() + K*R*K.transpose();
 //P(0,0) = (1-(gainx*dx/norm))*P(0,0);
 //P(3,3) = (1-(gainy*dy/norm))*P(3,3);
+
+
+
+
 }}
 
 
@@ -331,9 +354,9 @@ float distancediffsq = sqrt(error);
 float errorBaseDistance = sqrtf(powf(dhdx(0,0), 2) + powf(dhdx(0,3), 2));
 float errorDistance = fabsf(error / errorBaseDistance);
 
-//if (errorDistance < 0.4) {
+//if (errorDistance < 0.4) {/
 if(anchordistancesq > distancediffsq){
-if(mah_distance < 10){
+if(mah_distance < 100){
 // build Jacobian of observation model for anchor i
 
 dhdx << ((dx1 / d1) - (dx0 / d0)), 0, 0, ((dy1 / d1) - (dy0 / d0)), 0, 0,
@@ -361,7 +384,9 @@ Zm << norm,
 
 
 //
-K = P*(dhdx.transpose())/((P(0,0)*pow( ((dx1 / d1) - (dx0 / d0)),2) + P(3,3)*pow(((dy1 / d1) - (dy0 / d0)),2) + R(0,0)));
+//K = P*(dhdx.transpose())/((P(0,0)*pow( ((dx1 / d1) - (dx0 / d0)),2) + P(3,3)*pow(((dy1 / d1) - (dy0 / d0)),2) + R(0,0)));
+K = P*(dhdx.transpose())*((dhdx*P*(dhdx.transpose()) + dhdn*R*(dhdn.transpose())).inverse());
+
 // calculate Kalman Gain
 //float gainx = (P(0,0)*( ((dx1 / d1) - (dx0 / d0))))/((P(0,0)*pow( ((dx1 / d1) - (dx0 / d0)),2) + P(3,3)*pow(((dy1 / d1) - (dy0 / d0)),2) + R(0,0)));
 //float gainy = (P(3,3)*(((dy1 / d1) - (dy0 / d0))))/((P(0,0)*pow( ((dx1 / d1) - (dx0 / d0)),2) + P(3,3)*pow(((dy1 / d1) - (dy0 / d0)),2) + R(0,0)));
@@ -381,13 +406,33 @@ K = P*(dhdx.transpose())/((P(0,0)*pow( ((dx1 / d1) - (dx0 / d0)),2) + P(3,3)*pow
 
 // update the state
 X = X + K*(Z-Zm);
+//X(0,0) = X(0,0) + (K*(Z-Zm))(0,0);
+//X(3,0) = X(3,0) + (K*(Z-Zm))(3,0);
 
 //update state covariance
 //P = (I-K*dhdx)*P;
-P =(I-K*dhdx)*P;//*(I-K*dhdx).transpose() + K*R*K.transpose();
+P =(I-K*dhdx)*P*(I-K*dhdx).transpose() + K*R*K.transpose();
 //P(0,0) = (1-(gainx*((dx1 / d1) - (dx0 / d0))))*P(0,0);
 //P(3,3) = (1-(gainy*((dy1 / d1) - (dy0 / d0))))*P(3,3);
-
+//for (int i = 0; i<=5; i++){
+    // for (int k = i; k<=5; k++){
+ 
+    // float p = 0.5*P(i,k) + 0.5*P(i,k) ;//+ (K*K.transpose())(i,k)*R(0,0);
+    // if ( p>max_cov){
+    //      P(i,k) = max_cov;
+    //      P(k,i) = max_cov;
+    // }
+    // else if (i == k && p<min_cov)
+    // {
+    //    P(i,k) = min_cov;
+   //     P(k,i) = min_cov;
+   //  }
+   //  else {
+   //       P(i,k) = p;
+   //       P(k,i) = p;
+   //  }      
+ ////}
+//}
 }
 }}}
 
