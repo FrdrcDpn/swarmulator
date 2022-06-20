@@ -35,17 +35,23 @@ private:
 
 
 public:
+bool twr_performed = false; 
 float kR = 1;
 Eigen::MatrixXf NP{2,2};
  Eigen::MatrixXf U{6,1};
  Eigen::MatrixXf B{6,1};
  Eigen::MatrixXf X{6,1};
+ Eigen::MatrixXf X_est{6,1};
+  Eigen::MatrixXf X_cov{6,1};
   Eigen::MatrixXf I{6,6};
   Eigen::MatrixXf Z{4,1};
   Eigen::MatrixXf Zm{4,1};
   Eigen::MatrixXf dfdx{6,6};
   Eigen::MatrixXf dfdu{6,6};
   Eigen::MatrixXf P{6,6};
+   Eigen::MatrixXf P_est{6,6};
+    Eigen::MatrixXf P_cov{6,6};
+   Eigen::MatrixXf P_stored{6,6};
   Eigen::MatrixXf Q{6,6};
   Eigen::MatrixXf R{4,4};
   Eigen::MatrixXf dhdntwr{1,4};
@@ -76,6 +82,7 @@ Eigen::MatrixXf NP{2,2};
   void ekf_update_acc(float ax, float ay);
 
   void ekf_update_twr(float dist, float anchor_x, float anchor_y);
+ void ekf_update_twr_CI(float dist, float anchor_x, float anchor_y, float Px, float Py,float Pxx, float Pyy);
 
   void ekf_update_tdoa(float dist, float anchor_0x, float anchor_0y, float anchor_1x, float anchor_1y); 
   void ekf_set_twr_noise(float s_twr);

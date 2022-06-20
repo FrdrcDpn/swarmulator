@@ -11,6 +11,7 @@ public:
   struct speed speed; 
   struct pos pos;
   struct cov cov; 
+  struct cov coolcov; 
   bool initialized;
   uint16_t ID;
   float simtime_seconds_store = 0;

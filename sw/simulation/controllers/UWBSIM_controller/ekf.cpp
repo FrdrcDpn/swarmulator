@@ -8,8 +8,8 @@
 
 #define PN_X 0.0f
 #define PN_Y 0.0f
-#define PN_VX 0.1f
-#define PN_VY 0.1f
+#define PN_VX 0.0f
+#define PN_VY 0.0f
 #define PN_AX 0.01f
 #define PN_AY 0.01f
 
@@ -50,8 +50,8 @@ struct cov ekf::ekf_get_cov(){
   result.c2 = P(0,3);
   result.c3 = P(3,3);
   result.c4 = P(3,0);
-  result.c5 = P(4,4);
-  result.c6 = P(5,5);
+  result.c5 = P(3,3);
+  result.c6 = P(4,4);
   return result; 
 }
 
@@ -162,33 +162,51 @@ Q <<   (pow(dt,5)/20)*q*q,  (pow(dt,4)/8)*q*q,  (pow(dt,3)/6)*q*q, 0, 0, 0,
      0, 0, 0,  (pow(dt,4)/8)*q*q, (pow(dt,3)/3)*q*q ,  (pow(dt,2)/2)*q*q,
      0, 0, 0,  (pow(dt,3)/6)*q*q,  (pow(dt,2)/2)*q*q, q*q;
 
- 
 
 /*
-
-
-
- //dt = param->EKF_timestep();
+Q << 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0,
+     0, 0, s_ax, 0, 0, 0,
+     0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, s_ay;
  
+ float proc_accxy = 0.5;
+ float proc_pos = 0; 
+ float proc_vel = 0; 
+
+
+Q << 0.001, 0, 0, 0, 0, 0,
+     0, 0.01, 0, 0, 0, 0,
+     0, 0, 0.1, 0, 0, 0,
+     0, 0, 0, 0.001, 0, 0,
+     0, 0, 0, 0,0.01, 0,
+     0, 0, 0, 0, 0, 0.1;
+
+
+*/
+//dt = param->EKF_timestep();
+ /*
 Q <<   (pow(dt,4)/4)*q,  (pow(dt,3)/2)*q,  (pow(dt,2)/2)*q, 0, 0, 0,
       (pow(dt,3)/2)*q, (pow(dt,2))*q,  dt*q, 0, 0, 0,
       (pow(dt,2)/2)*q,  dt*q,q , 0, 0, 0,
      0, 0, 0, (pow(dt,4)/4)*q,  (pow(dt,3)/2)*q,  (pow(dt,2)/2)*q,
      0, 0, 0,  (pow(dt,3)/2)*q, (pow(dt,2))*q ,  dt*q,
      0, 0, 0,  (pow(dt,2)/2)*q,  dt*q, q;
-*/
 
+*/
 //std::cout<<P(0,0)<<std::endl;
 //std::cout<<P(0,3)<<std::endl;
 //std::cout<<P(3,3)<<std::endl;
 //std::cout<<P(3,0)<<std::endl;
-dfdx << 1, dt, dt*dt*0.5, 0, 0, 0,
+dfdx << 1, dt, dt*dt/2, 0, 0, 0,
         0, 1, dt, 0, 0, 0,
         0, 0, 1, 0, 0, 0,
-        0, 0, 0, 1, dt, dt*dt*0.5,
+        0, 0, 0, 1, dt, dt*dt/2,
         0, 0, 0, 0, 1, dt,
         0, 0, 0, 0, 0, 1;
  
+
 // predict next state
 // = ;//+ distributiond(generatord);
 //
@@ -218,8 +236,8 @@ X(5,0) = accy ;
 
 P = dfdx * P * dfdx.transpose() +Q;
 
-
-
+//std::cout<<P<<std::endl;
+//std::cout<<"-----------------------------------"<<std::endl;
 }
 
 
@@ -267,7 +285,7 @@ float norm = sqrtf(dx * dx + dy * dy);
 float error = dist-norm;
 float mah_distance = abs(error/sqrtf(R(1,1)));  
       
-if(mah_distance < 1000){
+if(mah_distance < 5){
 dhdx << 0, 0, 0, 0, 0, 0,
         dx/ norm, 0, 0, dy/ norm, 0, 0,
         0, 0, 0, 0, 0, 0,
@@ -303,8 +321,7 @@ K = P*(dhdx.transpose())*((dhdx*P*(dhdx.transpose()) + dhdn*R*(dhdn.transpose())
 
 
 // update the state
-X(0,0) = X(0,0) + (K*(Z-Zm))(0,0);
-X(3,0) = X(3,0) + (K*(Z-Zm))(3,0);
+X = X + K*(Z-Zm);
 //update state covariance
 
 
@@ -317,15 +334,105 @@ X(3,0) = X(3,0) + (K*(Z-Zm))(3,0);
 //update state covariance
 //P = (I-K*dhdx)*P;
 P =(I-K*dhdx)*P*(I-K*dhdx).transpose() + K*R*K.transpose();
+
+
+
 //P(0,0) = (1-(gainx*dx/norm))*P(0,0);
 //P(3,3) = (1-(gainy*dy/norm))*P(3,3);
+/*
+// we perform an additional covariance propagation, in order to take into account the covariance un
+float dt = 1/param->UWB_D_frequency();
+float q = param->Q();
+Q <<   (pow(dt,5)/20)*q*q,  (pow(dt,4)/8)*q*q,  (pow(dt,3)/6)*q*q, 0, 0, 0,
+      (pow(dt,4)/8)*q*q, (pow(dt,1)/1)*q*q,  (pow(dt,2)/2)*q*q, 0, 0, 0,
+      (pow(dt,3)/6)*q*q,  (pow(dt,2)/2)*q*q,q*q , 0, 0, 0,
+     0, 0, 0, (pow(dt,5)/20)*q*q,  (pow(dt,4)/8)*q*q,  (pow(dt,3)/6)*q*q,
+     0, 0, 0,  (pow(dt,4)/8)*q*q, (pow(dt,3)/3)*q*q ,  (pow(dt,2)/2)*q*q,
+     0, 0, 0,  (pow(dt,3)/6)*q*q,  (pow(dt,2)/2)*q*q, q*q;
 
+dfdx << 1, dt, dt*dt/2, 0, 0, 0,
+        0, 1, dt, 0, 0, 0,
+        0, 0, 1, 0, 0, 0,
+        0, 0, 0, 1, dt, dt*dt/2,
+        0, 0, 0, 0, 1, dt,
+        0, 0, 0, 0, 0, 1;
+ 
+P = dfdx * P * dfdx.transpose() +Q;
 
-
-
+*/
 }}
 
+// covariance intersection TWR update
+void ekf::ekf_update_twr_CI(float dist, float anchor_x, float anchor_y, float Px ,float Py,float Pxx, float Pyy){
+//std::cout<<"TWR"<<std::endl;
+float dx = X(0,0) - anchor_x;
+float dy = X(3,0) - anchor_y;
 
+float norm = sqrtf(dx * dx + dy * dy);
+
+// build Jacobian of observation model for anchor i
+//outlier rejection based on Mahalonobis distance
+float error = dist-norm;
+float mah_distance = abs(error/sqrtf(R(1,1)));  
+      
+if(mah_distance < 5){
+dhdx << 0, 0, 0, 0, 0, 0,
+        dx/ norm, 0, 0, dy/ norm, 0, 0,
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0;
+
+// our twr measurement
+Z << 0,
+     dist,
+     0,
+     0;
+
+Zm << 0,
+     norm,
+     0,
+     0;
+
+// est is where I think I am 
+P_est = P; 
+X_est = X; 
+
+// now calculate where the other quad thinks I am 
+
+P_cov = P; 
+X_cov = X; 
+
+//K = P*(dhdx.transpose())/((P_cov(0,0)*pow(dx/norm,2) + P_cov(3,3)*pow(dy/norm,2) + R(1,1)));
+// calculate Kalman Gain of the ranging quadrotor's estimate
+K = P*(dhdx.transpose())*((dhdx*P*(dhdx.transpose()) + dhdn*R*(dhdn.transpose())).inverse());
+// update the state of the ranging quadrotor's estimate
+X_cov = X_cov + K*(Z-Zm);
+// update the state
+//update state covariance
+P_cov =(I-K*dhdx)*P*(I-K*dhdx).transpose() + K*R*K.transpose();
+
+std::vector<float> optimal;
+float omega;
+for (int i = 1; i < 100; i++) {
+  omega = 1/100;
+  P = (omega*P_cov.inverse() + (1-omega)*P_est.inverse()).inverse();
+  optimal.push_back(P.trace());
+}
+
+//ensure we take an omega between 0 and 1
+omega = optimal[std::min_element(optimal.begin(),optimal.end()) - optimal.begin()];
+
+// now merge the two estimates with covariance intersection x_est, X_cov, P_cov and P_est
+//float omega = 1-(P_cov(0,0)+P_cov(3,3))/(P_est(0,0)+P_est(3,3)+P_cov(0,0)+P_cov(3,3));
+//omega = 1-omega;
+P = (omega*P_cov.inverse() + (1-omega)*P_est.inverse()).inverse();
+X = P*(omega*(P_cov.inverse())*X_cov + (1-omega)*(P_est.inverse())*X_est);
+//std::cout<<"CIIIIII"<<omega<<std::endl;
+
+// now X and P are the quadrotor's own estimate, while X_est and P_est are the estimate of where the other quadrotor thinks this quadrotor is
+// let's perform the conservative covariance intersection of these estimates
+
+}
+}
 void ekf::ekf_update_tdoa(float dist, float anchor_0x, float anchor_0y, float anchor_1x, float anchor_1y){
 
 //std::cout<<"TDOA"<<std::endl;
@@ -356,7 +463,7 @@ float errorDistance = fabsf(error / errorBaseDistance);
 
 //if (errorDistance < 0.4) {/
 if(anchordistancesq > distancediffsq){
-if(mah_distance < 100){
+if(mah_distance < 5){
 // build Jacobian of observation model for anchor i
 
 dhdx << ((dx1 / d1) - (dx0 / d0)), 0, 0, ((dy1 / d1) - (dy0 / d0)), 0, 0,

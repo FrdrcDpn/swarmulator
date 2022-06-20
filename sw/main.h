@@ -13,6 +13,7 @@ extern bool moving_1;
 extern bool moving_2;
 extern bool moving_3;
 extern bool moving_4;
+
 extern std::vector<float> xpositions;
 extern std::vector<float> ypositions;
 extern std::vector<int> startposindex;

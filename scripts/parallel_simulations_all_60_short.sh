@@ -31,8 +31,8 @@ for (( t = 8; t >= 2; --t )); do
       -u 'parameters/beacon_8_en' -v 1 \
     conf/parameters.xml 
 
-  for (( j = 1; j <= 12; j++ )); do
-    p=$(($j*$s/6))
+  for (( j = 1; j <= 1; j++ )); do
+    p=$(($j*15))
     d=logs/3dplot/dynamic/''$t''quad/''$s''statfreq/dynfreq$p
     mkdir $d
 
@@ -76,8 +76,8 @@ for (( t = 1; t <= 1; t++ )); do
       -u 'parameters/beacon_8_en' -v 1 \
     conf/parameters.xml 
 
-  for (( j = 1; j <= 12; j++ )); do
-    p=$(($j*$s/6))
+  for (( j = 1; j <= 1; j++ )); do
+    p=$(($j*15))
     d=logs/3dplot/dynamic/''$t''quad/''$s''statfreq/dynfreq$p
     mkdir $d
 

@@ -9,10 +9,10 @@
   <Kdtheta>0.3</Kdtheta>
   <Kpx>5</Kpx>
   <Kix>0</Kix>
-  <Kdx>3</Kdx>
+  <Kdx>1</Kdx>
   <Kpy>5</Kpy>
   <Kiy>0</Kiy>
-  <Kdy>3</Kdy>
+  <Kdy>1</Kdy>
   <Kpz>2</Kpz>
   <Kiz>0.01</Kiz>
   <Kdz>1</Kdz>
@@ -24,11 +24,11 @@
   <UWB_frequency>60</UWB_frequency> 
   <UWB_D_frequency>60</UWB_D_frequency> 
   <UWB_signal_length>0.01</UWB_signal_length>
-  <max_UWB_range>6.5</max_UWB_range>
+  <max_UWB_range>0</max_UWB_range>
   <s_tdoa>0.22</s_tdoa>
   <s_twr>0.16</s_twr>
   <Q>0.01</Q>
-  <kR>1.0</kR>
+  <kR>1</kR>
   <beacon_1_en>1</beacon_1_en>
   <beacon_2_en>1</beacon_2_en>
   <beacon_3_en>1</beacon_3_en>
@@ -46,7 +46,7 @@
   <beacon_7_freq>50</beacon_7_freq>
   <beacon_8_freq>50</beacon_8_freq>
   <beacon_dynamic_freq>400</beacon_dynamic_freq>
-  <dynamic_cov_approach>0</dynamic_cov_approach>
+  <dynamic_cov_approach>1</dynamic_cov_approach>
   <beaconvelocity>0</beaconvelocity>
   <x_beacon_1>3</x_beacon_1>
   <y_beacon_1>12</y_beacon_1>
