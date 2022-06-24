@@ -129,7 +129,7 @@ float dist = UWBm_0[0];
 
     
     float dist = UWBm_0[6];
-    filterekf.ekf_set_twr_noise(twr_noise);
+    filterekf.ekf_set_twr_noise(0.16);
     filterekf.ekf_update_twr(dist, UWBm_0[7], UWBm_0[8]);
  
  }
@@ -137,7 +137,7 @@ float dist = UWBm_0[0];
     if(param->dynamic_cov_approach()==1){
        tdoa_t = simtime_seconds - tdoa_t_stored; 
     if(simtime_seconds>1){
-    filterekf.ekf_set_twr_noise(sqrtf((twr_noise*twr_noise)));//2*sqrtf(0.16)*(variance_total_add));
+    filterekf.ekf_set_twr_noise(sqrtf((0.16*0.16)));//2*sqrtf(0.16)*(variance_total_add));
     float dist = UWBm_0[6];
     filterekf.ekf_update_twr_CI(dist, UWBm_0[7], UWBm_0[8],UWBm_0[10] ,UWBm_0[12],UWBm_0[11] ,UWBm_0[13]);
     
@@ -148,8 +148,8 @@ float dist = UWBm_0[0];
        tdoa_t = simtime_seconds - tdoa_t_stored; 
     if(simtime_seconds>1){
 
-   //float theta = (atan2f((s[ID]->state_estimate[1]-UWBm_0[8]),s[ID]->state_estimate[0]-UWBm_0[7]));
-   float theta = (tan(s[ID]->state_estimate[1]-UWBm_0[8]/(s[ID]->state_estimate[0]-UWBm_0[7])));
+   float theta = (atan2f((s[ID]->state_estimate[1]-UWBm_0[8]),s[ID]->state_estimate[0]-UWBm_0[7]));
+   //float theta = (tan(s[ID]->state_estimate[1]-UWBm_0[8]/(s[ID]->state_estimate[0]-UWBm_0[7])));
 
   
     float variance1 = cosf(theta)*cosf(theta)*(abs(UWBm_0[10])) + sinf(theta)*sinf(theta)*(UWBm_0[12]) +2*(abs(UWBm_0[11]))*sinf(theta)*cosf(theta); 
@@ -160,7 +160,7 @@ float dist = UWBm_0[0];
     if(isnan(variance_total_add)){
       variance_total_add = 0;
     }
-    filterekf.ekf_set_twr_noise(sqrtf((twr_noise*twr_noise)+ variance_total_add*param->kR()));//2*sqrtf(0.16)*(variance_total_add));
+    filterekf.ekf_set_twr_noise(sqrtf((0.16*0.16)+ variance_total_add*param->kR()));//2*sqrtf(0.16)*(variance_total_add));
     float dist = UWBm_0[6];
     filterekf.ekf_update_twr_CI(dist, UWBm_0[7], UWBm_0[8],UWBm_0[10] ,UWBm_0[12],UWBm_0[11] ,UWBm_0[13]);
     
@@ -176,8 +176,8 @@ float dist = UWBm_0[0];
     
     // update the twr measurement noise with the covariance values of the quadrotor 
     
-   //float theta = (atan2f((s[ID]->state_estimate[1]-UWBm_0[8]),s[ID]->state_estimate[0]-UWBm_0[7]));
-   float theta = (tan(s[ID]->state_estimate[1]-UWBm_0[8]/(s[ID]->state_estimate[0]-UWBm_0[7])));
+   float theta = (atan2f((s[ID]->state_estimate[1]-UWBm_0[8]),s[ID]->state_estimate[0]-UWBm_0[7]));
+   //float theta = (tan(s[ID]->state_estimate[1]-UWBm_0[8]/(s[ID]->state_estimate[0]-UWBm_0[7])));
 
     //if(theta < 0){
     //  theta = theta + M_PI/2;
@@ -204,7 +204,7 @@ float dist = UWBm_0[0];
     if(isnan(variance_total_add)){
       variance_total_add = 0;
     }
-    filterekf.ekf_set_twr_noise(sqrtf((twr_noise*twr_noise)+ variance_total_add*param->kR()));//2*sqrtf(0.16)*(variance_total_add));
+    filterekf.ekf_set_twr_noise(sqrtf((0.16*0.16)+ variance_total_add*param->kR()));//2*sqrtf(0.16)*(variance_total_add));
     
     //std::cout<<variance_total_add<<std::endl;
     float dist = UWBm_0[6];

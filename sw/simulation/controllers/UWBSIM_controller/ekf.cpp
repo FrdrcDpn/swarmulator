@@ -6,10 +6,10 @@
 #include "trigonometry.h"
 #include <random>
 
-#define PN_X 0.0f
-#define PN_Y 0.0f
-#define PN_VX 0.0f
-#define PN_VY 0.0f
+#define PN_X 0.1f
+#define PN_Y 0.1f
+#define PN_VX 0.1f
+#define PN_VY 0.1f
 #define PN_AX 0.01f
 #define PN_AY 0.01f
 
@@ -285,7 +285,7 @@ float norm = sqrtf(dx * dx + dy * dy);
 float error = dist-norm;
 float mah_distance = abs(error/sqrtf(R(1,1)));  
       
-if(mah_distance < 5){
+if(mah_distance < 500000){
 dhdx << 0, 0, 0, 0, 0, 0,
         dx/ norm, 0, 0, dy/ norm, 0, 0,
         0, 0, 0, 0, 0, 0,
@@ -375,7 +375,7 @@ float norm = sqrtf(dx * dx + dy * dy);
 float error = dist-norm;
 float mah_distance = abs(error/sqrtf(R(1,1)));  
       
-if(mah_distance < 5){
+if(mah_distance < 50000){
 dhdx << 0, 0, 0, 0, 0, 0,
         dx/ norm, 0, 0, dy/ norm, 0, 0,
         0, 0, 0, 0, 0, 0,
@@ -414,7 +414,8 @@ std::vector<float> optimal;
 float omega;
 for (int i = 1; i < 100; i++) {
   omega = 1/100;
-  P = (omega*P_cov.inverse() + (1-omega)*P_est.inverse()).inverse();
+  //P = (((1/omega)*P_cov + P_cov).inverse() + ((1/(1-omega))*P_est + P_est).inverse()).inverse();
+  P = ((omega)*P_cov.inverse() + (1-omega)*P_est.inverse()).inverse();
   optimal.push_back(P.trace());
 }
 
@@ -424,8 +425,10 @@ omega = optimal[std::min_element(optimal.begin(),optimal.end()) - optimal.begin(
 // now merge the two estimates with covariance intersection x_est, X_cov, P_cov and P_est
 //float omega = 1-(P_cov(0,0)+P_cov(3,3))/(P_est(0,0)+P_est(3,3)+P_cov(0,0)+P_cov(3,3));
 //omega = 1-omega;
-P = (omega*P_cov.inverse() + (1-omega)*P_est.inverse()).inverse();
-X = P*(omega*(P_cov.inverse())*X_cov + (1-omega)*(P_est.inverse())*X_est);
+//P = (((1/omega)*P_cov + P_cov).inverse() + ((1/(1-omega))*P_est + P_est).inverse()).inverse();
+////X = P*((((1/omega)*P_cov + P_cov).inverse())*X_cov + ((1/(1-omega))*P_est + P_est).inverse()*X_est);
+P = ((omega)*P_cov.inverse() + (1-omega)*P_est.inverse()).inverse();
+X = P*((omega)*(P_cov.inverse())*X_cov + (1-omega)*(P_est.inverse())*X_est);
 //std::cout<<"CIIIIII"<<omega<<std::endl;
 
 // now X and P are the quadrotor's own estimate, while X_est and P_est are the estimate of where the other quadrotor thinks this quadrotor is
