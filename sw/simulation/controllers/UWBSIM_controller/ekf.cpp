@@ -6,8 +6,8 @@
 #include "trigonometry.h"
 #include <random>
 
-#define PN_X 0.1f
-#define PN_Y 0.1f
+#define PN_X 0.0f
+#define PN_Y 0.0f
 #define PN_VX 0.1f
 #define PN_VY 0.1f
 #define PN_AX 0.01f
@@ -285,7 +285,7 @@ float norm = sqrtf(dx * dx + dy * dy);
 float error = dist-norm;
 float mah_distance = abs(error/sqrtf(R(1,1)));  
       
-if(mah_distance < 500000){
+if(mah_distance < 5){
 dhdx << 0, 0, 0, 0, 0, 0,
         dx/ norm, 0, 0, dy/ norm, 0, 0,
         0, 0, 0, 0, 0, 0,
@@ -375,7 +375,7 @@ float norm = sqrtf(dx * dx + dy * dy);
 float error = dist-norm;
 float mah_distance = abs(error/sqrtf(R(1,1)));  
       
-if(mah_distance < 50000){
+if(mah_distance < 5){
 dhdx << 0, 0, 0, 0, 0, 0,
         dx/ norm, 0, 0, dy/ norm, 0, 0,
         0, 0, 0, 0, 0, 0,
@@ -466,7 +466,7 @@ float errorDistance = fabsf(error / errorBaseDistance);
 
 //if (errorDistance < 0.4) {/
 if(anchordistancesq > distancediffsq){
-if(mah_distance < 5){
+if(mah_distance < 5000){
 // build Jacobian of observation model for anchor i
 
 dhdx << ((dx1 / d1) - (dx0 / d0)), 0, 0, ((dy1 / d1) - (dy0 / d0)), 0, 0,

@@ -7,10 +7,10 @@
   <Kptheta>1</Kptheta>
   <Kitheta>0.1</Kitheta>
   <Kdtheta>0.3</Kdtheta>
-  <Kpx>5</Kpx>
+  <Kpx>3</Kpx>
   <Kix>0</Kix>
   <Kdx>1</Kdx>
-  <Kpy>5</Kpy>
+  <Kpy>3</Kpy>
   <Kiy>0</Kiy>
   <Kdy>1</Kdy>
   <Kpz>2</Kpz>
@@ -27,7 +27,7 @@
   <max_UWB_range>0</max_UWB_range>
   <s_tdoa>0.22</s_tdoa>
   <s_twr>0.16</s_twr>
-  <Q>0.01</Q>
+  <Q>0.05</Q>
   <kR>1</kR>
   <beacon_1_en>1</beacon_1_en>
   <beacon_2_en>1</beacon_2_en>
@@ -46,7 +46,7 @@
   <beacon_7_freq>50</beacon_7_freq>
   <beacon_8_freq>50</beacon_8_freq>
   <beacon_dynamic_freq>400</beacon_dynamic_freq>
-  <dynamic_cov_approach>0</dynamic_cov_approach>
+  <dynamic_cov_approach>3</dynamic_cov_approach>
   <beaconvelocity>0</beaconvelocity>
   <x_beacon_1>3</x_beacon_1>
   <y_beacon_1>12</y_beacon_1>
