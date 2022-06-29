@@ -375,7 +375,7 @@ float norm = sqrtf(dx * dx + dy * dy);
 float error = dist-norm;
 float mah_distance = abs(error/sqrtf(R(1,1)));  
       
-if(mah_distance < 5){
+if(mah_distance < 500000000){
 dhdx << 0, 0, 0, 0, 0, 0,
         dx/ norm, 0, 0, dy/ norm, 0, 0,
         0, 0, 0, 0, 0, 0,
@@ -411,16 +411,22 @@ X_cov = X_cov + K*(Z-Zm);
 P_cov =(I-K*dhdx)*P*(I-K*dhdx).transpose() + K*R*K.transpose();
 
 std::vector<float> optimal;
+std::vector<float> omegalist;
 float omega;
-for (int i = 1; i < 100; i++) {
-  omega = 1/100;
+
+for (float i = 1; i < 100; i++) {
+  omega = i*1/100;
+  //std::cout<<"CIIIIII "<<omega<<std::endl;
   //P = (((1/omega)*P_cov + P_cov).inverse() + ((1/(1-omega))*P_est + P_est).inverse()).inverse();
   P = ((omega)*P_cov.inverse() + (1-omega)*P_est.inverse()).inverse();
-  optimal.push_back(P.trace());
+ // std::cout<<"CIIIpIII "<<P(0,0)+P(3,3)<<std::endl;
+  optimal.push_back(P(0,0)+P(3,3));
+  omegalist.push_back(omega);
 }
+auto it = std::min_element(std::begin(optimal), std::end(optimal));
+omega = omegalist[std::distance(std::begin(optimal), it)];
 
 //ensure we take an omega between 0 and 1
-omega = optimal[std::min_element(optimal.begin(),optimal.end()) - optimal.begin()];
 
 // now merge the two estimates with covariance intersection x_est, X_cov, P_cov and P_est
 //float omega = 1-(P_cov(0,0)+P_cov(3,3))/(P_est(0,0)+P_est(3,3)+P_cov(0,0)+P_cov(3,3));
@@ -429,8 +435,10 @@ omega = optimal[std::min_element(optimal.begin(),optimal.end()) - optimal.begin(
 ////X = P*((((1/omega)*P_cov + P_cov).inverse())*X_cov + ((1/(1-omega))*P_est + P_est).inverse()*X_est);
 P = ((omega)*P_cov.inverse() + (1-omega)*P_est.inverse()).inverse();
 X = P*((omega)*(P_cov.inverse())*X_cov + (1-omega)*(P_est.inverse())*X_est);
-//std::cout<<"CIIIIII"<<omega<<std::endl;
 
+
+omegalist.clear(); 
+optimal.clear();
 // now X and P are the quadrotor's own estimate, while X_est and P_est are the estimate of where the other quadrotor thinks this quadrotor is
 // let's perform the conservative covariance intersection of these estimates
 

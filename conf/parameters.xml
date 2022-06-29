@@ -22,7 +22,7 @@
   <IMU_timestep>0.001</IMU_timestep> 
   <trajectory_frequency>100</trajectory_frequency> 
   <UWB_frequency>50</UWB_frequency> 
-  <UWB_D_frequency>10</UWB_D_frequency> 
+  <UWB_D_frequency>20</UWB_D_frequency> 
   <UWB_signal_length>0.01</UWB_signal_length>
   <max_UWB_range>0</max_UWB_range>
   <s_tdoa>0.22</s_tdoa>
@@ -46,7 +46,7 @@
   <beacon_7_freq>50</beacon_7_freq>
   <beacon_8_freq>50</beacon_8_freq>
   <beacon_dynamic_freq>400</beacon_dynamic_freq>
-  <dynamic_cov_approach>3</dynamic_cov_approach>
+  <dynamic_cov_approach>1</dynamic_cov_approach>
   <beaconvelocity>0</beaconvelocity>
   <x_beacon_1>3</x_beacon_1>
   <y_beacon_1>12</y_beacon_1>
