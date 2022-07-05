@@ -22,7 +22,7 @@
   <IMU_timestep>0.001</IMU_timestep> 
   <trajectory_frequency>100</trajectory_frequency> 
   <UWB_frequency>50</UWB_frequency> 
-  <UWB_D_frequency>10</UWB_D_frequency> 
+  <UWB_D_frequency>20</UWB_D_frequency> 
   <UWB_signal_length>0.01</UWB_signal_length>
   <max_UWB_range>6.5</max_UWB_range>
   <s_tdoa>0.22</s_tdoa>

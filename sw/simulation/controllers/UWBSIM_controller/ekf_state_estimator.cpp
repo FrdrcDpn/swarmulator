@@ -210,7 +210,7 @@ float dist = UWBm_0[0];
 
     float finaldist = finalvar*(((omega)*dist/variance1 ) +(1-omega)*(finaldist2)/variance2);
     
-    filterekf.ekf_set_twr_noise(sqrtf(0.16*0.16 +finalvar));//2*sqrtf(0.16)*(variance_total_add));
+    filterekf.ekf_set_twr_noise(sqrtf(finalvar));//2*sqrtf(0.16)*(variance_total_add));
     filterekf.ekf_update_twr(finaldist, UWBm_0[7], UWBm_0[8]);
     
  
