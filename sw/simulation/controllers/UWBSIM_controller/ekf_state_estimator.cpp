@@ -148,21 +148,70 @@ float dist = UWBm_0[0];
        tdoa_t = simtime_seconds - tdoa_t_stored; 
     if(simtime_seconds>1){
 
-   float theta = (atan2f((s[ID]->state_estimate[1]-UWBm_0[8]),s[ID]->state_estimate[0]-UWBm_0[7]));
+   float theta = (atan2((s[ID]->state_estimate[1]-UWBm_0[8]),s[ID]->state_estimate[0]-UWBm_0[7]));
    //float theta = (tan(s[ID]->state_estimate[1]-UWBm_0[8]/(s[ID]->state_estimate[0]-UWBm_0[7])));
 
-  
-    float variance1 = cosf(theta)*cosf(theta)*(abs(UWBm_0[10])) + sinf(theta)*sinf(theta)*(UWBm_0[12]) +2*(abs(UWBm_0[11]))*sinf(theta)*cosf(theta); 
-    //coolcov = filterekf.ekf_get_cov(); 
+  float variance1 = abs(cosf(theta)*cosf(theta)*(abs(UWBm_0[10])) + sinf(theta)*sinf(theta)*(UWBm_0[12]) +2*(abs(UWBm_0[11]))*sinf(theta)*cosf(theta)); 
+    //
    // float variance2 = cosf(theta)*cosf(theta)*(param->kR()*abs(coolcov.c1)) + sinf(theta)*sinf(theta)*(param->kR()*abs(coolcov.c3)) +2*(param->kR()*abs(coolcov.c2))*sinf(theta)*cosf(theta); 
     float variance_total_add =  abs(variance1);
 
     if(isnan(variance_total_add)){
       variance_total_add = 0;
     }
-    filterekf.ekf_set_twr_noise(sqrtf((0.16*0.16)+ variance_total_add*param->kR()));//2*sqrtf(0.16)*(variance_total_add));
+    filterekf.ekf_set_twr_noise(sqrtf(0.16*0.16 + variance_total_add*param->kR()));//2*sqrtf(0.16)*(variance_total_add));
     float dist = UWBm_0[6];
     filterekf.ekf_update_twr_CI(dist, UWBm_0[7], UWBm_0[8],UWBm_0[10] ,UWBm_0[12],UWBm_0[11] ,UWBm_0[13]);
+    
+ 
+ }}
+     //If we use the standard ranging no information exchange approach, the approach is 0 in the parameters file
+    if(param->dynamic_cov_approach()==12){
+       tdoa_t = simtime_seconds - tdoa_t_stored; 
+    if(simtime_seconds>0){
+
+   float theta = (atan2((s[ID]->state_estimate[1]-UWBm_0[8]),s[ID]->state_estimate[0]-UWBm_0[7]));
+   //float theta = (tan(s[ID]->state_estimate[1]-UWBm_0[8]/(s[ID]->state_estimate[0]-UWBm_0[7])));
+   cov = filterekf.ekf_get_cov();
+    float variance2 = 0.16*0.16+ abs(cosf(theta)*cosf(theta)*(abs(cov.c1)) + sinf(theta)*sinf(theta)*(cov.c3) +2*(abs(cov.c2))*sinf(theta)*cosf(theta)) +abs(cosf(theta)*cosf(theta)*(abs(UWBm_0[10])) + sinf(theta)*sinf(theta)*(UWBm_0[12]) +2*(abs(UWBm_0[11]))*sinf(theta)*cosf(theta)); 
+    float variance1 = 0.16*0.16+ abs(cosf(theta)*cosf(theta)*(abs(cov.c1)) + sinf(theta)*sinf(theta)*(cov.c3) +2*(abs(cov.c2))*sinf(theta)*cosf(theta));
+   
+    //if(isnan(variance1)){
+    //  variance1 = 0.0000001;
+    //}
+    if(isnan(variance2)){
+      variance2 = 0.0000001;
+    }
+
+    float dist = UWBm_0[6];
+   // std::vector<float> optimal;
+    //std::vector<float> omegalist;
+    //float omega;
+   // float finalvar; 
+
+   // for (float i = 1; i < 100; i++) {
+    //  omega = i*1/100;
+      
+    //  finalvar = 1/((omega/variance1)+((1-omega)/variance2));
+    //  optimal.push_back(finalvar);
+    //  omegalist.push_back(omega);
+    //}
+    //auto it = std::min_element(std::begin(optimal), std::end(optimal));
+    //omega = omegalist[std::distance(std::begin(optimal), it)];  
+
+    float v1 = 1/variance1;
+    float v2 = 1/variance2;
+
+    float omega = (abs(v1+v2)-v2+v1)/(2*abs(v1+v2));
+    //std::cout<<omega<<std::endl;
+    float finalvar = 1/((omega/variance1)+((1-omega)/variance2));
+
+    float finaldist2 = sqrtf(((s[ID]->state_estimate[1]-UWBm_0[8])*(s[ID]->state_estimate[1]-UWBm_0[8]))+((s[ID]->state_estimate[0]-UWBm_0[7])*(s[ID]->state_estimate[0]-UWBm_0[7])));
+
+    float finaldist = finalvar*(((omega)*dist/variance1 ) +(1-omega)*(finaldist2)/variance2);
+    
+    filterekf.ekf_set_twr_noise(sqrtf(0.16*0.16 +finalvar));//2*sqrtf(0.16)*(variance_total_add));
+    filterekf.ekf_update_twr(finaldist, UWBm_0[7], UWBm_0[8]);
     
  
  }}
@@ -204,7 +253,7 @@ float dist = UWBm_0[0];
     if(isnan(variance_total_add)){
       variance_total_add = 0;
     }
-    filterekf.ekf_set_twr_noise(sqrtf((0.16*0.16)+ variance_total_add*param->kR()));//2*sqrtf(0.16)*(variance_total_add));
+    filterekf.ekf_set_twr_noise(sqrtf(((0.16*0.16)+ variance_total_add)*param->kR()));//2*sqrtf(0.16)*(variance_total_add));
     
     //std::cout<<variance_total_add<<std::endl;
     float dist = UWBm_0[6];

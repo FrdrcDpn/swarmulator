@@ -23,6 +23,7 @@ void txtwrite::txtwrite_state(ofstream &logfile)
   t << simtime_seconds; // Write down time
   vector<Agent *> state_buff = s; // Get state
   float f = evaluate_fitness(); // Evaluate fitness
+ 
   for (uint16_t i = 0; i < s.size(); i++) {
     logfile << t.str() << " " // time
             << i + 1 << " "; // ID

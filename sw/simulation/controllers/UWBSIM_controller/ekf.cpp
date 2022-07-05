@@ -151,9 +151,7 @@ NP << 0, 0,
 void ekf::ekf_predict(uint16_t ID, float dt){
  float q = param->Q(); 
 //std::cout<<"--------"<<std::endl;
-//std::cout<<"ID "<<ID<<" ranging std "<<sqrtf(R(1,1))<<std::endl;
-
-
+//std::cout<<"ID <<ID<<" ranging std "<<sqrtf(R(1,1))<<std::endl;
 
 Q <<   (pow(dt,5)/20)*q*q,  (pow(dt,4)/8)*q*q,  (pow(dt,3)/6)*q*q, 0, 0, 0,
       (pow(dt,4)/8)*q*q, (pow(dt,1)/1)*q*q,  (pow(dt,2)/2)*q*q, 0, 0, 0,
@@ -285,7 +283,7 @@ float norm = sqrtf(dx * dx + dy * dy);
 float error = dist-norm;
 float mah_distance = abs(error/sqrtf(R(1,1)));  
       
-if(mah_distance < 5){
+if(mah_distance < 50000){
 dhdx << 0, 0, 0, 0, 0, 0,
         dx/ norm, 0, 0, dy/ norm, 0, 0,
         0, 0, 0, 0, 0, 0,
@@ -364,51 +362,29 @@ P = dfdx * P * dfdx.transpose() +Q;
 
 // covariance intersection TWR update
 void ekf::ekf_update_twr_CI(float dist, float anchor_x, float anchor_y, float Px ,float Py,float Pxx, float Pyy){
-//std::cout<<"TWR"<<std::endl;
-float dx = X(0,0) - anchor_x;
-float dy = X(3,0) - anchor_y;
 
-float norm = sqrtf(dx * dx + dy * dy);
+// where I think I am 
+X1(0,0) = X(0,0);
+X1(1,0) = X(3,0);
+// where the other quad thinks I am 
+float theta = (atan2((X(3,0)-anchor_y),(X(0,0)-anchor_x)));
 
-// build Jacobian of observation model for anchor i
-//outlier rejection based on Mahalonobis distance
-float error = dist-norm;
-float mah_distance = abs(error/sqrtf(R(1,1)));  
-      
-if(mah_distance < 500000000){
-dhdx << 0, 0, 0, 0, 0, 0,
-        dx/ norm, 0, 0, dy/ norm, 0, 0,
-        0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0;
+// the covariance block associated with the position of where I think I am 
+P1(0,0) = P(0,0);
+P1(1,0) = P(3,0);
+P1(0,1) = P(0,3);
+P1(1,1) = P(3,3);
 
-// our twr measurement
-Z << 0,
-     dist,
-     0,
-     0;
 
-Zm << 0,
-     norm,
-     0,
-     0;
+X1_est(0,0) = anchor_x + ((dist)*cos(theta));
+X1_est(1,0) = anchor_y + ((dist)*sin(theta));
 
-// est is where I think I am 
-P_est = P; 
-X_est = X; 
-
-// now calculate where the other quad thinks I am 
-
-P_cov = P; 
-X_cov = X; 
-
-//K = P*(dhdx.transpose())/((P_cov(0,0)*pow(dx/norm,2) + P_cov(3,3)*pow(dy/norm,2) + R(1,1)));
-// calculate Kalman Gain of the ranging quadrotor's estimate
-K = P*(dhdx.transpose())*((dhdx*P*(dhdx.transpose()) + dhdn*R*(dhdn.transpose())).inverse());
-// update the state of the ranging quadrotor's estimate
-X_cov = X_cov + K*(Z-Zm);
-// update the state
-//update state covariance
-P_cov =(I-K*dhdx)*P*(I-K*dhdx).transpose() + K*R*K.transpose();
+// the covariance block associated with the position of where the other quad thinks I am 
+// covariance of the ranging agent
+P1_est(0,0) = Px + 0.16*0.16+cos(theta)*cos(theta);// +P(0,0);
+P1_est(1,0) = Pxx + 0.16*0.16+sin(theta)*cos(theta) ;
+P1_est(0,1) = Pyy + 0.16*0.16+sin(theta)*cos(theta) ;
+P1_est(1,1) = Py + 0.16*0.16+cos(theta)*cos(theta) ;//+P(1,1);
 
 std::vector<float> optimal;
 std::vector<float> omegalist;
@@ -416,33 +392,29 @@ float omega;
 
 for (float i = 1; i < 100; i++) {
   omega = i*1/100;
-  //std::cout<<"CIIIIII "<<omega<<std::endl;
-  //P = (((1/omega)*P_cov + P_cov).inverse() + ((1/(1-omega))*P_est + P_est).inverse()).inverse();
-  P = ((omega)*P_cov.inverse() + (1-omega)*P_est.inverse()).inverse();
- // std::cout<<"CIIIpIII "<<P(0,0)+P(3,3)<<std::endl;
-  optimal.push_back(P(0,0)+P(3,3));
+
+  P1_CI = ((omega*(P1.inverse()))+((1-omega)*(P1_est.inverse()))).inverse();
+
+  optimal.push_back(P1_CI.trace());
   omegalist.push_back(omega);
+
 }
 auto it = std::min_element(std::begin(optimal), std::end(optimal));
 omega = omegalist[std::distance(std::begin(optimal), it)];
 
-//ensure we take an omega between 0 and 1
+P1_CI = ((omega*(P1.inverse()))+((1-omega)*(P1_est.inverse()))).inverse();
 
-// now merge the two estimates with covariance intersection x_est, X_cov, P_cov and P_est
-//float omega = 1-(P_cov(0,0)+P_cov(3,3))/(P_est(0,0)+P_est(3,3)+P_cov(0,0)+P_cov(3,3));
-//omega = 1-omega;
-//P = (((1/omega)*P_cov + P_cov).inverse() + ((1/(1-omega))*P_est + P_est).inverse()).inverse();
-////X = P*((((1/omega)*P_cov + P_cov).inverse())*X_cov + ((1/(1-omega))*P_est + P_est).inverse()*X_est);
-P = ((omega)*P_cov.inverse() + (1-omega)*P_est.inverse()).inverse();
-X = P*((omega)*(P_cov.inverse())*X_cov + (1-omega)*(P_est.inverse())*X_est);
+X1_CI = P1_CI*(((omega*(P1.inverse())*X1)+((1-omega)*(P1_est.inverse())*X1_est)));
 
+// update our state-information
+X(0,0) = X1_CI(0,0); 
+X(3,0) = X1_CI(1,0); 
 
-omegalist.clear(); 
-optimal.clear();
-// now X and P are the quadrotor's own estimate, while X_est and P_est are the estimate of where the other quadrotor thinks this quadrotor is
-// let's perform the conservative covariance intersection of these estimates
+P(0,0)= P1_CI(0,0);
+P(3,0)= P1_CI(1,0);
+P(0,3)= P1_CI(0,1);
+P(3,3)= P1_CI(1,1);
 
-}
 }
 void ekf::ekf_update_tdoa(float dist, float anchor_0x, float anchor_0y, float anchor_1x, float anchor_1y){
 
